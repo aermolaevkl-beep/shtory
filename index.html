@@ -93,12 +93,6 @@
         .btn-danger:hover {
             background: #dc2626;
         }
-        .btn-success {
-            background: #22c55e;
-        }
-        .btn-success:hover {
-            background: #16a34a;
-        }
         .btn-sm {
             padding: 6px 14px;
             font-size: 13px;
@@ -209,7 +203,6 @@
         <small>несколько изделий</small>
     </h1>
 
-    <!-- Форма добавления -->
     <div class="grid-2" id="addForm">
         <div class="field-group">
             <label for="typeSelect">Тип жалюзи</label>
@@ -242,7 +235,6 @@
         </div>
     </div>
 
-    <!-- Список изделий -->
     <div class="items-section">
         <div class="items-header">
             <h3>📋 Список изделий <span class="count" id="itemsCount">0</span></h3>
@@ -289,14 +281,14 @@
         <span>⚡ Данные из файла «Расценки уни.xlsx»</span>
         <span>🧷 Доп. +25% за коричневую фурнитуру (не учтено)</span>
         <span>📐 свыше 2,0 м +10% за каждые 10 см</span>
-        <span>🔄 0-4 → вниз, 5-9 → вверх</span>
+        <span>🔄 40-44→40, 45-49→50, 50-54→50, 55-59→60 и т.д.</span>
     </div>
 </div>
 
 <script>
     (function() {
         // --------------------------------------------------------------
-        // 1. ПРАЙС-ДАННЫЕ (полностью из файла)
+        // ПРАЙС-ДАННЫЕ
         // --------------------------------------------------------------
         const PRICES = {
             roll_mini: {
@@ -382,21 +374,19 @@
         const totalPrice = document.getElementById('totalPrice');
 
         // --------------------------------------------------------------
-        // Функция округления: 0-4 → вниз, 5-9 → вверх
+        // Округление: 40-44→40, 45-49→50, 50-54→50, 55-59→60 и т.д.
         // --------------------------------------------------------------
-        function roundToNearestStep(value, step) {
-            // Находим ближайший шаг (0-4 вниз, 5-9 вверх)
-            const remainder = value % step;
-            if (remainder <= step / 2 - 0.1) { // 0-4 для шага 10
-                return value - remainder;
-            } else {
-                return value + (step - remainder);
-            }
-        }
-
         function roundWidth(width) {
-            // Округляем до ближайшего значения из WIDTHS
-            let rounded = roundToNearestStep(width, 10);
+            // Округляем до ближайшего числа, кратного 10
+            // 45 округляется вверх (математическое округление)
+            let rounded = Math.round(width / 10) * 10;
+            
+            // Если результат меньше 40, берём 40
+            if (rounded < 40) return 40;
+            
+            // Если результат больше 160, берём 160
+            if (rounded > 160) return 160;
+            
             // Находим ближайшее доступное значение из WIDTHS
             let best = WIDTHS[0];
             for (let i = 0; i < WIDTHS.length; i++) {
@@ -404,15 +394,11 @@
                     best = WIDTHS[i];
                 }
             }
-            // Если rounded меньше 40, берём 40
-            if (rounded < 40) return 40;
-            // Если rounded больше 160, берём 160
-            if (rounded > 160) return 160;
             return best;
         }
 
         // --------------------------------------------------------------
-        // Расчёт цены для одного изделия (с округлением 0-4 вниз, 5-9 вверх)
+        // Расчёт цены
         // --------------------------------------------------------------
         function calculatePrice(typeKey, cat, width, height) {
             const typeData = PRICES[typeKey];
@@ -420,10 +406,8 @@
             const catData = typeData[cat];
             if (!catData) return 0;
 
-            // Округляем ширину: 0-4 вниз, 5-9 вверх
             const roundedWidth = roundWidth(width);
 
-            // Определяем группу высоты
             let heightGroup;
             if (typeKey === 'roll_mini' || typeKey === 'roll_uni_mgs') {
                 if (height <= 170) heightGroup = 'до1.7';
@@ -443,13 +427,11 @@
             }
             if (!row || !Array.isArray(row)) return 0;
 
-            // Находим индекс для округлённой ширины
             let idx = WIDTHS.indexOf(roundedWidth);
             if (idx === -1) idx = WIDTHS.length - 1;
 
             let basePrice = row[idx] || 0;
 
-            // Доплата за высоту свыше 2.0 м
             let extra = 0;
             if (heightGroup === 'свыше2.0') {
                 const extraCm = height - 200;
@@ -506,7 +488,6 @@
                 `;
             });
 
-            // Итоговая строка
             html += `
                 <tr class="total-row">
                     <td colspan="5" style="text-align:right;">ИТОГО:</td>
@@ -531,9 +512,6 @@
             return map[typeKey] || typeKey;
         }
 
-        // --------------------------------------------------------------
-        // Добавление / удаление
-        // --------------------------------------------------------------
         function addItem() {
             const type = typeSelect.value;
             const cat = parseInt(catSelect.value, 10);
@@ -574,22 +552,14 @@
             }
         }
 
-        // --------------------------------------------------------------
-        // События
-        // --------------------------------------------------------------
         addBtn.addEventListener('click', addItem);
-
         document.querySelectorAll('#addForm input, #addForm select').forEach(el => {
             el.addEventListener('keydown', (e) => {
                 if (e.key === 'Enter') addItem();
             });
         });
-
         clearAllBtn.addEventListener('click', clearAll);
 
-        // --------------------------------------------------------------
-        // Старт
-        // --------------------------------------------------------------
         renderItems();
     })();
 </script>
