@@ -289,6 +289,7 @@
         <span>⚡ Данные из файла «Расценки уни.xlsx»</span>
         <span>🧷 Доп. +25% за коричневую фурнитуру (не учтено)</span>
         <span>📐 свыше 2,0 м +10% за каждые 10 см</span>
+        <span>⬆ Округление вверх до ближайшего размера</span>
     </div>
 </div>
 
@@ -381,7 +382,20 @@
         const totalPrice = document.getElementById('totalPrice');
 
         // --------------------------------------------------------------
-        // Расчёт цены для одного изделия
+        // Вспомогательная функция: округление до ближайшей большей ширины
+        // --------------------------------------------------------------
+        function roundUpWidth(width) {
+            for (let i = 0; i < WIDTHS.length; i++) {
+                if (WIDTHS[i] >= width) {
+                    return WIDTHS[i];
+                }
+            }
+            // Если ширина больше 160, возвращаем 160 (максимум в прайсе)
+            return WIDTHS[WIDTHS.length - 1];
+        }
+
+        // --------------------------------------------------------------
+        // Расчёт цены для одного изделия (с округлением вверх)
         // --------------------------------------------------------------
         function calculatePrice(typeKey, cat, width, height) {
             const typeData = PRICES[typeKey];
@@ -389,30 +403,36 @@
             const catData = typeData[cat];
             if (!catData) return 0;
 
+            // Округляем ширину ВВЕРХ до ближайшего значения из WIDTHS
+            const roundedWidth = roundUpWidth(width);
+
+            // Определяем группу высоты с округлением ВВЕРХ
             let heightGroup;
             if (typeKey === 'roll_mini' || typeKey === 'roll_uni_mgs') {
-                heightGroup = height <= 170 ? 'до1.7' : height <= 200 ? 'до2.0' : 'свыше2.0';
+                if (height <= 170) heightGroup = 'до1.7';
+                else if (height <= 200) heightGroup = 'до2.0';
+                else heightGroup = 'свыше2.0';
             } else {
-                heightGroup = height <= 160 ? 'до1.6' : height <= 200 ? 'до2.0' : 'свыше2.0';
+                if (height <= 160) heightGroup = 'до1.6';
+                else if (height <= 200) heightGroup = 'до2.0';
+                else heightGroup = 'свыше2.0';
             }
 
             let row;
-            let groupUsed = heightGroup;
             if (heightGroup === 'свыше2.0') {
                 row = catData['до2.0'] || null;
-                groupUsed = 'до2.0';
             } else {
                 row = catData[heightGroup] || null;
             }
             if (!row || !Array.isArray(row)) return 0;
 
-            let idx = 0;
-            for (let i = 0; i < WIDTHS.length; i++) {
-                if (WIDTHS[i] <= width) idx = i;
-                else break;
-            }
+            // Находим индекс для округлённой ширины
+            let idx = WIDTHS.indexOf(roundedWidth);
+            if (idx === -1) idx = WIDTHS.length - 1;
+
             let basePrice = row[idx] || 0;
 
+            // Доплата за высоту свыше 2.0 м
             let extra = 0;
             if (heightGroup === 'свыше2.0') {
                 const extraCm = height - 200;
@@ -452,13 +472,14 @@
                 total += price;
 
                 const typeName = getTypeName(item.type);
+                const roundedW = roundUpWidth(item.width);
 
                 html += `
                     <tr>
                         <td>${index + 1}</td>
                         <td><span class="badge">${typeName}</span></td>
                         <td>${item.cat}</td>
-                        <td>${item.width} см</td>
+                        <td>${item.width} см → ${roundedW} см</td>
                         <td>${item.height} см</td>
                         <td><strong>${price.toFixed(2)} $</strong></td>
                         <td>
