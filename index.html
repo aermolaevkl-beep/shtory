@@ -45,7 +45,7 @@
             background: #f8fafc;
             padding: 20px 20px 15px 20px;
             border-radius: 18px;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
         }
         .field-group {
             display: flex;
@@ -96,6 +96,41 @@
         .btn-sm {
             padding: 6px 14px;
             font-size: 13px;
+        }
+        .preview-box {
+            background: #eef2ff;
+            border-radius: 14px;
+            padding: 12px 20px;
+            margin: 0 0 20px 0;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            border: 2px solid #dbeafe;
+        }
+        .preview-box .label {
+            font-weight: 600;
+            color: #1e293b;
+            font-size: 14px;
+        }
+        .preview-box .price {
+            font-size: 28px;
+            font-weight: 700;
+            color: #1e293b;
+            background: white;
+            padding: 4px 20px;
+            border-radius: 30px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+        .preview-box .price small {
+            font-size: 16px;
+            font-weight: 400;
+            color: #475569;
+        }
+        .preview-box .detail {
+            color: #475569;
+            font-size: 14px;
         }
         .items-section {
             margin: 20px 0;
@@ -193,6 +228,7 @@
             .container { padding: 16px; }
             .grid-2 { grid-template-columns: 1fr; }
             .items-header { flex-direction: column; gap: 8px; align-items: stretch; }
+            .preview-box { flex-direction: column; align-items: stretch; text-align: center; }
         }
     </style>
 </head>
@@ -203,6 +239,7 @@
         <small>несколько изделий</small>
     </h1>
 
+    <!-- Форма добавления -->
     <div class="grid-2" id="addForm">
         <div class="field-group">
             <label for="typeSelect">Тип жалюзи</label>
@@ -235,6 +272,16 @@
         </div>
     </div>
 
+    <!-- Превью цены -->
+    <div class="preview-box" id="previewBox">
+        <div>
+            <span class="label">💡 Предварительный расчёт</span>
+            <span class="detail" id="previewDetail">80 см × 170 см → 80 см</span>
+        </div>
+        <div class="price" id="previewPrice">0.00 <small>$</small></div>
+    </div>
+
+    <!-- Список изделий -->
     <div class="items-section">
         <div class="items-header">
             <h3>📋 Список изделий <span class="count" id="itemsCount">0</span></h3>
@@ -372,22 +419,16 @@
         const itemsFoot = document.getElementById('itemsFoot');
         const itemsCount = document.getElementById('itemsCount');
         const totalPrice = document.getElementById('totalPrice');
+        const previewPrice = document.getElementById('previewPrice');
+        const previewDetail = document.getElementById('previewDetail');
 
         // --------------------------------------------------------------
         // Округление: 40-44→40, 45-49→50, 50-54→50, 55-59→60 и т.д.
         // --------------------------------------------------------------
         function roundWidth(width) {
-            // Округляем до ближайшего числа, кратного 10
-            // 45 округляется вверх (математическое округление)
             let rounded = Math.round(width / 10) * 10;
-            
-            // Если результат меньше 40, берём 40
             if (rounded < 40) return 40;
-            
-            // Если результат больше 160, берём 160
             if (rounded > 160) return 160;
-            
-            // Находим ближайшее доступное значение из WIDTHS
             let best = WIDTHS[0];
             for (let i = 0; i < WIDTHS.length; i++) {
                 if (Math.abs(WIDTHS[i] - rounded) < Math.abs(best - rounded)) {
@@ -440,6 +481,22 @@
             }
 
             return basePrice + extra;
+        }
+
+        // --------------------------------------------------------------
+        // Обновление превью
+        // --------------------------------------------------------------
+        function updatePreview() {
+            const type = typeSelect.value;
+            const cat = parseInt(catSelect.value, 10);
+            const width = parseInt(widthInput.value, 10) || 80;
+            const height = parseInt(heightInput.value, 10) || 170;
+
+            const price = calculatePrice(type, cat, width, height);
+            const roundedW = roundWidth(width);
+
+            previewPrice.innerHTML = `${price.toFixed(2)} <small>$</small>`;
+            previewDetail.textContent = `${width} см × ${height} см → ${roundedW} см`;
         }
 
         // --------------------------------------------------------------
@@ -552,14 +609,29 @@
             }
         }
 
+        // --------------------------------------------------------------
+        // События
+        // --------------------------------------------------------------
         addBtn.addEventListener('click', addItem);
+
+        // Обновление превью при любом изменении
+        typeSelect.addEventListener('change', updatePreview);
+        catSelect.addEventListener('change', updatePreview);
+        widthInput.addEventListener('input', updatePreview);
+        heightInput.addEventListener('input', updatePreview);
+
         document.querySelectorAll('#addForm input, #addForm select').forEach(el => {
             el.addEventListener('keydown', (e) => {
                 if (e.key === 'Enter') addItem();
             });
         });
+
         clearAllBtn.addEventListener('click', clearAll);
 
+        // --------------------------------------------------------------
+        // Старт
+        // --------------------------------------------------------------
+        updatePreview();
         renderItems();
     })();
 </script>
