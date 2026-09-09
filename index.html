@@ -31,6 +31,7 @@
             display: flex;
             align-items: center;
             gap: 8px;
+            flex-wrap: wrap;
         }
         h1 small {
             font-size: 16px;
@@ -40,7 +41,7 @@
         }
         .grid-2 {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
             gap: 18px 20px;
             background: #f8fafc;
             padding: 20px 20px 15px 20px;
@@ -70,6 +71,11 @@
             outline: 2px solid #3b82f6;
             border-color: transparent;
         }
+        .field-group .currency-hint {
+            font-size: 12px;
+            color: #64748b;
+            margin-top: 2px;
+        }
         .btn {
             padding: 10px 24px;
             border: none;
@@ -97,6 +103,15 @@
             padding: 6px 14px;
             font-size: 13px;
         }
+        .btn-outline {
+            background: transparent;
+            border: 2px solid #3b82f6;
+            color: #3b82f6;
+        }
+        .btn-outline:hover {
+            background: #3b82f6;
+            color: white;
+        }
         .preview-box {
             background: #eef2ff;
             border-radius: 14px;
@@ -122,6 +137,17 @@
             padding: 4px 20px;
             border-radius: 30px;
             box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+        .preview-box .price .usd {
+            color: #1e293b;
+        }
+        .preview-box .price .byn {
+            color: #2563eb;
+            font-size: 20px;
         }
         .preview-box .price small {
             font-size: 16px;
@@ -140,6 +166,8 @@
             justify-content: space-between;
             align-items: center;
             margin-bottom: 12px;
+            flex-wrap: wrap;
+            gap: 10px;
         }
         .items-header h3 {
             margin: 0;
@@ -151,6 +179,12 @@
             border-radius: 30px;
             font-size: 14px;
             font-weight: 600;
+        }
+        .items-header .controls {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            flex-wrap: wrap;
         }
         .table-wrap {
             overflow-x: auto;
@@ -224,11 +258,63 @@
             padding: 4px 14px;
             border-radius: 30px;
         }
+        .currency-box {
+            background: #f1f5f9;
+            padding: 8px 16px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-left: auto;
+        }
+        .currency-box label {
+            font-weight: 600;
+            font-size: 13px;
+            color: #1e293b;
+            margin: 0;
+        }
+        .currency-box input {
+            width: 80px;
+            padding: 6px 10px;
+            border: 1px solid #d1d9e6;
+            border-radius: 8px;
+            font-size: 15px;
+            text-align: center;
+            background: white;
+        }
+        .currency-box input:focus {
+            outline: 2px solid #3b82f6;
+            border-color: transparent;
+        }
+        .currency-box .currency-label {
+            font-weight: 600;
+            color: #1e293b;
+            font-size: 14px;
+        }
+        .price-both {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        .price-both .usd-price {
+            font-weight: 600;
+        }
+        .price-both .byn-price {
+            color: #2563eb;
+            font-weight: 600;
+        }
+        .price-both .divider {
+            color: #94a3b8;
+        }
         @media (max-width: 768px) {
             .container { padding: 16px; }
             .grid-2 { grid-template-columns: 1fr; }
-            .items-header { flex-direction: column; gap: 8px; align-items: stretch; }
+            .items-header { flex-direction: column; align-items: stretch; }
+            .items-header .controls { justify-content: space-between; }
             .preview-box { flex-direction: column; align-items: stretch; text-align: center; }
+            .currency-box { margin-left: 0; width: 100%; justify-content: center; }
         }
     </style>
 </head>
@@ -237,6 +323,11 @@
     <h1>
         🧮 Калькулятор жалюзи
         <small>несколько изделий</small>
+        <div class="currency-box">
+            <label>Курс $ → Br</label>
+            <input type="number" id="rateInput" value="3.5" step="0.01" min="1">
+            <span class="currency-label">Br</span>
+        </div>
     </h1>
 
     <div class="grid-2" id="addForm">
@@ -278,13 +369,17 @@
             <span class="label">💡 Предварительный расчёт</span>
             <span class="detail" id="previewDetail">80 см × 170 см → 80 см</span>
         </div>
-        <div class="price" id="previewPrice">0.00 <small>$</small></div>
+        <div class="price" id="previewPrice">
+            <span class="usd">0.00 <small>$</small></span>
+            <span style="color:#94a3b8;">/</span>
+            <span class="byn">0.00 <small>Br</small></span>
+        </div>
     </div>
 
     <div class="items-section">
         <div class="items-header">
             <h3>📋 Список изделий <span class="count" id="itemsCount">0</span></h3>
-            <div>
+            <div class="controls">
                 <button class="btn btn-danger btn-sm" id="clearAllBtn">🗑 Очистить всё</button>
             </div>
         </div>
@@ -315,7 +410,7 @@
                 <tfoot id="itemsFoot" style="display:none;">
                     <tr class="total-row">
                         <td colspan="5" style="text-align:right;">ИТОГО:</td>
-                        <td id="totalPrice">0.00 $</td>
+                        <td id="totalPrice">0.00 $ / 0.00 Br</td>
                         <td></td>
                     </tr>
                 </tfoot>
@@ -337,7 +432,6 @@
         // ПРАЙС-ДАННЫЕ (все из файла)
         // --------------------------------------------------------------
         const PRICES = {
-            // ----- РУЛОННЫЕ МИНИ (индив.) -----
             roll_mini: {
                 widths: [40,50,60,70,80,90,100,110,120,130,140,150,160],
                 '1': {
@@ -357,7 +451,6 @@
                     'до2.0': [32.025, 36.295, 38.43, 41.6325, 45.9025, 49.105, 52.3075, 56.5775, 59.78, 61.915, 67.2525, 69.3875, 71.5225],
                 }
             },
-            // ----- РУЛОННЫЕ УНИ 2 (индив.) -----
             roll_uni: {
                 widths: [40,50,60,70,80,90,100,110,120,130,140,150,160],
                 '1': {
@@ -377,7 +470,6 @@
                     'до2.0': [39.589, 42.2882, 48.5865, 53.0852, 58.4838, 64.782, 69.2807, 75.579, 79.178, 82.777, 88.1755, 93.574, 97.173],
                 }
             },
-            // ----- РУЛОННЫЕ МГС (индив.) -----
             roll_mgs: {
                 widths: [50,60,70,80,90,100,110,120,130,140,150,160,170,180,190,200],
                 '1': {
@@ -393,7 +485,6 @@
                     'до1.7': [35.726, 36.6666, 41.3675, 43.2478, 45.1282, 47.0085, 50.7692, 54.5299, 58.2905, 62.0512, 65.8119, 69.5726, 73.3333, 75.2136, 77.0939, 80.8546],
                 }
             },
-            // ----- ДЕНЬ-НОЧЬ МИНИ (индив.) -----
             dn_mini: {
                 widths: [40,50,60,70,80,90,100,110,120,130,140,150,160],
                 '2': {
@@ -409,7 +500,6 @@
                     'до2.0': [35.90156, 37.8422, 40.7531, 43.6641, 48.5156, 56.2781, 64.0406, 66.9516, 70.8328, 76.6547, 82.4766, 89.2687, 96.0609],
                 }
             },
-            // ----- ДЕНЬ-НОЧЬ УНИ 2 (индив.) -----
             dn_uni: {
                 widths: [40,50,60,70,80,90,100,110,120,130,140,150,160],
                 '2': {
@@ -425,7 +515,6 @@
                     'до2.0': [43.6128, 51.4008, 57.6312, 61.5252, 66.9768, 73.2072, 80.9952, 88.7832, 95.0136, 102.802, 107.474, 112.147, 121.493],
                 }
             },
-            // ----- ДЕНЬ-НОЧЬ МГС (индив.) -----
             dn_mgs: {
                 widths: [50,60,70,80,90,100,110,120,130,140,150,160,170,180,190,200],
                 '2': {
@@ -451,6 +540,7 @@
         const catSelect = document.getElementById('catSelect');
         const widthInput = document.getElementById('widthInput');
         const heightInput = document.getElementById('heightInput');
+        const rateInput = document.getElementById('rateInput');
         const addBtn = document.getElementById('addBtn');
         const clearAllBtn = document.getElementById('clearAllBtn');
         const itemsBody = document.getElementById('itemsBody');
@@ -459,6 +549,10 @@
         const totalPrice = document.getElementById('totalPrice');
         const previewPrice = document.getElementById('previewPrice');
         const previewDetail = document.getElementById('previewDetail');
+
+        function getRate() {
+            return parseFloat(rateInput.value) || 3.5;
+        }
 
         // --------------------------------------------------------------
         // Округление ширины: 40-44→40, 45-49→50 и т.д.
@@ -493,15 +587,12 @@
             const roundedWidth = roundWidth(typeKey, width);
             const widths = typeData.widths;
 
-            // Определяем группу высоты
             let heightGroup;
-            // Для МГС особый случай: только "до1.7" и свыше
             if (typeKey === 'roll_mgs') {
                 heightGroup = height <= 170 ? 'до1.7' : 'свыше1.7';
             } else if (typeKey === 'dn_mgs') {
                 heightGroup = height <= 160 ? 'до1.6' : 'свыше1.6';
             } else {
-                // roll_mini, roll_uni, dn_mini, dn_uni
                 if (typeKey === 'roll_mini' || typeKey === 'roll_uni') {
                     heightGroup = height <= 170 ? 'до1.7' : height <= 200 ? 'до2.0' : 'свыше2.0';
                 } else {
@@ -509,7 +600,6 @@
                 }
             }
 
-            // Для МГС: если свыше, берём базу "до1.7" или "до1.6" + наценка
             let row;
             let isOverHeight = false;
             if (heightGroup === 'свыше1.7' || heightGroup === 'свыше1.6' || heightGroup === 'свыше2.0') {
@@ -534,7 +624,6 @@
 
             let basePrice = row[idx] || 0;
 
-            // Доплата за превышение высоты
             let extra = 0;
             if (isOverHeight) {
                 let baseHeight = 0;
@@ -553,6 +642,17 @@
             return basePrice + extra;
         }
 
+        function formatPrice(usd) {
+            const rate = getRate();
+            const byn = usd * rate;
+            return {
+                usd: usd,
+                byn: byn,
+                usdStr: usd.toFixed(2),
+                bynStr: byn.toFixed(2)
+            };
+        }
+
         // --------------------------------------------------------------
         // Обновление превью
         // --------------------------------------------------------------
@@ -564,8 +664,13 @@
 
             const price = calculatePrice(type, cat, width, height);
             const roundedW = roundWidth(type, width);
+            const f = formatPrice(price);
 
-            previewPrice.innerHTML = `${price.toFixed(2)} <small>$</small>`;
+            previewPrice.innerHTML = `
+                <span class="usd">${f.usdStr} <small>$</small></span>
+                <span style="color:#94a3b8;">/</span>
+                <span class="byn">${f.bynStr} <small>Br</small></span>
+            `;
             previewDetail.textContent = `${width} см × ${height} см → ${roundedW} см`;
         }
 
@@ -591,64 +696,4 @@
             }
 
             let html = '';
-            let total = 0;
-
-            items.forEach((item, index) => {
-                const price = calculatePrice(item.type, item.cat, item.width, item.height);
-                total += price;
-
-                const typeName = getTypeName(item.type);
-                const roundedW = roundWidth(item.type, item.width);
-
-                html += `
-                    <tr>
-                        <td>${index + 1}</td>
-                        <td><span class="badge">${typeName}</span></td>
-                        <td>${item.cat}</td>
-                        <td>${item.width} см → ${roundedW} см</td>
-                        <td>${item.height} см</td>
-                        <td><strong>${price.toFixed(2)} $</strong></td>
-                        <td>
-                            <button class="btn btn-danger btn-sm" onclick="removeItem(${item.id})">✕</button>
-                        </td>
-                    </tr>
-                `;
-            });
-
-            html += `
-                <tr class="total-row">
-                    <td colspan="5" style="text-align:right;">ИТОГО:</td>
-                    <td><strong>${total.toFixed(2)} $</strong></td>
-                    <td></td>
-                </tr>
-            `;
-
-            itemsBody.innerHTML = html;
-            itemsFoot.style.display = 'table-row-group';
-            itemsCount.textContent = items.length;
-            totalPrice.textContent = total.toFixed(2) + ' $';
-        }
-
-        function getTypeName(typeKey) {
-            const map = {
-                'roll_mini': 'Рулонные мини',
-                'roll_uni': 'Рулонные Уни 2',
-                'roll_mgs': 'Рулонные МГС',
-                'dn_mini': 'День-Ночь мини',
-                'dn_uni': 'День-Ночь Уни 2',
-                'dn_mgs': 'День-Ночь МГС'
-            };
-            return map[typeKey] || typeKey;
-        }
-
-        function addItem() {
-            const type = typeSelect.value;
-            const cat = parseInt(catSelect.value, 10);
-            const width = parseInt(widthInput.value, 10) || 80;
-            const height = parseInt(heightInput.value, 10) || 170;
-
-            // Проверка максимальной ширины в зависимости от типа
-            const typeData = PRICES[type];
-            if (!typeData) return;
-            const maxWidth = typeData.widths[typeData.widths.length - 1];
-            const minWidth = type
+            let
