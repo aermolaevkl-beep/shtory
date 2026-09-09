@@ -39,6 +39,77 @@
             color: #64748b;
             margin-left: 12px;
         }
+        .top-controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            align-items: center;
+            margin-left: auto;
+        }
+        .currency-box {
+            background: #f1f5f9;
+            padding: 8px 16px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .currency-box label {
+            font-weight: 600;
+            font-size: 13px;
+            color: #1e293b;
+            margin: 0;
+            white-space: nowrap;
+        }
+        .currency-box input {
+            width: 80px;
+            padding: 6px 10px;
+            border: 1px solid #d1d9e6;
+            border-radius: 8px;
+            font-size: 15px;
+            text-align: center;
+            background: white;
+        }
+        .currency-box input:focus {
+            outline: 2px solid #3b82f6;
+            border-color: transparent;
+        }
+        .currency-box .currency-label {
+            font-weight: 600;
+            color: #1e293b;
+            font-size: 14px;
+        }
+        .cashless-box {
+            background: #fef3c7;
+            padding: 8px 16px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border: 2px solid #fcd34d;
+        }
+        .cashless-box label {
+            font-weight: 600;
+            font-size: 13px;
+            color: #92400e;
+            margin: 0;
+            white-space: nowrap;
+            cursor: pointer;
+        }
+        .cashless-box input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+            accent-color: #f59e0b;
+        }
+        .cashless-box .badge-cashless {
+            background: #f59e0b;
+            color: white;
+            padding: 2px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
         .grid-2 {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
@@ -71,11 +142,6 @@
             outline: 2px solid #3b82f6;
             border-color: transparent;
         }
-        .field-group .currency-hint {
-            font-size: 12px;
-            color: #64748b;
-            margin-top: 2px;
-        }
         .btn {
             padding: 10px 24px;
             border: none;
@@ -102,15 +168,6 @@
         .btn-sm {
             padding: 6px 14px;
             font-size: 13px;
-        }
-        .btn-outline {
-            background: transparent;
-            border: 2px solid #3b82f6;
-            color: #3b82f6;
-        }
-        .btn-outline:hover {
-            background: #3b82f6;
-            color: white;
         }
         .preview-box {
             background: #eef2ff;
@@ -148,6 +205,14 @@
         .preview-box .price .byn {
             color: #2563eb;
             font-size: 20px;
+        }
+        .preview-box .price .cashless-mark {
+            background: #fef3c7;
+            color: #92400e;
+            padding: 2px 12px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
         }
         .preview-box .price small {
             font-size: 16px;
@@ -233,6 +298,15 @@
             font-weight: 500;
             white-space: nowrap;
         }
+        .badge-cashless {
+            background: #fef3c7;
+            color: #92400e;
+            border-radius: 40px;
+            padding: 2px 10px;
+            font-size: 11px;
+            font-weight: 600;
+            margin-left: 4px;
+        }
         .empty-state {
             padding: 40px;
             text-align: center;
@@ -258,39 +332,6 @@
             padding: 4px 14px;
             border-radius: 30px;
         }
-        .currency-box {
-            background: #f1f5f9;
-            padding: 8px 16px;
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin-left: auto;
-        }
-        .currency-box label {
-            font-weight: 600;
-            font-size: 13px;
-            color: #1e293b;
-            margin: 0;
-        }
-        .currency-box input {
-            width: 80px;
-            padding: 6px 10px;
-            border: 1px solid #d1d9e6;
-            border-radius: 8px;
-            font-size: 15px;
-            text-align: center;
-            background: white;
-        }
-        .currency-box input:focus {
-            outline: 2px solid #3b82f6;
-            border-color: transparent;
-        }
-        .currency-box .currency-label {
-            font-weight: 600;
-            color: #1e293b;
-            font-size: 14px;
-        }
         .price-both {
             display: flex;
             gap: 8px;
@@ -314,7 +355,8 @@
             .items-header { flex-direction: column; align-items: stretch; }
             .items-header .controls { justify-content: space-between; }
             .preview-box { flex-direction: column; align-items: stretch; text-align: center; }
-            .currency-box { margin-left: 0; width: 100%; justify-content: center; }
+            .top-controls { margin-left: 0; width: 100%; justify-content: center; flex-wrap: wrap; }
+            .currency-box, .cashless-box { flex: 1; min-width: 180px; justify-content: center; }
         }
     </style>
 </head>
@@ -323,10 +365,16 @@
     <h1>
         🧮 Калькулятор жалюзи
         <small>несколько изделий</small>
-        <div class="currency-box">
-            <label>Курс $ → Br</label>
-            <input type="number" id="rateInput" value="3.5" step="0.01" min="1">
-            <span class="currency-label">Br</span>
+        <div class="top-controls">
+            <div class="cashless-box">
+                <input type="checkbox" id="cashlessToggle">
+                <label for="cashlessToggle">💰 Безнал <span class="badge-cashless">+6%</span></label>
+            </div>
+            <div class="currency-box">
+                <label>Курс $ → Br</label>
+                <input type="number" id="rateInput" value="3.5" step="0.01" min="1">
+                <span class="currency-label">Br</span>
+            </div>
         </div>
     </h1>
 
@@ -423,6 +471,7 @@
         <span>🧷 Доп. +25% за коричневую фурнитуру (не учтено)</span>
         <span>📐 свыше 2,0 м +10% за каждые 10 см</span>
         <span>🔄 40-44→40, 45-49→50, 50-54→50, 55-59→60 и т.д.</span>
+        <span>💰 Безнал +6% (включается галочкой)</span>
     </div>
 </div>
 
@@ -541,6 +590,7 @@
         const widthInput = document.getElementById('widthInput');
         const heightInput = document.getElementById('heightInput');
         const rateInput = document.getElementById('rateInput');
+        const cashlessToggle = document.getElementById('cashlessToggle');
         const addBtn = document.getElementById('addBtn');
         const clearAllBtn = document.getElementById('clearAllBtn');
         const itemsBody = document.getElementById('itemsBody');
@@ -552,6 +602,10 @@
 
         function getRate() {
             return parseFloat(rateInput.value) || 3.5;
+        }
+
+        function isCashless() {
+            return cashlessToggle.checked;
         }
 
         // --------------------------------------------------------------
@@ -576,9 +630,9 @@
         }
 
         // --------------------------------------------------------------
-        // Расчёт цены
+        // Расчёт цены (без учёта безнала)
         // --------------------------------------------------------------
-        function calculatePrice(typeKey, cat, width, height) {
+        function calculatePriceBase(typeKey, cat, width, height) {
             const typeData = PRICES[typeKey];
             if (!typeData) return 0;
             const catData = typeData[cat];
@@ -635,210 +689,4 @@
                 const extraCm = height - baseHeight;
                 if (extraCm > 0) {
                     const steps = Math.ceil(extraCm / 10);
-                    extra = basePrice * 0.1 * steps;
-                }
-            }
-
-            return basePrice + extra;
-        }
-
-        function formatPrice(usd) {
-            const rate = getRate();
-            const byn = usd * rate;
-            return {
-                usd: usd,
-                byn: byn,
-                usdStr: usd.toFixed(2),
-                bynStr: byn.toFixed(2)
-            };
-        }
-
-        // --------------------------------------------------------------
-        // Обновление превью
-        // --------------------------------------------------------------
-        function updatePreview() {
-            const type = typeSelect.value;
-            const cat = parseInt(catSelect.value, 10);
-            const width = parseInt(widthInput.value, 10) || 80;
-            const height = parseInt(heightInput.value, 10) || 170;
-
-            const price = calculatePrice(type, cat, width, height);
-            const roundedW = roundWidth(type, width);
-            const f = formatPrice(price);
-
-            previewPrice.innerHTML = `
-                <span class="usd">${f.usdStr} <small>$</small></span>
-                <span style="color:#94a3b8;">/</span>
-                <span class="byn">${f.bynStr} <small>Br</small></span>
-            `;
-            previewDetail.textContent = `${width} см × ${height} см → ${roundedW} см`;
-        }
-
-        // --------------------------------------------------------------
-        // Рендер списка
-        // --------------------------------------------------------------
-        function renderItems() {
-            if (items.length === 0) {
-                itemsBody.innerHTML = `
-                    <tr>
-                        <td colspan="7">
-                            <div class="empty-state">
-                                <div class="icon">📭</div>
-                                <div>Нет добавленных изделий</div>
-                                <div style="font-size:13px; margin-top:6px;">Заполните форму выше и нажмите «Добавить»</div>
-                            </div>
-                        </td>
-                    </tr>
-                `;
-                itemsFoot.style.display = 'none';
-                itemsCount.textContent = '0';
-                return;
-            }
-
-            let html = '';
-            let totalUsd = 0;
-
-            items.forEach((item, index) => {
-                const price = calculatePrice(item.type, item.cat, item.width, item.height);
-                totalUsd += price;
-
-                const typeName = getTypeName(item.type);
-                const roundedW = roundWidth(item.type, item.width);
-                const f = formatPrice(price);
-
-                html += `
-                    <tr>
-                        <td>${index + 1}</td>
-                        <td><span class="badge">${typeName}</span></td>
-                        <td>${item.cat}</td>
-                        <td>${item.width} см → ${roundedW} см</td>
-                        <td>${item.height} см</td>
-                        <td>
-                            <div class="price-both">
-                                <span class="usd-price">${f.usdStr} $</span>
-                                <span class="divider">/</span>
-                                <span class="byn-price">${f.bynStr} Br</span>
-                            </div>
-                        </td>
-                        <td>
-                            <button class="btn btn-danger btn-sm" onclick="removeItem(${item.id})">✕</button>
-                        </td>
-                    </tr>
-                `;
-            });
-
-            const totalF = formatPrice(totalUsd);
-            html += `
-                <tr class="total-row">
-                    <td colspan="5" style="text-align:right;">ИТОГО:</td>
-                    <td>
-                        <div class="price-both">
-                            <span class="usd-price">${totalF.usdStr} $</span>
-                            <span class="divider">/</span>
-                            <span class="byn-price">${totalF.bynStr} Br</span>
-                        </div>
-                    </td>
-                    <td></td>
-                </tr>
-            `;
-
-            itemsBody.innerHTML = html;
-            itemsFoot.style.display = 'table-row-group';
-            itemsCount.textContent = items.length;
-            totalPrice.innerHTML = `
-                <div class="price-both">
-                    <span class="usd-price">${totalF.usdStr} $</span>
-                    <span class="divider">/</span>
-                    <span class="byn-price">${totalF.bynStr} Br</span>
-                </div>
-            `;
-        }
-
-        function getTypeName(typeKey) {
-            const map = {
-                'roll_mini': 'Рулонные мини',
-                'roll_uni': 'Рулонные Уни 2',
-                'roll_mgs': 'Рулонные МГС',
-                'dn_mini': 'День-Ночь мини',
-                'dn_uni': 'День-Ночь Уни 2',
-                'dn_mgs': 'День-Ночь МГС'
-            };
-            return map[typeKey] || typeKey;
-        }
-
-        function addItem() {
-            const type = typeSelect.value;
-            const cat = parseInt(catSelect.value, 10);
-            const width = parseInt(widthInput.value, 10) || 80;
-            const height = parseInt(heightInput.value, 10) || 170;
-
-            const typeData = PRICES[type];
-            if (!typeData) return;
-            const maxWidth = typeData.widths[typeData.widths.length - 1];
-            const minWidth = typeData.widths[0];
-
-            if (width < minWidth || width > maxWidth) {
-                alert(`Ширина должна быть от ${minWidth} до ${maxWidth} см для выбранного типа`);
-                return;
-            }
-            if (height < 50 || height > 250) {
-                alert('Высота должна быть от 50 до 250 см');
-                return;
-            }
-
-            items.push({
-                id: nextId++,
-                type: type,
-                cat: cat,
-                width: width,
-                height: height
-            });
-
-            renderItems();
-        }
-
-        window.removeItem = function(id) {
-            items = items.filter(item => item.id !== id);
-            renderItems();
-        };
-
-        function clearAll() {
-            if (items.length === 0) return;
-            if (confirm('Удалить все изделия?')) {
-                items = [];
-                nextId = 1;
-                renderItems();
-            }
-        }
-
-        // --------------------------------------------------------------
-        // События
-        // --------------------------------------------------------------
-        addBtn.addEventListener('click', addItem);
-        rateInput.addEventListener('input', () => {
-            updatePreview();
-            renderItems();
-        });
-
-        typeSelect.addEventListener('change', updatePreview);
-        catSelect.addEventListener('change', updatePreview);
-        widthInput.addEventListener('input', updatePreview);
-        heightInput.addEventListener('input', updatePreview);
-
-        document.querySelectorAll('#addForm input, #addForm select').forEach(el => {
-            el.addEventListener('keydown', (e) => {
-                if (e.key === 'Enter') addItem();
-            });
-        });
-
-        clearAllBtn.addEventListener('click', clearAll);
-
-        // --------------------------------------------------------------
-        // Старт
-        // --------------------------------------------------------------
-        updatePreview();
-        renderItems();
-    })();
-</script>
-</body>
-</html>
+                    extra = basePrice * 0.1
