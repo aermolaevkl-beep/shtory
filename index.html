@@ -689,4 +689,235 @@
                 const extraCm = height - baseHeight;
                 if (extraCm > 0) {
                     const steps = Math.ceil(extraCm / 10);
-                    extra = basePrice * 0.1
+                    extra = basePrice * 0.1 * steps;
+                }
+            }
+
+            return basePrice + extra;
+        }
+
+        // --------------------------------------------------------------
+        // Расчёт цены с учётом безнала
+        // --------------------------------------------------------------
+        function calculatePrice(typeKey, cat, width, height) {
+            const base = calculatePriceBase(typeKey, cat, width, height);
+            if (isCashless()) {
+                return base * 1.06;
+            }
+            return base;
+        }
+
+        function formatPrice(usd) {
+            const rate = getRate();
+            const byn = usd * rate;
+            return {
+                usd: usd,
+                byn: byn,
+                usdStr: usd.toFixed(2),
+                bynStr: byn.toFixed(2)
+            };
+        }
+
+        // --------------------------------------------------------------
+        // Обновление превью
+        // --------------------------------------------------------------
+        function updatePreview() {
+            const type = typeSelect.value;
+            const cat = parseInt(catSelect.value, 10);
+            const width = parseInt(widthInput.value, 10) || 80;
+            const height = parseInt(heightInput.value, 10) || 170;
+
+            const price = calculatePrice(type, cat, width, height);
+            const roundedW = roundWidth(type, width);
+            const f = formatPrice(price);
+            const cashlessMark = isCashless() ? ' <span class="cashless-mark">+6%</span>' : '';
+
+            previewPrice.innerHTML = `
+                <span class="usd">${f.usdStr} <small>$</small></span>
+                <span style="color:#94a3b8;">/</span>
+                <span class="byn">${f.bynStr} <small>Br</small></span>
+                ${cashlessMark}
+            `;
+            previewDetail.textContent = `${width} см × ${height} см → ${roundedW} см`;
+        }
+
+        // --------------------------------------------------------------
+        // Рендер списка
+        // --------------------------------------------------------------
+        function renderItems() {
+            if (items.length === 0) {
+                itemsBody.innerHTML = `
+                    <tr>
+                        <td colspan="7">
+                            <div class="empty-state">
+                                <div class="icon">📭</div>
+                                <div>Нет добавленных изделий</div>
+                                <div style="font-size:13px; margin-top:6px;">Заполните форму выше и нажмите «Добавить»</div>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+                itemsFoot.style.display = 'none';
+                itemsCount.textContent = '0';
+                return;
+            }
+
+            let html = '';
+            let totalUsd = 0;
+
+            items.forEach((item, index) => {
+                const price = calculatePrice(item.type, item.cat, item.width, item.height);
+                totalUsd += price;
+
+                const typeName = getTypeName(item.type);
+                const roundedW = roundWidth(item.type, item.width);
+                const f = formatPrice(price);
+                const cashlessMark = isCashless() ? ' <span class="badge-cashless">+6%</span>' : '';
+
+                html += `
+                    <tr>
+                        <td>${index + 1}</td>
+                        <td><span class="badge">${typeName}</span></td>
+                        <td>${item.cat}</td>
+                        <td>${item.width} см → ${roundedW} см</td>
+                        <td>${item.height} см</td>
+                        <td>
+                            <div class="price-both">
+                                <span class="usd-price">${f.usdStr} $</span>
+                                <span class="divider">/</span>
+                                <span class="byn-price">${f.bynStr} Br</span>
+                                ${cashlessMark}
+                            </div>
+                        </td>
+                        <td>
+                            <button class="btn btn-danger btn-sm" onclick="removeItem(${item.id})">✕</button>
+                        </td>
+                    </tr>
+                `;
+            });
+
+            const totalF = formatPrice(totalUsd);
+            const cashlessMarkTotal = isCashless() ? ' <span class="badge-cashless">+6%</span>' : '';
+            
+            html += `
+                <tr class="total-row">
+                    <td colspan="5" style="text-align:right;">ИТОГО:</td>
+                    <td>
+                        <div class="price-both">
+                            <span class="usd-price">${totalF.usdStr} $</span>
+                            <span class="divider">/</span>
+                            <span class="byn-price">${totalF.bynStr} Br</span>
+                            ${cashlessMarkTotal}
+                        </div>
+                    </td>
+                    <td></td>
+                </tr>
+            `;
+
+            itemsBody.innerHTML = html;
+            itemsFoot.style.display = 'table-row-group';
+            itemsCount.textContent = items.length;
+            totalPrice.innerHTML = `
+                <div class="price-both">
+                    <span class="usd-price">${totalF.usdStr} $</span>
+                    <span class="divider">/</span>
+                    <span class="byn-price">${totalF.bynStr} Br</span>
+                    ${cashlessMarkTotal}
+                </div>
+            `;
+        }
+
+        function getTypeName(typeKey) {
+            const map = {
+                'roll_mini': 'Рулонные мини',
+                'roll_uni': 'Рулонные Уни 2',
+                'roll_mgs': 'Рулонные МГС',
+                'dn_mini': 'День-Ночь мини',
+                'dn_uni': 'День-Ночь Уни 2',
+                'dn_mgs': 'День-Ночь МГС'
+            };
+            return map[typeKey] || typeKey;
+        }
+
+        function addItem() {
+            const type = typeSelect.value;
+            const cat = parseInt(catSelect.value, 10);
+            const width = parseInt(widthInput.value, 10) || 80;
+            const height = parseInt(heightInput.value, 10) || 170;
+
+            const typeData = PRICES[type];
+            if (!typeData) return;
+            const maxWidth = typeData.widths[typeData.widths.length - 1];
+            const minWidth = typeData.widths[0];
+
+            if (width < minWidth || width > maxWidth) {
+                alert(`Ширина должна быть от ${minWidth} до ${maxWidth} см для выбранного типа`);
+                return;
+            }
+            if (height < 50 || height > 250) {
+                alert('Высота должна быть от 50 до 250 см');
+                return;
+            }
+
+            items.push({
+                id: nextId++,
+                type: type,
+                cat: cat,
+                width: width,
+                height: height
+            });
+
+            renderItems();
+        }
+
+        window.removeItem = function(id) {
+            items = items.filter(item => item.id !== id);
+            renderItems();
+        };
+
+        function clearAll() {
+            if (items.length === 0) return;
+            if (confirm('Удалить все изделия?')) {
+                items = [];
+                nextId = 1;
+                renderItems();
+            }
+        }
+
+        // --------------------------------------------------------------
+        // События
+        // --------------------------------------------------------------
+        addBtn.addEventListener('click', addItem);
+        
+        cashlessToggle.addEventListener('change', () => {
+            updatePreview();
+            renderItems();
+        });
+        
+        rateInput.addEventListener('input', () => {
+            updatePreview();
+            renderItems();
+        });
+
+        typeSelect.addEventListener('change', updatePreview);
+        catSelect.addEventListener('change', updatePreview);
+        widthInput.addEventListener('input', updatePreview);
+        heightInput.addEventListener('input', updatePreview);
+
+        document.querySelectorAll('#addForm input, #addForm select').forEach(el => {
+            el.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') addItem();
+            });
+        });
+
+        clearAllBtn.addEventListener('click', clearAll);
+
+        // --------------------------------------------------------------
+        // Старт
+        // --------------------------------------------------------------
+        updatePreview();
+        renderItems();
+    })();
+</script>
+</body>
+</html>
