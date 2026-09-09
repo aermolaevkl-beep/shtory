@@ -501,9 +501,8 @@
                 </tbody>
                 <tfoot id="itemsFoot" style="display:none;">
                     <tr class="total-row">
-                        <td colspan="5" style="text-align:right;">ИТОГО:</td>
+                        <td colspan="6" style="text-align:right;">ИТОГО:</td>
                         <td id="totalPrice">0.00 $ / 0.00 Br</td>
-                        <td></td>
                     </tr>
                 </tfoot>
             </table>
@@ -788,7 +787,7 @@
         }
 
         // --------------------------------------------------------------
-        // Рендер списка
+        // Рендер списка (исправленный — без дублирования итога)
         // --------------------------------------------------------------
         function renderItems() {
             if (items.length === 0) {
@@ -876,27 +875,16 @@
                 }
             });
 
-            const totalF = formatPrice(totalUsd);
-            const cashlessMarkTotal = isCashless() ? ' <span class="badge-cashless">+6%</span>' : '';
-            
-            html += `
-                <tr class="total-row">
-                    <td colspan="5" style="text-align:right;">ИТОГО:</td>
-                    <td>
-                        <div class="price-both">
-                            <span class="usd-price">${totalF.usdStr} $</span>
-                            <span class="divider">/</span>
-                            <span class="byn-price">${totalF.bynStr} Br</span>
-                            ${cashlessMarkTotal}
-                        </div>
-                    </td>
-                    <td></td>
-                </tr>
-            `;
-
+            // Только содержимое tbody (без итоговой строки)
             itemsBody.innerHTML = html;
+            
+            // Показываем tfoot с итогом
             itemsFoot.style.display = 'table-row-group';
             itemsCount.textContent = items.length;
+            
+            // Обновляем итог в tfoot (только одна строка ИТОГО)
+            const totalF = formatPrice(totalUsd);
+            const cashlessMarkTotal = isCashless() ? ' <span class="badge-cashless">+6%</span>' : '';
             totalPrice.innerHTML = `
                 <div class="price-both">
                     <span class="usd-price">${totalF.usdStr} $</span>
