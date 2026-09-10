@@ -718,8 +718,8 @@
         <div class="field-group">
             <label for="sideSelect">Сторона управления</label>
             <select id="sideSelect">
-                <option value="left">⬅ Слева (Л)</option>
-                <option value="right" selected>➡ Справа (П)</option>
+                <option value="left">⬅ Слева</option>
+                <option value="right" selected>➡ Справа</option>
             </select>
         </div>
         <div class="field-group">
@@ -801,7 +801,7 @@
     <div class="order-layout" id="orderLayout">
         <h3>
             📐 Макет заказа
-            <span class="hint">(П — управление справа, Л — управление слева)</span>
+            <span class="hint">(стрелка внизу показывает сторону управления)</span>
             <div class="layout-actions no-print">
                 <button class="btn btn-print btn-sm" id="savePngBtn">🖼 Сохранить PNG</button>
                 <button class="btn btn-print btn-sm" id="printBtn">🖨 Печать</button>
@@ -1079,7 +1079,6 @@
             return basePrice + extra;
         }
 
-        // Оплата "Безналичные" добавляет +6%
         function calculatePrice(item) {
             let base = calculatePriceBase(item.type, item.cat, item.width, item.height);
             if (item.payment === 'Безналичные') {
@@ -1137,6 +1136,10 @@
             }
         }
 
+        // --------------------------------------------------------------
+        // Рендер SVG макета заказа
+        // СТРЕЛКА УПРАВЛЕНИЯ НАПРАВЛЕНА ВНИЗ — с той стороны, где управление
+        // --------------------------------------------------------------
         function renderLayout() {
             if (items.length === 0) {
                 layoutSvgWrap.innerHTML = `
@@ -1161,7 +1164,6 @@
 
             const totalF = formatPrice(totalUsd);
 
-            // Подсчёт кол-ва безналичных
             const cashlessCount = items.filter(i => i.payment === 'Безналичные').length;
             const cashlessMarkTotal = cashlessCount > 0 ? ` <span class="badge-cashless">${cashlessCount}×+6%</span>` : '';
 
@@ -1172,7 +1174,7 @@
             const scale = Math.min(displayMaxW / maxWidth, displayMaxH / maxHeight);
 
             const cellW = 240;
-            const cellH = 360;
+            const cellH = 380; // увеличено для стрелки вниз + текста
             const padX = 20;
             const padY = 20;
 
@@ -1187,7 +1189,6 @@
                 const price = calculatePrice(item);
                 const f = formatPrice(price);
                 const sideText = item.side === 'left' ? 'Слева' : 'Справа';
-                const sideLetter = item.side === 'left' ? 'Л' : 'П';
                 const typeName = getTypeName(item.type);
                 const roundedW = roundWidth(item.type, item.width);
                 const sizeByText = item.sizeBy === 'ВГШ' ? 'ВГШ' : 'По ткани';
@@ -1205,7 +1206,7 @@
                 const rectX = cellCenterX - rectW / 2;
                 const rectY = cellTopY + 35;
 
-                // Прямоугольник
+                // Прямоугольник (окно)
                 svgContent += `
                     <rect x="${rectX}" y="${rectY}" width="${rectW}" height="${rectH}" 
                           fill="#f0f9ff" stroke="#3b82f6" stroke-width="2" rx="4"/>
@@ -1213,13 +1214,28 @@
                           fill="none" stroke="#93c5fd" stroke-width="0.5" stroke-dasharray="3,3" rx="2"/>
                 `;
 
-                // Буква П или Л внутри
-                const letterX = rectX + rectW - 15;
-                const letterY = rectY + 18;
+                // СТРЕЛКА ВНИЗ с той стороны, где управление
+                // Стрелка рисуется под прямоугольником
+                const arrowBaseX = item.side === 'left' ? rectX + 15 : rectX + rectW - 15;
+                const arrowStartY = rectY + rectH + 3;
+                const arrowEndY = arrowStartY + 25;
+
+                // Линия от низа прямоугольника
                 svgContent += `
-                    <circle cx="${letterX}" cy="${letterY}" r="11" fill="#f59e0b" stroke="#d97706" stroke-width="1"/>
-                    <text x="${letterX}" y="${letterY}" text-anchor="middle" dominant-baseline="middle" 
-                          font-size="13" font-weight="700" fill="white">${sideLetter}</text>
+                    <line x1="${arrowBaseX}" y1="${arrowStartY}" x2="${arrowBaseX}" y2="${arrowEndY - 8}" 
+                          stroke="#f59e0b" stroke-width="2.5" stroke-linecap="round"/>
+                    <polygon points="${arrowBaseX - 7},${arrowEndY - 8} ${arrowBaseX + 7},${arrowEndY - 8} ${arrowBaseX},${arrowEndY}" 
+                             fill="#f59e0b" stroke="#d97706" stroke-width="1"/>
+                `;
+
+                // Подпись стороны управления рядом со стрелкой
+                const labelX = item.side === 'left' ? arrowBaseX + 12 : arrowBaseX - 12;
+                const labelAnchor = item.side === 'left' ? 'start' : 'end';
+                svgContent += `
+                    <text x="${labelX}" y="${arrowEndY - 3}" text-anchor="${labelAnchor}" 
+                          font-size="10" font-weight="600" fill="#92400e">
+                        ${sideText}
+                    </text>
                 `;
 
                 // Подпись ширины сверху
@@ -1253,8 +1269,8 @@
                           font-size="11" font-weight="700" fill="white">${index + 1}</text>
                 `;
 
-                // Информация снизу
-                const infoY = rectY + rectH + 20;
+                // Информация снизу (после стрелки)
+                const infoY = arrowEndY + 20;
                 const infoX = rectX - 25;
                 const paymentColor = item.payment === 'Безналичные' ? '#dc2626' : '#065f46';
                 
@@ -1266,7 +1282,7 @@
                         ${item.width}×${item.height} см (окр. ${roundedW})
                     </text>
                     <text x="${infoX}" y="${infoY + 31}" font-size="11" fill="#475569">
-                        ${sideLetter === 'П' ? '➡' : '⬅'} Управление: ${sideText} (${sideLetter}) | Кат. ${item.cat}
+                        Управление: ${sideText} | Кат. ${item.cat}
                     </text>
                     <text x="${infoX}" y="${infoY + 46}" font-size="11" fill="#7c3aed">
                         📏 Размер по: ${sizeByText}
@@ -1322,7 +1338,7 @@
             if (leftCount > 0) {
                 summaryHtml += `
                     <div class="row">
-                        <span class="label">⬅ Управление слева (Л):</span>
+                        <span class="label">⬅ Управление слева:</span>
                         <span class="value">${leftCount} шт.</span>
                     </div>
                 `;
@@ -1330,13 +1346,12 @@
             if (rightCount > 0) {
                 summaryHtml += `
                     <div class="row">
-                        <span class="label">➡ Управление справа (П):</span>
+                        <span class="label">➡ Управление справа:</span>
                         <span class="value">${rightCount} шт.</span>
                     </div>
                 `;
             }
 
-            // Размер по
             const vgshCount = items.filter(i => i.sizeBy === 'ВГШ').length;
             const fabricCount = items.filter(i => i.sizeBy === 'по ткани').length;
             if (vgshCount > 0) {
@@ -1356,7 +1371,6 @@
                 `;
             }
 
-            // Оплата
             const cashCount = items.filter(i => i.payment === 'Наличные').length;
             const cashlessCnt = items.filter(i => i.payment === 'Безналичные').length;
             if (cashCount > 0) {
@@ -1416,7 +1430,7 @@
                 const roundedW = roundWidth(item.type, item.width);
                 const f = formatPrice(price);
                 const cashlessMark = item.payment === 'Безналичные' ? ' <span class="badge-cashless">+6%</span>' : '';
-                const sideText = item.side === 'left' ? '⬅ Л' : '➡ П';
+                const sideText = item.side === 'left' ? '⬅ Слева' : '➡ Справа';
                 const sizeByText = item.sizeBy === 'ВГШ' ? 'ВГШ' : 'По ткани';
                 const paymentBadge = item.payment === 'Безналичные' 
                     ? '<span class="badge-payment" style="background:#fee2e2;color:#991b1b;">💳 Безнал</span>' 
@@ -1444,8 +1458,8 @@
                             </td>
                             <td>
                                 <select id="edit_side_${item.id}" class="edit-select">
-                                    <option value="left" ${item.side === 'left' ? 'selected' : ''}>⬅ Л</option>
-                                    <option value="right" ${item.side === 'right' ? 'selected' : ''}>➡ П</option>
+                                    <option value="left" ${item.side === 'left' ? 'selected' : ''}>⬅ Слева</option>
+                                    <option value="right" ${item.side === 'right' ? 'selected' : ''}>➡ Справа</option>
                                 </select>
                             </td>
                             <td>
