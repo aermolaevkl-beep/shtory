@@ -187,6 +187,12 @@
         .btn-print:hover {
             background: #7c3aed;
         }
+        .btn-share {
+            background: #0ea5e9;
+        }
+        .btn-share:hover {
+            background: #0284c7;
+        }
         .btn-sm {
             padding: 4px 10px;
             font-size: 12px;
@@ -290,7 +296,7 @@
             border-collapse: collapse;
             font-size: 13px;
             background: white;
-            min-width: 900px;
+            min-width: 1000px;
         }
         th {
             background: #f1f5f9;
@@ -357,6 +363,19 @@
             font-size: 11px;
             font-weight: 500;
             display: inline-block;
+        }
+        .badge-fabric {
+            background: #fef3c7;
+            color: #92400e;
+            border-radius: 40px;
+            padding: 1px 10px;
+            font-size: 11px;
+            font-weight: 500;
+            display: inline-block;
+            max-width: 120px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
         }
         .badge-cashless {
             background: #fef3c7;
@@ -440,6 +459,25 @@
             gap: 4px;
             justify-content: center;
             flex-wrap: wrap;
+        }
+
+        /* Информация о проблеме с PWA */
+        .pwa-note {
+            background: #fef3c7;
+            border: 2px solid #fcd34d;
+            border-radius: 12px;
+            padding: 10px 15px;
+            margin-bottom: 12px;
+            font-size: 13px;
+            color: #92400e;
+            display: none;
+        }
+        .pwa-note.show {
+            display: block;
+        }
+        .pwa-note strong {
+            display: block;
+            margin-bottom: 4px;
         }
         
         /* ========== БЛОК МАКЕТА ЗАКАЗА ========== */
@@ -605,7 +643,7 @@
             .items-header h3 { font-size: 15px; }
             .items-header .controls { width: 100%; justify-content: flex-end; }
             .table-wrap { border-radius: 10px; }
-            table { font-size: 11px; min-width: 800px; }
+            table { font-size: 11px; min-width: 900px; }
             th { font-size: 10px; padding: 6px 4px; }
             td { font-size: 11px; padding: 6px 4px; }
             .badge { font-size: 10px; padding: 1px 8px; }
@@ -630,7 +668,7 @@
             .grid-2 { grid-template-columns: 1fr 1fr; gap: 6px 8px; padding: 10px; }
             .field-group select, .field-group input { padding: 5px 6px; font-size: 12px; }
             .btn { padding: 5px 12px; font-size: 12px; }
-            table { font-size: 10px; min-width: 700px; }
+            table { font-size: 10px; min-width: 800px; }
             th { font-size: 9px; padding: 4px 3px; }
             td { font-size: 10px; padding: 4px 3px; }
             .badge { font-size: 9px; padding: 1px 6px; }
@@ -666,6 +704,12 @@
             </div>
         </div>
     </h1>
+
+    <!-- Предупреждение для PWA -->
+    <div class="pwa-note no-print" id="pwaNote">
+        <strong>ℹ️ Вы открыли сайт как приложение на iPhone</strong>
+        Для сохранения фото откроется системное меню «Поделиться». Выберите <b>«Сохранить в Фото»</b> или <b>«Сохранить в Файлы»</b>.
+    </div>
 
     <div class="customer-block no-print">
         <div class="field-group">
@@ -706,6 +750,29 @@
                 <option value="3">3 категория</option>
                 <option value="4">4 категория</option>
             </select>
+        </div>
+        <div class="field-group">
+            <label for="fabricInput">🖼 Ткань (название)</label>
+            <input type="text" id="fabricInput" placeholder="Например: Сиде, Лен белый" value="" list="fabricList">
+            <datalist id="fabricList">
+                <option value="Шелк II">
+                <option value="Сиде">
+                <option value="Руан">
+                <option value="Лен">
+                <option value="Крис">
+                <option value="Невада">
+                <option value="Сфера блэкаут">
+                <option value="Дели">
+                <option value="Лама">
+                <option value="Москва">
+                <option value="Сибирь">
+                <option value="Брис">
+                <option value="Верди">
+                <option value="Адель">
+                <option value="Габриэль">
+                <option value="Дакар">
+                <option value="Аура">
+            </datalist>
         </div>
         <div class="field-group">
             <label for="widthInput">Ширина (см)</label>
@@ -767,6 +834,7 @@
                         <th>№</th>
                         <th>Тип</th>
                         <th>Кат.</th>
+                        <th>Ткань</th>
                         <th>Ширина</th>
                         <th>Высота</th>
                         <th>Сторона</th>
@@ -778,7 +846,7 @@
                 </thead>
                 <tbody id="itemsBody">
                     <tr>
-                        <td colspan="10">
+                        <td colspan="11">
                             <div class="empty-state">
                                 <div class="icon">📭</div>
                                 <div>Нет добавленных изделий</div>
@@ -789,7 +857,7 @@
                 </tbody>
                 <tfoot id="itemsFoot" style="display:none;">
                     <tr class="total-row">
-                        <td colspan="9" style="text-align:right;">ИТОГО:</td>
+                        <td colspan="10" style="text-align:right;">ИТОГО:</td>
                         <td id="totalPrice">0.00 $ / 0.00 Br</td>
                     </tr>
                 </tfoot>
@@ -803,7 +871,8 @@
             📐 Макет заказа
             <span class="hint">(стрелка внизу внутри окна показывает сторону управления)</span>
             <div class="layout-actions no-print">
-                <button class="btn btn-print btn-sm" id="savePngBtn">🖼 Сохранить PNG</button>
+                <button class="btn btn-share btn-sm" id="shareBtn">📤 Поделиться / Сохранить</button>
+                <button class="btn btn-print btn-sm" id="savePngBtn">🖼 Скачать PNG</button>
                 <button class="btn btn-print btn-sm" id="printBtn">🖨 Печать</button>
             </div>
         </h3>
@@ -957,10 +1026,12 @@
         let items = [];
         let nextId = 1;
         let editingId = null;
+        let lastCanvasBlob = null; // сохраняем последний сгенерированный blob
 
         // DOM
         const typeSelect = document.getElementById('typeSelect');
         const catSelect = document.getElementById('catSelect');
+        const fabricInput = document.getElementById('fabricInput');
         const widthInput = document.getElementById('widthInput');
         const heightInput = document.getElementById('heightInput');
         const sideSelect = document.getElementById('sideSelect');
@@ -988,7 +1059,20 @@
         const headerDate = document.getElementById('headerDate');
         const orderCapture = document.getElementById('orderCapture');
         const savePngBtn = document.getElementById('savePngBtn');
+        const shareBtn = document.getElementById('shareBtn');
         const printBtn = document.getElementById('printBtn');
+        const pwaNote = document.getElementById('pwaNote');
+
+        // Определяем PWA-режим (iPhone как приложение)
+        const isStandalone = window.matchMedia('(display-mode: standalone)').matches 
+                            || window.navigator.standalone === true;
+        const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+        const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+
+        // Показываем подсказку для PWA на iPhone
+        if (isIOS && isStandalone) {
+            pwaNote.classList.add('show');
+        }
 
         const today = new Date().toISOString().split('T')[0];
         orderDate.value = today;
@@ -1136,10 +1220,6 @@
             }
         }
 
-        // --------------------------------------------------------------
-        // Рендер SVG макета заказа
-        // СТРЕЛКА ВНИЗ ВНУТРИ ПРЯМОУГОЛЬНИКА
-        // --------------------------------------------------------------
         function renderLayout() {
             if (items.length === 0) {
                 layoutSvgWrap.innerHTML = `
@@ -1173,8 +1253,8 @@
             const displayMaxH = 180;
             const scale = Math.min(displayMaxW / maxWidth, displayMaxH / maxHeight);
 
-            const cellW = 240;
-            const cellH = 380;
+            const cellW = 260; // чуть шире для ткани
+            const cellH = 400;
             const padX = 20;
             const padY = 20;
 
@@ -1193,6 +1273,7 @@
                 const roundedW = roundWidth(item.type, item.width);
                 const sizeByText = item.sizeBy === 'ВГШ' ? 'ВГШ' : 'По ткани';
                 const paymentText = item.payment;
+                const fabricText = item.fabric || '—';
 
                 const rectW = Math.max(item.width * scale, 50);
                 const rectH = Math.max(item.height * scale, 50);
@@ -1206,7 +1287,6 @@
                 const rectX = cellCenterX - rectW / 2;
                 const rectY = cellTopY + 35;
 
-                // Прямоугольник (окно)
                 svgContent += `
                     <rect x="${rectX}" y="${rectY}" width="${rectW}" height="${rectH}" 
                           fill="#f0f9ff" stroke="#3b82f6" stroke-width="2" rx="4"/>
@@ -1214,7 +1294,7 @@
                           fill="none" stroke="#93c5fd" stroke-width="0.5" stroke-dasharray="3,3" rx="2"/>
                 `;
 
-                // СТРЕЛКА ВНИЗ ВНУТРИ ПРЯМОУГОЛЬНИКА (внизу с той стороны)
+                // Стрелка вниз ВНУТРИ прямоугольника
                 const arrowX = item.side === 'left' ? rectX + 20 : rectX + rectW - 20;
                 const arrowStartY = rectY + rectH - 35;
                 const arrowEndY = rectY + rectH - 8;
@@ -1226,7 +1306,6 @@
                              fill="#f59e0b" stroke="#d97706" stroke-width="1"/>
                 `;
 
-                // Подпись стороны управления рядом со стрелкой внутри
                 const labelX = item.side === 'left' ? arrowX + 14 : arrowX - 14;
                 const labelAnchor = item.side === 'left' ? 'start' : 'end';
                 svgContent += `
@@ -1236,7 +1315,6 @@
                     </text>
                 `;
 
-                // Подпись ширины сверху
                 svgContent += `
                     <text x="${rectX + rectW / 2}" y="${rectY - 8}" 
                           text-anchor="middle" font-size="12" font-weight="600" fill="#1e293b">
@@ -1248,7 +1326,6 @@
                           stroke="#3b82f6" stroke-width="1"/>
                 `;
 
-                // Подпись высоты слева
                 svgContent += `
                     <text x="${rectX - 8}" y="${rectY + rectH / 2}" 
                           text-anchor="end" dominant-baseline="middle" font-size="12" font-weight="600" fill="#1e293b">
@@ -1260,14 +1337,13 @@
                           stroke="#3b82f6" stroke-width="1"/>
                 `;
 
-                // Номер в левом верхнем углу
                 svgContent += `
                     <circle cx="${rectX + 12}" cy="${rectY + 12}" r="10" fill="#3b82f6"/>
                     <text x="${rectX + 12}" y="${rectY + 12}" text-anchor="middle" dominant-baseline="middle" 
                           font-size="11" font-weight="700" fill="white">${index + 1}</text>
                 `;
 
-                // Информация снизу (под прямоугольником)
+                // Информация снизу
                 const infoY = rectY + rectH + 22;
                 const infoX = rectX - 25;
                 const paymentColor = item.payment === 'Безналичные' ? '#dc2626' : '#065f46';
@@ -1276,19 +1352,22 @@
                     <text x="${infoX}" y="${infoY}" font-size="13" font-weight="700" fill="#1e293b">
                         ${typeName}
                     </text>
-                    <text x="${infoX}" y="${infoY + 17}" font-size="11" fill="#475569">
-                        ${item.width}×${item.height} см (окр. ${roundedW})
+                    <text x="${infoX}" y="${infoY + 17}" font-size="11" fill="#92400e" font-weight="600">
+                        🖼 Ткань: ${fabricText}
                     </text>
                     <text x="${infoX}" y="${infoY + 33}" font-size="11" fill="#475569">
+                        ${item.width}×${item.height} см (окр. ${roundedW})
+                    </text>
+                    <text x="${infoX}" y="${infoY + 49}" font-size="11" fill="#475569">
                         Управление: ${sideText} | Кат. ${item.cat}
                     </text>
-                    <text x="${infoX}" y="${infoY + 49}" font-size="11" fill="#7c3aed">
+                    <text x="${infoX}" y="${infoY + 65}" font-size="11" fill="#7c3aed">
                         📏 Размер по: ${sizeByText}
                     </text>
-                    <text x="${infoX}" y="${infoY + 65}" font-size="11" font-weight="600" fill="${paymentColor}">
+                    <text x="${infoX}" y="${infoY + 81}" font-size="11" font-weight="600" fill="${paymentColor}">
                         💰 Оплата: ${paymentText}
                     </text>
-                    <text x="${infoX}" y="${infoY + 84}" font-size="13" font-weight="700" fill="#1e293b">
+                    <text x="${infoX}" y="${infoY + 100}" font-size="13" font-weight="700" fill="#1e293b">
                         ${f.usdStr} $ / ${f.bynStr} Br
                     </text>
                 `;
@@ -1402,7 +1481,7 @@
             if (items.length === 0) {
                 itemsBody.innerHTML = `
                     <tr>
-                        <td colspan="10">
+                        <td colspan="11">
                             <div class="empty-state">
                                 <div class="icon">📭</div>
                                 <div>Нет добавленных изделий</div>
@@ -1433,6 +1512,7 @@
                 const paymentBadge = item.payment === 'Безналичные' 
                     ? '<span class="badge-payment" style="background:#fee2e2;color:#991b1b;">💳 Безнал</span>' 
                     : '<span class="badge-payment">💵 Наличные</span>';
+                const fabricText = item.fabric || '—';
 
                 if (editingId === item.id) {
                     html += `
@@ -1447,6 +1527,9 @@
                                 <select id="edit_cat_${item.id}" class="edit-select">
                                     ${getCatOptions(item.cat)}
                                 </select>
+                            </td>
+                            <td>
+                                <input type="text" id="edit_fabric_${item.id}" value="${item.fabric || ''}" style="max-width:110px;" placeholder="Ткань">
                             </td>
                             <td>
                                 <input type="number" id="edit_width_${item.id}" value="${item.width}" min="30" max="200" step="1">
@@ -1486,6 +1569,7 @@
                             <td>${index + 1}</td>
                             <td><span class="badge">${typeName}</span></td>
                             <td>${item.cat}</td>
+                            <td><span class="badge-fabric" title="${fabricText}">${fabricText}</span></td>
                             <td>${item.width} → ${roundedW}</td>
                             <td>${item.height}</td>
                             <td><span class="badge-side">${sideText}</span></td>
@@ -1565,6 +1649,7 @@
         function addItem() {
             const type = typeSelect.value;
             const cat = parseInt(catSelect.value, 10);
+            const fabric = fabricInput.value.trim();
             const width = parseInt(widthInput.value, 10) || 80;
             const height = parseInt(heightInput.value, 10) || 170;
             const side = sideSelect.value;
@@ -1589,12 +1674,16 @@
                 id: nextId++,
                 type: type,
                 cat: cat,
+                fabric: fabric,
                 width: width,
                 height: height,
                 side: side,
                 sizeBy: sizeBy,
                 payment: payment
             });
+
+            // Очищаем поле ткани
+            fabricInput.value = '';
 
             renderItems();
         }
@@ -1607,6 +1696,7 @@
         window.saveEdit = function(id) {
             const type = document.getElementById(`edit_type_${id}`).value;
             const cat = parseInt(document.getElementById(`edit_cat_${id}`).value, 10);
+            const fabric = document.getElementById(`edit_fabric_${id}`).value.trim();
             const width = parseInt(document.getElementById(`edit_width_${id}`).value, 10);
             const height = parseInt(document.getElementById(`edit_height_${id}`).value, 10);
             const side = document.getElementById(`edit_side_${id}`).value;
@@ -1631,6 +1721,7 @@
             if (item) {
                 item.type = type;
                 item.cat = cat;
+                item.fabric = fabric;
                 item.width = width;
                 item.height = height;
                 item.side = side;
@@ -1666,33 +1757,20 @@
         }
 
         // --------------------------------------------------------------
-        // СОХРАНЕНИЕ PNG — исправлено для iPhone и высокое разрешение
+        // ГЕНЕРАЦИЯ КАРТИНКИ (общая функция)
         // --------------------------------------------------------------
-        savePngBtn.addEventListener('click', async () => {
+        async function generateCanvas() {
             if (items.length === 0) {
                 alert('Добавьте изделия, чтобы сохранить макет');
-                return;
+                return null;
             }
 
-            savePngBtn.disabled = true;
-            savePngBtn.textContent = '⏳ Сохранение...';
+            const captureElement = document.getElementById('orderCapture');
+            const originalWidth = captureElement.style.width;
+            captureElement.style.width = '1240px';
 
             try {
-                // Определяем мобильное устройство
-                const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-                const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
-
-                // Для мобильных используем scale=3 для высокой чёткости
-                // Для десктопа scale=2 (достаточно)
                 const captureScale = isMobile ? 3 : 2;
-
-                // Получаем элемент для захвата
-                const captureElement = document.getElementById('orderCapture');
-
-                // Временно делаем элемент видимым и с фиксированной шириной для рендера
-                const originalWidth = captureElement.style.width;
-                captureElement.style.width = '1240px'; // фиксированная ширина для лучшего качества
-
                 const canvas = await html2canvas(captureElement, {
                     backgroundColor: '#ffffff',
                     scale: captureScale,
@@ -1704,7 +1782,6 @@
                     windowWidth: captureElement.scrollWidth,
                     windowHeight: captureElement.scrollHeight,
                     onclone: function(clonedDoc) {
-                        // Убеждаемся, что все стили применились
                         const clonedElement = clonedDoc.getElementById('orderCapture');
                         if (clonedElement) {
                             clonedElement.style.width = '1240px';
@@ -1712,75 +1789,138 @@
                         }
                     }
                 });
-
-                // Возвращаем исходную ширину
+                return canvas;
+            } finally {
                 captureElement.style.width = originalWidth;
+            }
+        }
 
-                // Формируем имя файла
-                const orderNum = orderNumber.value ? `заказ_${orderNumber.value}` : 'заказ';
-                const dateStr = new Date().toISOString().slice(0, 10);
-                const fileName = `${orderNum}_${dateStr}.png`;
+        function getFileName() {
+            const orderNum = orderNumber.value ? `заказ_${orderNumber.value}` : 'заказ';
+            const dateStr = new Date().toISOString().slice(0, 10);
+            return `${orderNum}_${dateStr}.png`;
+        }
 
-                // Преобразуем canvas в blob (лучше работает на iOS, чем dataURL)
+        // --------------------------------------------------------------
+        // КНОПКА «ПОДЕЛИТЬСЯ / СОХРАНИТЬ» — работает везде, включая PWA на iPhone
+        // --------------------------------------------------------------
+        shareBtn.addEventListener('click', async () => {
+            shareBtn.disabled = true;
+            shareBtn.textContent = '⏳ Подготовка...';
+
+            try {
+                const canvas = await generateCanvas();
+                if (!canvas) {
+                    shareBtn.disabled = false;
+                    shareBtn.textContent = '📤 Поделиться / Сохранить';
+                    return;
+                }
+
+                const fileName = getFileName();
+
+                canvas.toBlob(async function(blob) {
+                    if (!blob) {
+                        alert('Ошибка при создании файла');
+                        shareBtn.disabled = false;
+                        shareBtn.textContent = '📤 Поделиться / Сохранить';
+                        return;
+                    }
+
+                    const file = new File([blob], fileName, { type: 'image/png' });
+
+                    // Проверяем поддержку Web Share API с файлами
+                    if (navigator.canShare && navigator.canShare({ files: [file] })) {
+                        try {
+                            await navigator.share({
+                                files: [file],
+                                title: 'Заказ жалюзи',
+                                text: `Заказ № ${orderNumber.value || '—'}`
+                            });
+                            shareBtn.disabled = false;
+                            shareBtn.textContent = '📤 Поделиться / Сохранить';
+                            return;
+                        } catch (shareErr) {
+                            // Пользователь отменил или ошибка — пробуем скачать
+                            if (shareErr.name === 'AbortError') {
+                                shareBtn.disabled = false;
+                                shareBtn.textContent = '📤 Поделиться / Сохранить';
+                                return;
+                            }
+                            console.warn('Share failed, fallback to download', shareErr);
+                        }
+                    }
+
+                    // Fallback — обычное скачивание
+                    const url = URL.createObjectURL(blob);
+                    const link = document.createElement('a');
+                    link.href = url;
+                    link.download = fileName;
+                    link.style.display = 'none';
+                    document.body.appendChild(link);
+                    link.click();
+                    setTimeout(() => {
+                        document.body.removeChild(link);
+                        URL.revokeObjectURL(url);
+                    }, 100);
+
+                    shareBtn.disabled = false;
+                    shareBtn.textContent = '📤 Поделиться / Сохранить';
+                }, 'image/png', 1.0);
+
+            } catch (e) {
+                console.error('Ошибка:', e);
+                alert('Ошибка: ' + e.message);
+                shareBtn.disabled = false;
+                shareBtn.textContent = '📤 Поделиться / Сохранить';
+            }
+        });
+
+        // --------------------------------------------------------------
+        // КНОПКА «СКАЧАТЬ PNG» — обычное скачивание
+        // --------------------------------------------------------------
+        savePngBtn.addEventListener('click', async () => {
+            savePngBtn.disabled = true;
+            savePngBtn.textContent = '⏳ Сохранение...';
+
+            try {
+                const canvas = await generateCanvas();
+                if (!canvas) {
+                    savePngBtn.disabled = false;
+                    savePngBtn.textContent = '🖼 Скачать PNG';
+                    return;
+                }
+
+                const fileName = getFileName();
+
                 canvas.toBlob(function(blob) {
                     if (!blob) {
                         alert('Ошибка при создании файла');
                         savePngBtn.disabled = false;
-                        savePngBtn.textContent = '🖼 Сохранить PNG';
+                        savePngBtn.textContent = '🖼 Скачать PNG';
                         return;
                     }
 
-                    // Для iOS используем особый подход через FileReader и ссылку
-                    if (isIOS) {
-                        const reader = new FileReader();
-                        reader.onloadend = function() {
-                            const dataUrl = reader.result;
-                            
-                            // Создаём ссылку для скачивания
-                            const link = document.createElement('a');
-                            link.href = dataUrl;
-                            link.download = fileName;
-                            link.style.display = 'none';
-                            document.body.appendChild(link);
-                            
-                            // Для iOS Safari это откроет изображение в новой вкладке,
-                            // откуда можно сохранить через "Поделиться → Сохранить в Фото"
-                            try {
-                                link.click();
-                            } catch (e) {
-                                // Fallback: открываем в новой вкладке
-                                window.open(dataUrl, '_blank');
-                            }
-                            
-                            setTimeout(() => {
-                                document.body.removeChild(link);
-                            }, 100);
-                        };
-                        reader.readAsDataURL(blob);
-                    } else {
-                        // Для Android и десктопа — стандартное скачивание
-                        const url = URL.createObjectURL(blob);
-                        const link = document.createElement('a');
-                        link.href = url;
-                        link.download = fileName;
-                        link.style.display = 'none';
-                        document.body.appendChild(link);
-                        link.click();
-                        setTimeout(() => {
-                            document.body.removeChild(link);
-                            URL.revokeObjectURL(url);
-                        }, 100);
-                    }
+                    const url = URL.createObjectURL(blob);
+                    const link = document.createElement('a');
+                    link.href = url;
+                    link.download = fileName;
+                    link.style.display = 'none';
+                    document.body.appendChild(link);
+                    link.click();
+                    setTimeout(() => {
+                        document.body.removeChild(link);
+                        URL.revokeObjectURL(url);
+                    }, 100);
 
                     savePngBtn.disabled = false;
-                    savePngBtn.textContent = '🖼 Сохранить PNG';
+                    savePngBtn.textContent = '🖼 Скачать PNG';
                 }, 'image/png', 1.0);
 
             } catch (e) {
-                console.error('Ошибка сохранения:', e);
-                alert('Ошибка при сохранении: ' + e.message);
+                console.error('Ошибка:', e);
+                alert('Ошибка: ' + e.message);
                 savePngBtn.disabled = false;
-                savePngBtn.textContent = '🖼 Сохранить PNG';
+                savePngBtn.textContent = '🖼 Скачать PNG';
             }
         });
 
@@ -1806,6 +1946,7 @@
 
         typeSelect.addEventListener('change', updatePreview);
         catSelect.addEventListener('change', updatePreview);
+        fabricInput.addEventListener('input', updatePreview);
         widthInput.addEventListener('input', updatePreview);
         heightInput.addEventListener('input', updatePreview);
         sideSelect.addEventListener('change', updatePreview);
