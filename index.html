@@ -215,15 +215,6 @@
         .btn-warning:hover {
             background: #d97706;
         }
-        .btn-outline {
-            background: transparent;
-            border: 2px solid #3b82f6;
-            color: #3b82f6;
-        }
-        .btn-outline:hover {
-            background: #3b82f6;
-            color: white;
-        }
         .btn-print {
             background: #8b5cf6;
         }
@@ -490,6 +481,12 @@
             color: #64748b;
             margin-left: 8px;
         }
+        .layout-actions {
+            margin-left: auto;
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
         .layout-header {
             display: flex;
             justify-content: space-between;
@@ -537,6 +534,7 @@
         .layout-svg-wrap svg {
             max-width: none;
             height: auto;
+            display: block;
         }
         .order-summary {
             margin-top: 15px;
@@ -637,6 +635,7 @@
             .total-row { font-size: 12px; }
             .order-layout { padding: 12px; }
             .order-layout h3 { font-size: 15px; }
+            .layout-actions { width: 100%; margin-left: 0; justify-content: flex-end; }
             .layout-header { flex-direction: column; padding: 10px; }
             .layout-header .order-date { text-align: left; }
             .layout-svg-wrap { padding: 10px; }
@@ -811,33 +810,39 @@
         <h3>
             📐 Макет заказа
             <span class="hint">(визуальное представление с размерами и стороной управления)</span>
+            <div class="layout-actions no-print">
+                <button class="btn btn-print btn-sm" id="savePngBtn">🖼 Сохранить PNG</button>
+                <button class="btn btn-print btn-sm" id="printBtn">🖨 Печать</button>
+            </div>
         </h3>
 
-        <!-- Шапка заказа с данными заказчика -->
-        <div class="layout-header" id="layoutHeader">
-            <div class="order-info">
-                <div class="order-title">Заказ № <span id="headerOrderNumber">—</span></div>
-                <div class="order-line">👤 Заказчик: <strong id="headerCustomer">—</strong></div>
-                <div class="order-line">📞 Телефон: <strong id="headerPhone">—</strong></div>
+        <div id="orderCapture">
+            <!-- Шапка заказа с данными заказчика -->
+            <div class="layout-header" id="layoutHeader">
+                <div class="order-info">
+                    <div class="order-title">Заказ № <span id="headerOrderNumber">—</span></div>
+                    <div class="order-line">👤 Заказчик: <strong id="headerCustomer">—</strong></div>
+                    <div class="order-line">📞 Телефон: <strong id="headerPhone">—</strong></div>
+                </div>
+                <div class="order-date">
+                    📅 Дата: <span id="headerDate">—</span>
+                </div>
             </div>
-            <div class="order-date">
-                📅 Дата: <span id="headerDate">—</span>
-            </div>
-        </div>
 
-        <div class="layout-svg-wrap" id="layoutSvgWrap">
-            <!-- SVG вставляется через JS -->
-        </div>
-        <div class="order-summary" id="orderSummary">
-            <!-- Сводка вставляется через JS -->
-        </div>
-        <div class="order-total">
-            <span class="label">💰 ИТОГО ПО ЗАКАЗУ:</span>
-            <span class="value" id="orderTotalValue">
-                <span class="usd">0.00 <small>$</small></span>
-                <span style="color:#94a3b8;">/</span>
-                <span class="byn">0.00 <small>Br</small></span>
-            </span>
+            <div class="layout-svg-wrap" id="layoutSvgWrap">
+                <!-- SVG вставляется через JS -->
+            </div>
+            <div class="order-summary" id="orderSummary">
+                <!-- Сводка вставляется через JS -->
+            </div>
+            <div class="order-total">
+                <span class="label">💰 ИТОГО ПО ЗАКАЗУ:</span>
+                <span class="value" id="orderTotalValue">
+                    <span class="usd">0.00 <small>$</small></span>
+                    <span style="color:#94a3b8;">/</span>
+                    <span class="byn">0.00 <small>Br</small></span>
+                </span>
+            </div>
         </div>
     </div>
 
@@ -850,6 +855,9 @@
         <span>✏️ Нажмите ✏️ для редактирования</span>
     </div>
 </div>
+
+<!-- Библиотека html2canvas для сохранения в PNG -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
 <script>
     (function() {
@@ -988,6 +996,9 @@
         const headerPhone = document.getElementById('headerPhone');
         const headerOrderNumber = document.getElementById('headerOrderNumber');
         const headerDate = document.getElementById('headerDate');
+        const orderCapture = document.getElementById('orderCapture');
+        const savePngBtn = document.getElementById('savePngBtn');
+        const printBtn = document.getElementById('printBtn');
 
         // Установка даты по умолчанию (сегодня)
         const today = new Date().toISOString().split('T')[0];
@@ -1023,7 +1034,7 @@
         }
 
         // --------------------------------------------------------------
-        // Расчёт цены (без учёта безнала)
+        // Расчёт цены
         // --------------------------------------------------------------
         function calculatePriceBase(typeKey, cat, width, height) {
             const typeData = PRICES[typeKey];
@@ -1151,7 +1162,7 @@
         }
 
         // --------------------------------------------------------------
-        // Рендер SVG макета заказа (горизонтальное расположение)
+        // Рендер SVG макета заказа (горизонтальное расположение, увеличенные отступы)
         // --------------------------------------------------------------
         function renderLayout() {
             if (items.length === 0) {
@@ -1170,7 +1181,6 @@
                 return;
             }
 
-            // Подсчёт общего количества и суммы
             let totalUsd = 0;
             items.forEach(item => {
                 totalUsd += calculatePrice(item.type, item.cat, item.width, item.height);
@@ -1179,24 +1189,22 @@
             const totalF = formatPrice(totalUsd);
             const cashlessMarkTotal = isCashless() ? ' <span class="badge-cashless">+6%</span>' : '';
 
-            // Масштабирование — одинаковая шкала для всех изделий
+            // Масштабирование
             const maxWidth = Math.max(...items.map(i => i.width), 100);
             const maxHeight = Math.max(...items.map(i => i.height), 100);
-            const displayMaxW = 120; // макс. ширина прямоугольника на рисунке
-            const displayMaxH = 180; // макс. высота прямоугольника на рисунке
+            const displayMaxW = 120;
+            const displayMaxH = 180;
             const scale = Math.min(displayMaxW / maxWidth, displayMaxH / maxHeight);
 
-            // Параметры сетки
-            const cellW = 200; // ширина одной ячейки
-            const cellH = 260; // высота одной ячейки
+            // Параметры сетки (увеличены отступы, чтобы текст не обрезался)
+            const cellW = 220;
+            const cellH = 340; // увеличено для полного текста снизу
             const padX = 20;
             const padY = 20;
-            const infoBlockW = 170; // ширина блока с текстом справа
 
-            // Расположение: горизонтально, с переносом
             const itemsPerRow = Math.max(1, Math.floor((1200 - padX * 2) / cellW));
             const rows = Math.ceil(items.length / itemsPerRow);
-            const totalWidth = padX * 2 + itemsPerRow * cellW + infoBlockW;
+            const totalWidth = padX * 2 + itemsPerRow * cellW;
             const totalHeight = padY * 2 + rows * cellH;
 
             let svgContent = '';
@@ -1212,15 +1220,15 @@
                 const rectW = Math.max(item.width * scale, 30);
                 const rectH = Math.max(item.height * scale, 30);
 
-                // Позиция ячейки
                 const row = Math.floor(index / itemsPerRow);
                 const col = index % itemsPerRow;
 
-                // Центр ячейки для прямоугольника
                 const cellCenterX = padX + col * cellW + cellW / 2;
-                const cellCenterY = padY + row * cellH + cellH / 2;
+                const cellTopY = padY + row * cellH;
+
+                // Прямоугольник: центр по X, верх с отступом 30 от верха ячейки
                 const rectX = cellCenterX - rectW / 2;
-                const rectY = cellCenterY - rectH / 2;
+                const rectY = cellTopY + 35;
 
                 // Прямоугольник
                 svgContent += `
@@ -1246,7 +1254,6 @@
                         ${item.width} см
                     </text>
                 `;
-                // Линия размера сверху
                 svgContent += `
                     <line x1="${rectX}" y1="${rectY - 3}" x2="${rectX + rectW}" y2="${rectY - 3}" 
                           stroke="#3b82f6" stroke-width="1"/>
@@ -1259,7 +1266,6 @@
                         ${item.height} см
                     </text>
                 `;
-                // Линия размера слева
                 svgContent += `
                     <line x1="${rectX - 3}" y1="${rectY}" x2="${rectX - 3}" y2="${rectY + rectH}" 
                           stroke="#3b82f6" stroke-width="1"/>
@@ -1267,25 +1273,26 @@
 
                 // Номер в углу
                 svgContent += `
-                    <circle cx="${rectX + 10}" cy="${rectY + 10}" r="9" fill="#3b82f6"/>
-                    <text x="${rectX + 10}" y="${rectY + 10}" text-anchor="middle" dominant-baseline="middle" 
-                          font-size="10" font-weight="700" fill="white">${index + 1}</text>
+                    <circle cx="${rectX + 12}" cy="${rectY + 12}" r="10" fill="#3b82f6"/>
+                    <text x="${rectX + 12}" y="${rectY + 12}" text-anchor="middle" dominant-baseline="middle" 
+                          font-size="11" font-weight="700" fill="white">${index + 1}</text>
                 `;
 
-                // Информация снизу-справа от прямоугольника
+                // Информация снизу от прямоугольника (с большим отступом, чтобы не обрезалось)
                 const infoY = rectY + rectH + 20;
-                const infoX = rectX;
+                const infoX = rectX - 20; // выравниваем по левому краю ячейки
+                
                 svgContent += `
-                    <text x="${infoX}" y="${infoY}" font-size="11" font-weight="600" fill="#1e293b">
+                    <text x="${infoX}" y="${infoY}" font-size="12" font-weight="700" fill="#1e293b">
                         ${typeName}
                     </text>
-                    <text x="${infoX}" y="${infoY + 14}" font-size="10" fill="#475569">
-                        ${item.width}×${item.height} (окр. ${roundedW})
+                    <text x="${infoX}" y="${infoY + 16}" font-size="11" fill="#475569">
+                        ${item.width}×${item.height} см (окр. ${roundedW})
                     </text>
-                    <text x="${infoX}" y="${infoY + 27}" font-size="10" fill="#475569">
+                    <text x="${infoX}" y="${infoY + 31}" font-size="11" fill="#475569">
                         ${sideIcon} ${sideText} | Кат. ${item.cat}
                     </text>
-                    <text x="${infoX}" y="${infoY + 42}" font-size="11" font-weight="700" fill="#1e293b">
+                    <text x="${infoX}" y="${infoY + 48}" font-size="12" font-weight="700" fill="#1e293b">
                         ${f.usdStr} $ / ${f.bynStr} Br
                     </text>
                 `;
@@ -1293,15 +1300,8 @@
 
             const svg = `
                 <svg width="${totalWidth}" height="${totalHeight}" viewBox="0 0 ${totalWidth} ${totalHeight}" 
-                     xmlns="http://www.w3.org/2000/svg" style="min-width: 100%;">
-                    <defs>
-                        <marker id="arrowStart" markerWidth="6" markerHeight="6" refX="0" refY="3" orient="auto">
-                            <path d="M6,0 L0,3 L6,6" fill="none" stroke="#3b82f6" stroke-width="1"/>
-                        </marker>
-                        <marker id="arrowEnd" markerWidth="6" markerHeight="6" refX="6" refY="3" orient="auto">
-                            <path d="M0,0 L6,3 L0,6" fill="none" stroke="#3b82f6" stroke-width="1"/>
-                        </marker>
-                    </defs>
+                     xmlns="http://www.w3.org/2000/svg" style="display: block;">
+                    <rect width="${totalWidth}" height="${totalHeight}" fill="white"/>
                     ${svgContent}
                 </svg>
             `;
@@ -1611,6 +1611,51 @@
         }
 
         // --------------------------------------------------------------
+        // Сохранение в PNG
+        // --------------------------------------------------------------
+        savePngBtn.addEventListener('click', async () => {
+            if (items.length === 0) {
+                alert('Добавьте изделия, чтобы сохранить макет');
+                return;
+            }
+
+            savePngBtn.disabled = true;
+            savePngBtn.textContent = '⏳ Сохранение...';
+
+            try {
+                const canvas = await html2canvas(orderCapture, {
+                    backgroundColor: '#ffffff',
+                    scale: 2, // высокое качество
+                    useCORS: true,
+                    logging: false
+                });
+
+                const link = document.createElement('a');
+                const orderNum = orderNumber.value ? `заказ_${orderNumber.value}` : 'заказ';
+                const dateStr = new Date().toISOString().slice(0, 10);
+                link.download = `${orderNum}_${dateStr}.png`;
+                link.href = canvas.toDataURL('image/png');
+                link.click();
+            } catch (e) {
+                alert('Ошибка при сохранении: ' + e.message);
+            } finally {
+                savePngBtn.disabled = false;
+                savePngBtn.textContent = '🖼 Сохранить PNG';
+            }
+        });
+
+        // --------------------------------------------------------------
+        // Печать
+        // --------------------------------------------------------------
+        printBtn.addEventListener('click', () => {
+            if (items.length === 0) {
+                alert('Добавьте изделия, чтобы распечатать макет');
+                return;
+            }
+            window.print();
+        });
+
+        // --------------------------------------------------------------
         // События
         // --------------------------------------------------------------
         addBtn.addEventListener('click', addItem);
@@ -1625,7 +1670,6 @@
             renderItems();
         });
 
-        // Обновление шапки при изменении данных заказчика
         customerName.addEventListener('input', updateHeader);
         customerPhone.addEventListener('input', updateHeader);
         orderNumber.addEventListener('input', updateHeader);
