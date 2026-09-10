@@ -120,7 +120,6 @@
             font-weight: 600;
         }
 
-        /* Блок заказчика */
         .customer-block {
             background: #f0fdf4;
             border: 2px solid #86efac;
@@ -598,7 +597,6 @@
             font-weight: 400;
         }
 
-        /* Мобильная адаптация */
         @media (max-width: 768px) {
             body { padding: 6px; }
             .container { padding: 10px; border-radius: 16px; }
@@ -663,7 +661,6 @@
             .total-row { font-size: 11px; }
         }
 
-        /* Печать */
         @media print {
             body { background: white; padding: 0; }
             .container { box-shadow: none; border-radius: 0; padding: 10px; }
@@ -690,7 +687,6 @@
         </div>
     </h1>
 
-    <!-- Блок заказчика -->
     <div class="customer-block no-print">
         <div class="field-group">
             <label for="customerName">👤 Заказчик</label>
@@ -742,8 +738,8 @@
         <div class="field-group">
             <label for="sideSelect">Сторона управления</label>
             <select id="sideSelect">
-                <option value="left">⬅ Слева</option>
-                <option value="right" selected>➡ Справа</option>
+                <option value="left">⬅ Слева (Л)</option>
+                <option value="right" selected>➡ Справа (П)</option>
             </select>
         </div>
         <div class="field-group" style="justify-content:flex-end;">
@@ -809,7 +805,7 @@
     <div class="order-layout" id="orderLayout">
         <h3>
             📐 Макет заказа
-            <span class="hint">(визуальное представление с размерами и стороной управления)</span>
+            <span class="hint">(П — управление справа, Л — управление слева)</span>
             <div class="layout-actions no-print">
                 <button class="btn btn-print btn-sm" id="savePngBtn">🖼 Сохранить PNG</button>
                 <button class="btn btn-print btn-sm" id="printBtn">🖨 Печать</button>
@@ -817,7 +813,6 @@
         </h3>
 
         <div id="orderCapture">
-            <!-- Шапка заказа с данными заказчика -->
             <div class="layout-header" id="layoutHeader">
                 <div class="order-info">
                     <div class="order-title">Заказ № <span id="headerOrderNumber">—</span></div>
@@ -856,13 +851,12 @@
     </div>
 </div>
 
-<!-- Библиотека html2canvas для сохранения в PNG -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
 <script>
     (function() {
         // --------------------------------------------------------------
-        // ПРАЙС-ДАННЫЕ (все из файла)
+        // ПРАЙС-ДАННЫЕ
         // --------------------------------------------------------------
         const PRICES = {
             roll_mini: {
@@ -1000,7 +994,6 @@
         const savePngBtn = document.getElementById('savePngBtn');
         const printBtn = document.getElementById('printBtn');
 
-        // Установка даты по умолчанию (сегодня)
         const today = new Date().toISOString().split('T')[0];
         orderDate.value = today;
 
@@ -1012,9 +1005,6 @@
             return cashlessToggle.checked;
         }
 
-        // --------------------------------------------------------------
-        // Округление ширины
-        // --------------------------------------------------------------
         function roundWidth(typeKey, width) {
             const typeData = PRICES[typeKey];
             if (!typeData) return 40;
@@ -1033,9 +1023,6 @@
             return best;
         }
 
-        // --------------------------------------------------------------
-        // Расчёт цены
-        // --------------------------------------------------------------
         function calculatePriceBase(typeKey, cat, width, height) {
             const typeData = PRICES[typeKey];
             if (!typeData) return 0;
@@ -1119,9 +1106,6 @@
             };
         }
 
-        // --------------------------------------------------------------
-        // Обновление превью
-        // --------------------------------------------------------------
         function updatePreview() {
             const type = typeSelect.value;
             const cat = parseInt(catSelect.value, 10);
@@ -1145,9 +1129,6 @@
             renderLayout();
         }
 
-        // --------------------------------------------------------------
-        // Обновление шапки заказа
-        // --------------------------------------------------------------
         function updateHeader() {
             headerCustomer.textContent = customerName.value || '—';
             headerPhone.textContent = customerPhone.value || '—';
@@ -1162,7 +1143,8 @@
         }
 
         // --------------------------------------------------------------
-        // Рендер SVG макета заказа (горизонтальное расположение, увеличенные отступы)
+        // Рендер SVG макета заказа
+        // УПРАВЛЕНИЕ ОБОЗНАЧАЕТСЯ БУКВОЙ П/Л ВНУТРИ ПРЯМОУГОЛЬНИКА
         // --------------------------------------------------------------
         function renderLayout() {
             if (items.length === 0) {
@@ -1196,9 +1178,8 @@
             const displayMaxH = 180;
             const scale = Math.min(displayMaxW / maxWidth, displayMaxH / maxHeight);
 
-            // Параметры сетки (увеличены отступы, чтобы текст не обрезался)
             const cellW = 220;
-            const cellH = 340; // увеличено для полного текста снизу
+            const cellH = 340;
             const padX = 20;
             const padY = 20;
 
@@ -1213,12 +1194,12 @@
                 const price = calculatePrice(item.type, item.cat, item.width, item.height);
                 const f = formatPrice(price);
                 const sideText = item.side === 'left' ? 'Слева' : 'Справа';
-                const sideIcon = item.side === 'left' ? '⬅' : '➡';
+                const sideLetter = item.side === 'left' ? 'Л' : 'П';
                 const typeName = getTypeName(item.type);
                 const roundedW = roundWidth(item.type, item.width);
 
-                const rectW = Math.max(item.width * scale, 30);
-                const rectH = Math.max(item.height * scale, 30);
+                const rectW = Math.max(item.width * scale, 50);
+                const rectH = Math.max(item.height * scale, 50);
 
                 const row = Math.floor(index / itemsPerRow);
                 const col = index % itemsPerRow;
@@ -1226,7 +1207,6 @@
                 const cellCenterX = padX + col * cellW + cellW / 2;
                 const cellTopY = padY + row * cellH;
 
-                // Прямоугольник: центр по X, верх с отступом 30 от верха ячейки
                 const rectX = cellCenterX - rectW / 2;
                 const rectY = cellTopY + 35;
 
@@ -1238,13 +1218,14 @@
                           fill="none" stroke="#93c5fd" stroke-width="0.5" stroke-dasharray="3,3" rx="2"/>
                 `;
 
-                // Стрелка управления
-                const arrowX = item.side === 'left' ? rectX - 3 : rectX + rectW + 3;
-                const arrowY = rectY + rectH / 2;
-                const arrowDir = item.side === 'left' ? -1 : 1;
+                // БУКВА П или Л внутри прямоугольника (в правом верхнем углу)
+                const letterX = rectX + rectW - 15;
+                const letterY = rectY + 18;
+                // Фон кружка для буквы
                 svgContent += `
-                    <polygon points="${arrowX},${arrowY - 7} ${arrowX + arrowDir * 11},${arrowY} ${arrowX},${arrowY + 7}" 
-                             fill="#f59e0b" stroke="#d97706" stroke-width="1"/>
+                    <circle cx="${letterX}" cy="${letterY}" r="11" fill="#f59e0b" stroke="#d97706" stroke-width="1"/>
+                    <text x="${letterX}" y="${letterY}" text-anchor="middle" dominant-baseline="middle" 
+                          font-size="13" font-weight="700" fill="white">${sideLetter}</text>
                 `;
 
                 // Подпись ширины сверху
@@ -1271,16 +1252,16 @@
                           stroke="#3b82f6" stroke-width="1"/>
                 `;
 
-                // Номер в углу
+                // Номер в левом верхнем углу
                 svgContent += `
                     <circle cx="${rectX + 12}" cy="${rectY + 12}" r="10" fill="#3b82f6"/>
                     <text x="${rectX + 12}" y="${rectY + 12}" text-anchor="middle" dominant-baseline="middle" 
                           font-size="11" font-weight="700" fill="white">${index + 1}</text>
                 `;
 
-                // Информация снизу от прямоугольника (с большим отступом, чтобы не обрезалось)
+                // Информация снизу от прямоугольника
                 const infoY = rectY + rectH + 20;
-                const infoX = rectX - 20; // выравниваем по левому краю ячейки
+                const infoX = rectX - 20;
                 
                 svgContent += `
                     <text x="${infoX}" y="${infoY}" font-size="12" font-weight="700" fill="#1e293b">
@@ -1290,7 +1271,7 @@
                         ${item.width}×${item.height} см (окр. ${roundedW})
                     </text>
                     <text x="${infoX}" y="${infoY + 31}" font-size="11" fill="#475569">
-                        ${sideIcon} ${sideText} | Кат. ${item.cat}
+                        ${sideLetter === 'П' ? '➡' : '⬅'} Управление: ${sideText} (${sideLetter}) | Кат. ${item.cat}
                     </text>
                     <text x="${infoX}" y="${infoY + 48}" font-size="12" font-weight="700" fill="#1e293b">
                         ${f.usdStr} $ / ${f.bynStr} Br
@@ -1340,7 +1321,7 @@
             if (leftCount > 0) {
                 summaryHtml += `
                     <div class="row">
-                        <span class="label">⬅ Управление слева:</span>
+                        <span class="label">⬅ Управление слева (Л):</span>
                         <span class="value">${leftCount} шт.</span>
                     </div>
                 `;
@@ -1348,7 +1329,7 @@
             if (rightCount > 0) {
                 summaryHtml += `
                     <div class="row">
-                        <span class="label">➡ Управление справа:</span>
+                        <span class="label">➡ Управление справа (П):</span>
                         <span class="value">${rightCount} шт.</span>
                     </div>
                 `;
@@ -1364,9 +1345,6 @@
             `;
         }
 
-        // --------------------------------------------------------------
-        // Рендер списка
-        // --------------------------------------------------------------
         function renderItems() {
             if (items.length === 0) {
                 itemsBody.innerHTML = `
@@ -1397,7 +1375,7 @@
                 const roundedW = roundWidth(item.type, item.width);
                 const f = formatPrice(price);
                 const cashlessMark = isCashless() ? ' <span class="badge-cashless">+6%</span>' : '';
-                const sideText = item.side === 'left' ? '⬅ Слева' : '➡ Справа';
+                const sideText = item.side === 'left' ? '⬅ Л' : '➡ П';
 
                 if (editingId === item.id) {
                     html += `
@@ -1421,8 +1399,8 @@
                             </td>
                             <td>
                                 <select id="edit_side_${item.id}" class="edit-select">
-                                    <option value="left" ${item.side === 'left' ? 'selected' : ''}>⬅ Слева</option>
-                                    <option value="right" ${item.side === 'right' ? 'selected' : ''}>➡ Справа</option>
+                                    <option value="left" ${item.side === 'left' ? 'selected' : ''}>⬅ Л</option>
+                                    <option value="right" ${item.side === 'right' ? 'selected' : ''}>➡ П</option>
                                 </select>
                             </td>
                             <td colspan="2">
@@ -1512,9 +1490,6 @@
             return map[typeKey] || typeKey;
         }
 
-        // --------------------------------------------------------------
-        // Добавление / удаление / редактирование
-        // --------------------------------------------------------------
         function addItem() {
             const type = typeSelect.value;
             const cat = parseInt(catSelect.value, 10);
@@ -1610,9 +1585,6 @@
             }
         }
 
-        // --------------------------------------------------------------
-        // Сохранение в PNG
-        // --------------------------------------------------------------
         savePngBtn.addEventListener('click', async () => {
             if (items.length === 0) {
                 alert('Добавьте изделия, чтобы сохранить макет');
@@ -1625,7 +1597,7 @@
             try {
                 const canvas = await html2canvas(orderCapture, {
                     backgroundColor: '#ffffff',
-                    scale: 2, // высокое качество
+                    scale: 2,
                     useCORS: true,
                     logging: false
                 });
@@ -1644,9 +1616,6 @@
             }
         });
 
-        // --------------------------------------------------------------
-        // Печать
-        // --------------------------------------------------------------
         printBtn.addEventListener('click', () => {
             if (items.length === 0) {
                 alert('Добавьте изделия, чтобы распечатать макет');
@@ -1655,9 +1624,6 @@
             window.print();
         });
 
-        // --------------------------------------------------------------
-        // События
-        // --------------------------------------------------------------
         addBtn.addEventListener('click', addItem);
         
         cashlessToggle.addEventListener('change', () => {
@@ -1689,9 +1655,6 @@
 
         clearAllBtn.addEventListener('click', clearAll);
 
-        // --------------------------------------------------------------
-        // Старт
-        // --------------------------------------------------------------
         updatePreview();
         renderItems();
     })();
