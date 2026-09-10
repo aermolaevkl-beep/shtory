@@ -112,6 +112,42 @@
             outline: 2px solid #22c55e;
         }
 
+        /* Кнопка СРОЧНО */
+        .urgent-box {
+            display: flex;
+            align-items: flex-end;
+        }
+        .urgent-btn {
+            width: 100%;
+            padding: 8px 16px;
+            border: 2px solid #fbbf24;
+            background: #fef3c7;
+            color: #92400e;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: 0.15s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            white-space: nowrap;
+        }
+        .urgent-btn:hover {
+            background: #fde68a;
+            transform: scale(1.02);
+        }
+        .urgent-btn.active {
+            background: #f59e0b;
+            color: white;
+            border-color: #d97706;
+            box-shadow: 0 4px 12px rgba(245, 158, 11, 0.4);
+        }
+        .urgent-btn .icon {
+            font-size: 16px;
+        }
+
         .grid-2 {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
@@ -535,6 +571,29 @@
             font-size: 12px;
             color: #64748b;
             text-align: right;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 6px;
+        }
+        .urgent-badge {
+            display: none;
+            background: #f59e0b;
+            color: white;
+            padding: 4px 14px;
+            border-radius: 30px;
+            font-size: 13px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            box-shadow: 0 2px 8px rgba(245, 158, 11, 0.4);
+            animation: pulse 1.5s ease-in-out infinite;
+        }
+        .urgent-badge.show {
+            display: inline-block;
+        }
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
         }
         .layout-svg-wrap {
             display: flex;
@@ -617,6 +676,7 @@
             .top-controls { flex-direction: column; align-items: stretch; width: 100%; }
             .top-controls .currency-box { width: 100%; justify-content: center; }
             .customer-block { grid-template-columns: 1fr; padding: 10px; gap: 8px; }
+            .urgent-box { width: 100%; }
             .grid-2 { 
                 grid-template-columns: 1fr 1fr; 
                 gap: 8px 10px;
@@ -646,7 +706,7 @@
             .order-layout h3 { font-size: 15px; }
             .layout-actions { width: 100%; margin-left: 0; justify-content: flex-end; }
             .layout-header { flex-direction: column; padding: 10px; }
-            .layout-header .order-date { text-align: left; }
+            .layout-header .order-date { text-align: left; align-items: flex-start; }
             .layout-svg-wrap { padding: 10px; }
             .order-total { flex-direction: column; align-items: stretch; text-align: center; }
             .order-total .value { justify-content: center; font-size: 18px; }
@@ -715,6 +775,11 @@
         <div class="field-group">
             <label for="orderDate">📅 Дата</label>
             <input type="date" id="orderDate">
+        </div>
+        <div class="field-group urgent-box">
+            <button type="button" class="urgent-btn" id="urgentBtn">
+                <span class="icon">⚡</span> СРОЧНО
+            </button>
         </div>
     </div>
 
@@ -872,7 +937,8 @@
                     <div class="order-line">📞 Телефон: <strong id="headerPhone">—</strong></div>
                 </div>
                 <div class="order-date">
-                    📅 Дата: <span id="headerDate">—</span>
+                    <div>📅 Дата: <span id="headerDate">—</span></div>
+                    <span class="urgent-badge" id="headerUrgent">⚡ СРОЧНО</span>
                 </div>
             </div>
 
@@ -885,7 +951,7 @@
             <div class="order-total">
                 <span class="label">💰 ИТОГО ПО ЗАКАЗУ:</span>
                 <span class="value" id="orderTotalValue">
-                    <span class="byn">0.00 <small>Br</small></span>
+                    <span class="byn">0 <small>Br</small></span>
                 </span>
             </div>
         </div>
@@ -896,7 +962,8 @@
         <span>🧷 Доп. +25% за коричневую фурнитуру (не учтено)</span>
         <span>📐 свыше 2,0 м +10% за каждые 10 см</span>
         <span>🔄 40-44→40, 45-49→50</span>
-        <span>✏️ Нажмите ✏️ для редактирования</span>
+        <span>💰 Итог округляется до 10 Br вверх</span>
+        <span>⚡ Срочно — нажмите кнопку</span>
     </div>
 </div>
 
@@ -1012,6 +1079,7 @@
         let nextId = 1;
         let editingId = null;
         let savedFabric = localStorage.getItem('savedFabric') || '';
+        let isUrgent = false;
 
         // DOM
         const typeSelect = document.getElementById('typeSelect');
@@ -1023,6 +1091,7 @@
         const sizeBySelect = document.getElementById('sizeBySelect');
         const paymentSelect = document.getElementById('paymentSelect');
         const rateInput = document.getElementById('rateInput');
+        const urgentBtn = document.getElementById('urgentBtn');
         const addBtn = document.getElementById('addBtn');
         const clearAllBtn = document.getElementById('clearAllBtn');
         const itemsBody = document.getElementById('itemsBody');
@@ -1042,6 +1111,7 @@
         const headerPhone = document.getElementById('headerPhone');
         const headerOrderNumber = document.getElementById('headerOrderNumber');
         const headerDate = document.getElementById('headerDate');
+        const headerUrgent = document.getElementById('headerUrgent');
         const orderCapture = document.getElementById('orderCapture');
         const savePngBtn = document.getElementById('savePngBtn');
         const shareBtn = document.getElementById('shareBtn');
@@ -1066,6 +1136,11 @@
 
         function getRate() {
             return parseFloat(rateInput.value) || 3.5;
+        }
+
+        // Округление итога вверх до ближайших 10 BYN
+        function roundUpTo10(byn) {
+            return Math.ceil(byn / 10) * 10;
         }
 
         function roundWidth(typeKey, width) {
@@ -1205,7 +1280,27 @@
             } else {
                 headerDate.textContent = '—';
             }
+
+            // Показываем/скрываем бейдж "СРОЧНО"
+            if (isUrgent) {
+                headerUrgent.classList.add('show');
+            } else {
+                headerUrgent.classList.remove('show');
+            }
         }
+
+        // Переключение кнопки "СРОЧНО"
+        urgentBtn.addEventListener('click', () => {
+            isUrgent = !isUrgent;
+            if (isUrgent) {
+                urgentBtn.classList.add('active');
+                urgentBtn.innerHTML = '<span class="icon">⚡</span> СРОЧНО ✓';
+            } else {
+                urgentBtn.classList.remove('active');
+                urgentBtn.innerHTML = '<span class="icon">⚡</span> СРОЧНО';
+            }
+            updateHeader();
+        });
 
         // --------------------------------------------------------------
         // Рендер SVG макета
@@ -1220,7 +1315,7 @@
                 `;
                 orderSummary.innerHTML = '';
                 orderTotalValue.innerHTML = `
-                    <span class="byn">0.00 <small>Br</small></span>
+                    <span class="byn">0 <small>Br</small></span>
                 `;
                 return;
             }
@@ -1231,6 +1326,8 @@
             });
 
             const totalF = formatPrice(totalUsd);
+            // Округляем итог до 10 Br ВВЕРХ
+            const totalBynRounded = roundUpTo10(totalF.byn);
 
             const cashlessCount = items.filter(i => i.payment === 'Безналичные').length;
             const cashlessMarkTotal = cashlessCount > 0 ? ` <span class="badge-cashless">${cashlessCount}×+6%</span>` : '';
@@ -1242,23 +1339,20 @@
                 groups[item.type].push({ item, originalIndex: idx });
             });
 
-            // Параметры SVG — крупнее квадраты, меньше отступы
             const padX = 15;
             const padY = 10;
-            const cellW = 170;   // чуть больше ширина ячейки
-            const cellH = 250;   // уменьшена высота ячейки
+            const cellW = 170;
+            const cellH = 250;
             const groupTitleH = 40;
-            const groupSpacingY = 5; // минимальный отступ между группами
+            const groupSpacingY = 5;
             const itemsPerRow = 6;
 
-            // Масштабирование — квадраты крупнее
             const allMaxWidth = Math.max(...items.map(i => i.width), 100);
             const allMaxHeight = Math.max(...items.map(i => i.height), 100);
-            const displayMaxW = 110;  // было 80 — стало крупнее
-            const displayMaxH = 160;  // было 120 — стало крупнее
+            const displayMaxW = 110;
+            const displayMaxH = 160;
             const scale = Math.min(displayMaxW / allMaxWidth, displayMaxH / allMaxHeight);
 
-            // Считаем общую ширину и высоту
             let maxRowCount = 0;
             let totalHeight = padY * 2;
             const groupLayouts = [];
@@ -1279,7 +1373,6 @@
             let svgContent = '';
 
             groupLayouts.forEach(group => {
-                // Заголовок группы — ПО ЦЕНТРУ
                 svgContent += `
                     <text x="${totalWidth / 2}" y="${group.startY + 26}" text-anchor="middle" 
                           font-size="20" font-weight="700" fill="#1e293b">
@@ -1292,7 +1385,6 @@
                     const row = Math.floor(i / itemsPerRow);
                     const col = i % itemsPerRow;
 
-                    // Центрируем ряды с меньшим количеством
                     const itemsInThisRow = Math.min(itemsPerRow, group.groupItems.length - row * itemsPerRow);
                     const rowWidth = itemsInThisRow * cellW;
                     const rowStartX = padX + (contentWidth - rowWidth) / 2;
@@ -1305,7 +1397,6 @@
                     const rectX = cellX + (cellW - rectW) / 2;
                     const rectY = cellY + 20;
 
-                    // Прямоугольник (окно)
                     svgContent += `
                         <rect x="${rectX}" y="${rectY}" width="${rectW}" height="${rectH}" 
                               fill="#f0f9ff" stroke="#3b82f6" stroke-width="2" rx="4"/>
@@ -1313,40 +1404,34 @@
                               fill="none" stroke="#93c5fd" stroke-width="0.5" stroke-dasharray="3,3" rx="2"/>
                     `;
 
-                    // Подпись ширины сверху
                     svgContent += `
                         <text x="${rectX + rectW / 2}" y="${rectY - 6}" 
                               text-anchor="middle" font-size="11" font-weight="700" fill="#1e293b">
                             ${item.width} см
                         </text>
                     `;
-                    // Линия размера сверху
                     svgContent += `
                         <line x1="${rectX}" y1="${rectY - 2}" x2="${rectX + rectW}" y2="${rectY - 2}" 
                               stroke="#3b82f6" stroke-width="1"/>
                     `;
 
-                    // Подпись высоты слева
                     svgContent += `
                         <text x="${rectX - 6}" y="${rectY + rectH / 2}" 
                               text-anchor="end" dominant-baseline="middle" font-size="11" font-weight="700" fill="#1e293b">
                             ${item.height} см
                         </text>
                     `;
-                    // Линия размера слева
                     svgContent += `
                         <line x1="${rectX - 2}" y1="${rectY}" x2="${rectX - 2}" y2="${rectY + rectH}" 
                               stroke="#3b82f6" stroke-width="1"/>
                     `;
 
-                    // Номер в левом верхнем углу (чуть меньше)
                     svgContent += `
                         <circle cx="${rectX + 11}" cy="${rectY + 11}" r="10" fill="#3b82f6"/>
                         <text x="${rectX + 11}" y="${rectY + 11}" text-anchor="middle" dominant-baseline="middle" 
                               font-size="10" font-weight="700" fill="white">${originalIndex + 1}</text>
                     `;
 
-                    // Текст "Размер по" ВНУТРИ квадрата (опущен ниже номера)
                     const sizeByText = item.sizeBy === 'ВГШ' ? 'ВГШ' : 'по ткани';
                     svgContent += `
                         <text x="${rectX + rectW / 2}" y="${rectY + 32}" text-anchor="middle" 
@@ -1355,7 +1440,6 @@
                         </text>
                     `;
 
-                    // Стрелка управления внутри прямоугольника (снизу)
                     const isLeft = item.side === 'left';
                     const arrowColor = isLeft ? '#22c55e' : '#f59e0b';
                     const arrowStroke = isLeft ? '#16a34a' : '#d97706';
@@ -1370,7 +1454,6 @@
                                  fill="${arrowColor}" stroke="${arrowStroke}" stroke-width="1"/>
                     `;
 
-                    // Ткань снизу от квадрата (если есть)
                     if (item.fabric) {
                         svgContent += `
                             <text x="${rectX + rectW / 2}" y="${rectY + rectH + 14}" 
@@ -1471,9 +1554,9 @@
 
             orderSummary.innerHTML = summaryHtml;
 
-            // Итог — только в BYN
+            // Итог — только в BYN (округлённый до 10 вверх)
             orderTotalValue.innerHTML = `
-                <span class="byn">${totalF.bynStr} <small>Br</small></span>
+                <span class="byn">${totalBynRounded} <small>Br</small></span>
                 ${cashlessMarkTotal}
             `;
         }
@@ -1505,7 +1588,6 @@
                 totalUsd += price;
 
                 const typeName = getTypeName(item.type);
-                const roundedW = roundWidth(item.type, item.width);
                 const f = formatPrice(price);
                 const cashlessMark = item.payment === 'Безналичные' ? ' <span class="badge-cashless">+6%</span>' : '';
                 const sideText = item.side === 'left' ? '⬅ Слева' : '➡ Справа';
@@ -1601,13 +1683,14 @@
             itemsCount.textContent = items.length;
             
             const totalF = formatPrice(totalUsd);
+            const totalBynRounded = roundUpTo10(totalF.byn);
             const cashlessCount = items.filter(i => i.payment === 'Безналичные').length;
             const cashlessMarkTotal = cashlessCount > 0 ? ` <span class="badge-cashless">${cashlessCount}×+6%</span>` : '';
             totalPrice.innerHTML = `
                 <div class="price-both">
                     <span class="usd-price">${totalF.usdStr} $</span>
                     <span class="divider">/</span>
-                    <span class="byn-price">${totalF.bynStr} Br</span>
+                    <span class="byn-price" style="font-weight:700; font-size:14px;">${totalBynRounded} Br</span>
                     ${cashlessMarkTotal}
                 </div>
             `;
@@ -1804,7 +1887,8 @@
         function getFileName() {
             const orderNum = orderNumber.value ? `заказ_${orderNumber.value}` : 'заказ';
             const dateStr = new Date().toISOString().slice(0, 10);
-            return `${orderNum}_${dateStr}.png`;
+            const urgentStr = isUrgent ? '_СРОЧНО' : '';
+            return `${orderNum}${urgentStr}_${dateStr}.png`;
         }
 
         shareBtn.addEventListener('click', async () => {
@@ -1835,8 +1919,8 @@
                         try {
                             await navigator.share({
                                 files: [file],
-                                title: 'Заказ жалюзи',
-                                text: `Заказ № ${orderNumber.value || '—'}`
+                                title: isUrgent ? 'Заказ жалюзи (СРОЧНО)' : 'Заказ жалюзи',
+                                text: `Заказ № ${orderNumber.value || '—'}${isUrgent ? ' (СРОЧНО)' : ''}`
                             });
                             shareBtn.disabled = false;
                             shareBtn.textContent = '📤 Поделиться / Сохранить';
