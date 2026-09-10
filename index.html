@@ -955,11 +955,11 @@
         </div>
         <div class="field-group">
             <label for="widthInput">Ширина (см)</label>
-            <input type="number" id="widthInput" value="80" min="30" max="200" step="1">
+            <input type="number" id="widthInput" value="80" min="30" max="200" step="0.1">
         </div>
         <div class="field-group">
             <label for="heightInput">Высота (см)</label>
-            <input type="number" id="heightInput" value="170" min="50" max="250" step="1">
+            <input type="number" id="heightInput" value="170" min="50" max="250" step="0.1">
         </div>
         <div class="field-group">
             <label for="sideSelect">Сторона управления</label>
@@ -1118,6 +1118,7 @@
         <span>💰 Итог округляется до 10 Br вверх</span>
         <span>⚡ Срочно — нажмите кнопку</span>
         <span>💵 Аванс — общий на весь заказ</span>
+        <span>📏 Можно вводить мм (80,7 см)</span>
     </div>
 </div>
 
@@ -1293,22 +1294,43 @@
         orderDate.value = today;
 
         function getRate() {
-            return parseFloat(rateInput.value) || 3.5;
+            return parseFloat(rateInput.value.replace(',', '.')) || 3.5;
         }
 
         function getAdvance() {
-            return parseFloat(advanceInput.value) || 0;
+            return parseFloat(advanceInput.value.replace(',', '.')) || 0;
         }
 
         function roundUpTo10(byn) {
             return Math.ceil(byn / 10) * 10;
         }
 
+        // Парсинг чисел с запятой: "80,7" → 80.7
+        function parseNum(val) {
+            if (val === undefined || val === null || val === '') return 0;
+            const str = String(val).replace(',', '.').trim();
+            const num = parseFloat(str);
+            return isNaN(num) ? 0 : num;
+        }
+
+        // Форматирование числа для отображения: 80.7 → "80,7"
+        function formatNum(val) {
+            if (val === undefined || val === null || val === '') return '0';
+            const num = parseFloat(val);
+            if (isNaN(num)) return '0';
+            // Если целое — без десятичных, иначе с запятой
+            if (Number.isInteger(num)) return String(num);
+            // Убираем лишние нули в конце
+            return num.toFixed(1).replace('.', ',').replace(/,0$/, '');
+        }
+
+        // Для расчёта цены — округление ширины до ближайшего 10
         function roundWidth(typeKey, width) {
             const typeData = PRICES[typeKey];
             if (!typeData) return 40;
             const widths = typeData.widths;
             
+            // Округляем математически до 10
             let rounded = Math.round(width / 10) * 10;
             if (rounded < widths[0]) return widths[0];
             if (rounded > widths[widths.length - 1]) return widths[widths.length - 1];
@@ -1408,8 +1430,8 @@
         function updatePreview() {
             const type = typeSelect.value;
             const cat = parseInt(catSelect.value, 10);
-            const width = parseInt(widthInput.value, 10) || 80;
-            const height = parseInt(heightInput.value, 10) || 170;
+            const width = parseNum(widthInput.value) || 80;
+            const height = parseNum(heightInput.value) || 170;
             const payment = paymentSelect.value;
 
             const fakeItem = { type, cat, width, height, payment };
@@ -1424,7 +1446,7 @@
                 <span class="byn">${f.bynStr} <small>Br</small></span>
                 ${cashlessMark}
             `;
-            previewDetail.textContent = `${width} см × ${height} см → ${roundedW} см`;
+            previewDetail.textContent = `${formatNum(width)} см × ${formatNum(height)} см → ${roundedW} см`;
 
             updateHeader();
             renderLayout();
@@ -1466,10 +1488,6 @@
             renderItems();
         });
 
-        // --------------------------------------------------------------
-        // Рендер SVG макета
-        // ВСЕ КВАДРАТЫ ОДИНАКОВЫЕ, размеры точные (без округления)
-        // --------------------------------------------------------------
         function renderLayout() {
             if (items.length === 0) {
                 layoutSvgWrap.innerHTML = `
@@ -1513,7 +1531,6 @@
             const groupSpacingY = 5;
             const itemsPerRow = 6;
 
-            // ЕДИНЫЙ РАЗМЕР для всех квадратов
             const BASE_WIDTH = 70;
             const BASE_HEIGHT = 130;
 
@@ -1556,7 +1573,6 @@
                     const cellX = rowStartX + col * cellW;
                     const cellY = group.startY + groupTitleH + row * cellH;
 
-                    // Фиксированный размер квадрата
                     const rectW = BASE_WIDTH;
                     const rectH = BASE_HEIGHT;
                     const rectX = cellX + (cellW - rectW) / 2;
@@ -1570,11 +1586,11 @@
                     `;
 
                     const widthLineY = rectY - 12;
-                    // ТОЧНЫЕ размеры без округления
+                    // ТОЧНЫЕ размеры без округления, с запятой
                     svgContent += `
                         <text x="${rectX + rectW / 2}" y="${widthLineY - 6}" 
                               text-anchor="middle" font-size="11" font-weight="700" fill="#1e293b">
-                            ${item.width} см
+                            ${formatNum(item.width)} см
                         </text>
                     `;
                     svgContent += `
@@ -1590,7 +1606,7 @@
                     svgContent += `
                         <text x="${heightLineX - 6}" y="${rectY + rectH / 2}" 
                               text-anchor="end" dominant-baseline="middle" font-size="11" font-weight="700" fill="#1e293b">
-                            ${item.height} см
+                            ${formatNum(item.height)} см
                         </text>
                     `;
                     svgContent += `
@@ -1799,10 +1815,10 @@
                                 <input type="text" id="edit_fabric_${item.id}" value="${item.fabric || ''}" style="max-width:110px;" placeholder="Ткань">
                             </td>
                             <td>
-                                <input type="number" id="edit_width_${item.id}" value="${item.width}" min="30" max="200" step="1">
+                                <input type="number" id="edit_width_${item.id}" value="${item.width}" min="30" max="200" step="0.1">
                             </td>
                             <td>
-                                <input type="number" id="edit_height_${item.id}" value="${item.height}" min="50" max="250" step="1">
+                                <input type="number" id="edit_height_${item.id}" value="${item.height}" min="50" max="250" step="0.1">
                             </td>
                             <td>
                                 <select id="edit_side_${item.id}" class="edit-select">
@@ -1837,8 +1853,8 @@
                             <td><span class="badge">${typeName}</span></td>
                             <td>${item.cat}</td>
                             <td><span class="badge-fabric" title="${fabricText}">${fabricText}</span></td>
-                            <td>${item.width}</td>
-                            <td>${item.height}</td>
+                            <td>${formatNum(item.width)}</td>
+                            <td>${formatNum(item.height)}</td>
                             <td><span class="badge-side">${sideText}</span></td>
                             <td><span class="badge-size">${sizeByText}</span></td>
                             <td>${paymentBadge}</td>
@@ -1918,8 +1934,8 @@
             const type = typeSelect.value;
             const cat = parseInt(catSelect.value, 10);
             const fabric = fabricInput.value.trim();
-            const width = parseInt(widthInput.value, 10) || 80;
-            const height = parseInt(heightInput.value, 10) || 170;
+            const width = parseNum(widthInput.value) || 80;
+            const height = parseNum(heightInput.value) || 170;
             const side = sideSelect.value;
             const sizeBy = sizeBySelect.value;
             const payment = paymentSelect.value;
@@ -1967,8 +1983,8 @@
             const type = document.getElementById(`edit_type_${id}`).value;
             const cat = parseInt(document.getElementById(`edit_cat_${id}`).value, 10);
             const fabric = document.getElementById(`edit_fabric_${id}`).value.trim();
-            const width = parseInt(document.getElementById(`edit_width_${id}`).value, 10);
-            const height = parseInt(document.getElementById(`edit_height_${id}`).value, 10);
+            const width = parseNum(document.getElementById(`edit_width_${id}`).value);
+            const height = parseNum(document.getElementById(`edit_height_${id}`).value);
             const side = document.getElementById(`edit_side_${id}`).value;
             const sizeBy = document.getElementById(`edit_sizeby_${id}`).value;
             const payment = document.getElementById(`edit_payment_${id}`).value;
