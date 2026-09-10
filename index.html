@@ -111,7 +111,6 @@
         .customer-block .field-group input:focus {
             outline: 2px solid #22c55e;
         }
-        /* Поле аванса */
         .customer-block .field-group.advance-field label {
             color: #0369a1;
         }
@@ -125,7 +124,6 @@
             outline: 2px solid #0ea5e9;
         }
 
-        /* Кнопка СРОЧНО */
         .urgent-box {
             display: flex;
             align-items: flex-end;
@@ -552,9 +550,21 @@
             flex-wrap: wrap;
         }
 
-        /* ====== Красивый макет ====== */
+        /* ====== Красивый макет с фоном в клеточку ====== */
         .layout-paper {
-            background: white;
+            background-color: #ffffff;
+            /* Фон в клеточку (нежная миллиметровка) */
+            background-image: 
+                linear-gradient(rgba(59, 130, 246, 0.08) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(59, 130, 246, 0.08) 1px, transparent 1px),
+                linear-gradient(rgba(59, 130, 246, 0.04) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(59, 130, 246, 0.04) 1px, transparent 1px);
+            background-size: 
+                40px 40px,
+                40px 40px,
+                8px 8px,
+                8px 8px;
+            background-position: -1px -1px, -1px -1px, -1px -1px, -1px -1px;
             border-radius: 16px;
             overflow: hidden;
             box-shadow: 0 4px 16px rgba(0,0,0,0.08);
@@ -622,7 +632,8 @@
             justify-content: center;
             align-items: flex-start;
             padding: 20px;
-            background: white;
+            /* Прозрачный фон, чтобы была видна клеточка */
+            background: transparent;
             overflow-x: auto;
             -webkit-overflow-scrolling: touch;
         }
@@ -630,6 +641,8 @@
             max-width: none;
             height: auto;
             display: block;
+            /* Убеждаемся что фон SVG прозрачный для клеточки */
+            background: transparent;
         }
         .order-summary {
             padding: 0 20px 10px 20px;
@@ -642,9 +655,10 @@
             display: flex;
             justify-content: space-between;
             padding: 8px 12px;
-            background: #f8fafc;
+            background: rgba(255, 255, 255, 0.85);
             border-radius: 8px;
-            border: 1px solid #e9edf3;
+            border: 1px solid rgba(226, 232, 240, 0.8);
+            backdrop-filter: blur(4px);
         }
         .order-summary .row .label {
             color: #64748b;
@@ -655,14 +669,15 @@
             font-weight: 600;
         }
 
-        /* === Красивый итоговый блок с авансом === */
+        /* === Итоговый блок с авансом === */
         .order-total-block {
             padding: 20px;
-            background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+            background: linear-gradient(135deg, rgba(240, 249, 255, 0.95) 0%, rgba(224, 242, 254, 0.95) 100%);
             border-top: 3px solid #0ea5e9;
             display: flex;
             flex-direction: column;
             gap: 12px;
+            backdrop-filter: blur(4px);
         }
         .order-total-row {
             display: flex;
@@ -670,10 +685,11 @@
             align-items: center;
             flex-wrap: wrap;
             gap: 10px;
-            padding: 10px 16px;
+            padding: 12px 18px;
             background: white;
-            border-radius: 10px;
+            border-radius: 12px;
             border: 1px solid #bae6fd;
+            box-shadow: 0 2px 6px rgba(14, 165, 233, 0.08);
         }
         .order-total-row .label {
             font-weight: 700;
@@ -1015,7 +1031,7 @@
                     <!-- Сводка вставляется через JS -->
                 </div>
 
-                <!-- Красивый итоговый блок с авансом -->
+                <!-- Итоговый блок с авансом -->
                 <div class="order-total-block">
                     <div class="order-total-row">
                         <span class="label">💰 ИТОГО ПО ЗАКАЗУ:</span>
@@ -1380,7 +1396,6 @@
             }
         }
 
-        // Переключение кнопки "СРОЧНО"
         urgentBtn.addEventListener('click', () => {
             isUrgent = !isUrgent;
             if (isUrgent) {
@@ -1393,15 +1408,11 @@
             updateHeader();
         });
 
-        // Обновление аванса
         advanceInput.addEventListener('input', () => {
             renderLayout();
             renderItems();
         });
 
-        // --------------------------------------------------------------
-        // Рендер SVG макета
-        // --------------------------------------------------------------
         function renderLayout() {
             if (items.length === 0) {
                 layoutSvgWrap.innerHTML = `
@@ -1430,7 +1441,6 @@
             const cashlessCount = items.filter(i => i.payment === 'Безналичные').length;
             const cashlessMarkTotal = cashlessCount > 0 ? ` <span class="badge-cashless">${cashlessCount}×+6%</span>` : '';
 
-            // Группировка по типу
             const groups = {};
             items.forEach((item, idx) => {
                 if (!groups[item.type]) groups[item.type] = [];
@@ -1495,9 +1505,10 @@
                     const rectX = cellX + (cellW - rectW) / 2;
                     const rectY = cellY + 20;
 
+                    // Квадрат с лёгкой полупрозрачностью, чтобы клеточка была чуть видна
                     svgContent += `
                         <rect x="${rectX}" y="${rectY}" width="${rectW}" height="${rectH}" 
-                              fill="#f0f9ff" stroke="#3b82f6" stroke-width="2" rx="4"/>
+                              fill="rgba(240, 249, 255, 0.85)" stroke="#3b82f6" stroke-width="2" rx="4"/>
                         <rect x="${rectX + 3}" y="${rectY + 3}" width="${rectW - 6}" height="${rectH - 6}" 
                               fill="none" stroke="#93c5fd" stroke-width="0.5" stroke-dasharray="3,3" rx="2"/>
                     `;
@@ -1565,15 +1576,13 @@
 
             const svg = `
                 <svg width="${totalWidth}" height="${totalHeight}" viewBox="0 0 ${totalWidth} ${totalHeight}" 
-                     xmlns="http://www.w3.org/2000/svg" style="display: block;">
-                    <rect width="${totalWidth}" height="${totalHeight}" fill="white"/>
+                     xmlns="http://www.w3.org/2000/svg" style="display: block; background: transparent;">
                     ${svgContent}
                 </svg>
             `;
 
             layoutSvgWrap.innerHTML = svg;
 
-            // Сводка
             let summaryHtml = '';
             const totalItems = items.length;
 
@@ -1652,13 +1661,11 @@
 
             orderSummary.innerHTML = summaryHtml;
 
-            // Итог
             orderTotalValue.innerHTML = `
                 <span class="byn">${totalBynRounded} <small>Br</small></span>
                 ${cashlessMarkTotal}
             `;
 
-            // Аванс и остаток
             if (advance > 0) {
                 advanceRow.style.display = 'flex';
                 orderAdvanceValue.innerHTML = `<span class="byn">${advance} <small>Br</small></span>`;
