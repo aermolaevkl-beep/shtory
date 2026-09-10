@@ -1208,7 +1208,7 @@
         }
 
         // --------------------------------------------------------------
-        // Рендер SVG макета — с группировкой по типу, центрированием
+        // Рендер SVG макета
         // --------------------------------------------------------------
         function renderLayout() {
             if (items.length === 0) {
@@ -1242,20 +1242,20 @@
                 groups[item.type].push({ item, originalIndex: idx });
             });
 
-            // Параметры SVG — уменьшены отступы
-            const padX = 20;
-            const padY = 15;
-            const cellW = 150;   // меньше ширина ячейки
-            const cellH = 260;   // меньше высота ячейки
-            const groupTitleH = 45;
-            const groupSpacingY = 10; // небольшой отступ между группами
-            const itemsPerRow = 6; // больше в ряд
+            // Параметры SVG — крупнее квадраты, меньше отступы
+            const padX = 15;
+            const padY = 10;
+            const cellW = 170;   // чуть больше ширина ячейки
+            const cellH = 250;   // уменьшена высота ячейки
+            const groupTitleH = 40;
+            const groupSpacingY = 5; // минимальный отступ между группами
+            const itemsPerRow = 6;
 
-            // Масштабирование
+            // Масштабирование — квадраты крупнее
             const allMaxWidth = Math.max(...items.map(i => i.width), 100);
             const allMaxHeight = Math.max(...items.map(i => i.height), 100);
-            const displayMaxW = 80;
-            const displayMaxH = 120;
+            const displayMaxW = 110;  // было 80 — стало крупнее
+            const displayMaxH = 160;  // было 120 — стало крупнее
             const scale = Math.min(displayMaxW / allMaxWidth, displayMaxH / allMaxHeight);
 
             // Считаем общую ширину и высоту
@@ -1281,7 +1281,7 @@
             groupLayouts.forEach(group => {
                 // Заголовок группы — ПО ЦЕНТРУ
                 svgContent += `
-                    <text x="${totalWidth / 2}" y="${group.startY + 30}" text-anchor="middle" 
+                    <text x="${totalWidth / 2}" y="${group.startY + 26}" text-anchor="middle" 
                           font-size="20" font-weight="700" fill="#1e293b">
                         ${getTypeName(group.type)}
                     </text>
@@ -1300,10 +1300,10 @@
                     const cellX = rowStartX + col * cellW;
                     const cellY = group.startY + groupTitleH + row * cellH;
 
-                    const rectW = Math.max(item.width * scale, 35);
-                    const rectH = Math.max(item.height * scale, 35);
+                    const rectW = Math.max(item.width * scale, 45);
+                    const rectH = Math.max(item.height * scale, 45);
                     const rectX = cellX + (cellW - rectW) / 2;
-                    const rectY = cellY + 25;
+                    const rectY = cellY + 20;
 
                     // Прямоугольник (окно)
                     svgContent += `
@@ -1339,11 +1339,20 @@
                               stroke="#3b82f6" stroke-width="1"/>
                     `;
 
-                    // Номер в левом верхнем углу
+                    // Номер в левом верхнем углу (чуть меньше)
                     svgContent += `
-                        <circle cx="${rectX + 11}" cy="${rectY + 11}" r="9" fill="#3b82f6"/>
+                        <circle cx="${rectX + 11}" cy="${rectY + 11}" r="10" fill="#3b82f6"/>
                         <text x="${rectX + 11}" y="${rectY + 11}" text-anchor="middle" dominant-baseline="middle" 
                               font-size="10" font-weight="700" fill="white">${originalIndex + 1}</text>
+                    `;
+
+                    // Текст "Размер по" ВНУТРИ квадрата (опущен ниже номера)
+                    const sizeByText = item.sizeBy === 'ВГШ' ? 'ВГШ' : 'по ткани';
+                    svgContent += `
+                        <text x="${rectX + rectW / 2}" y="${rectY + 32}" text-anchor="middle" 
+                              font-size="11" font-weight="700" fill="#7c3aed">
+                            ${sizeByText}
+                        </text>
                     `;
 
                     // Стрелка управления внутри прямоугольника (снизу)
@@ -1351,23 +1360,14 @@
                     const arrowColor = isLeft ? '#22c55e' : '#f59e0b';
                     const arrowStroke = isLeft ? '#16a34a' : '#d97706';
                     const arrowX = isLeft ? rectX + 15 : rectX + rectW - 15;
-                    const arrowStartY = rectY + rectH - 28;
-                    const arrowEndY = rectY + rectH - 8;
+                    const arrowStartY = rectY + rectH - 25;
+                    const arrowEndY = rectY + rectH - 7;
 
                     svgContent += `
                         <line x1="${arrowX}" y1="${arrowStartY}" x2="${arrowX}" y2="${arrowEndY - 6}" 
                               stroke="${arrowColor}" stroke-width="2.5" stroke-linecap="round"/>
                         <polygon points="${arrowX - 6},${arrowEndY - 6} ${arrowX + 6},${arrowEndY - 6} ${arrowX},${arrowEndY}" 
                                  fill="${arrowColor}" stroke="${arrowStroke}" stroke-width="1"/>
-                    `;
-
-                    // Текст "Размер по" ВНУТРИ квадрата (вверху по центру)
-                    const sizeByText = item.sizeBy === 'ВГШ' ? 'ВГШ' : 'по ткани';
-                    svgContent += `
-                        <text x="${rectX + rectW / 2}" y="${rectY + 18}" text-anchor="middle" 
-                              font-size="10" font-weight="700" fill="#7c3aed">
-                            ${sizeByText}
-                        </text>
                     `;
 
                     // Ткань снизу от квадрата (если есть)
