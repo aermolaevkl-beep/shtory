@@ -48,8 +48,7 @@
             width: 100%;
             justify-content: flex-start;
         }
-        .top-controls .currency-box,
-        .top-controls .cashless-box {
+        .top-controls .currency-box {
             flex: 1;
             min-width: 140px;
         }
@@ -86,38 +85,6 @@
             font-weight: 600;
             color: #1e293b;
             font-size: 13px;
-        }
-        .cashless-box {
-            background: #fef3c7;
-            padding: 6px 12px;
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            border: 2px solid #fcd34d;
-            flex-wrap: wrap;
-        }
-        .cashless-box label {
-            font-weight: 600;
-            font-size: 12px;
-            color: #92400e;
-            margin: 0;
-            white-space: nowrap;
-            cursor: pointer;
-        }
-        .cashless-box input[type="checkbox"] {
-            width: 18px;
-            height: 18px;
-            cursor: pointer;
-            accent-color: #f59e0b;
-        }
-        .cashless-box .badge-cashless {
-            background: #f59e0b;
-            color: white;
-            padding: 1px 8px;
-            border-radius: 20px;
-            font-size: 11px;
-            font-weight: 600;
         }
 
         .customer-block {
@@ -323,7 +290,7 @@
             border-collapse: collapse;
             font-size: 13px;
             background: white;
-            min-width: 700px;
+            min-width: 900px;
         }
         th {
             background: #f1f5f9;
@@ -367,6 +334,24 @@
         .badge-side {
             background: #e0e7ff;
             color: #3730a3;
+            border-radius: 40px;
+            padding: 1px 10px;
+            font-size: 11px;
+            font-weight: 500;
+            display: inline-block;
+        }
+        .badge-size {
+            background: #fce7f3;
+            color: #9d174d;
+            border-radius: 40px;
+            padding: 1px 10px;
+            font-size: 11px;
+            font-weight: 500;
+            display: inline-block;
+        }
+        .badge-payment {
+            background: #d1fae5;
+            color: #065f46;
             border-radius: 40px;
             padding: 1px 10px;
             font-size: 11px;
@@ -603,8 +588,7 @@
             h1 { font-size: 18px; }
             h1 small { font-size: 12px; margin-left: 4px; }
             .top-controls { flex-direction: column; align-items: stretch; width: 100%; }
-            .top-controls .currency-box,
-            .top-controls .cashless-box { width: 100%; justify-content: center; }
+            .top-controls .currency-box { width: 100%; justify-content: center; }
             .customer-block { grid-template-columns: 1fr; padding: 10px; gap: 8px; }
             .grid-2 { 
                 grid-template-columns: 1fr 1fr; 
@@ -621,7 +605,7 @@
             .items-header h3 { font-size: 15px; }
             .items-header .controls { width: 100%; justify-content: flex-end; }
             .table-wrap { border-radius: 10px; }
-            table { font-size: 11px; min-width: 600px; }
+            table { font-size: 11px; min-width: 800px; }
             th { font-size: 10px; padding: 6px 4px; }
             td { font-size: 11px; padding: 6px 4px; }
             .badge { font-size: 10px; padding: 1px 8px; }
@@ -646,7 +630,7 @@
             .grid-2 { grid-template-columns: 1fr 1fr; gap: 6px 8px; padding: 10px; }
             .field-group select, .field-group input { padding: 5px 6px; font-size: 12px; }
             .btn { padding: 5px 12px; font-size: 12px; }
-            table { font-size: 10px; min-width: 500px; }
+            table { font-size: 10px; min-width: 700px; }
             th { font-size: 9px; padding: 4px 3px; }
             td { font-size: 10px; padding: 4px 3px; }
             .badge { font-size: 9px; padding: 1px 6px; }
@@ -675,10 +659,6 @@
         🧮 Калькулятор жалюзи
         <small>несколько изделий</small>
         <div class="top-controls">
-            <div class="cashless-box">
-                <input type="checkbox" id="cashlessToggle">
-                <label for="cashlessToggle">💰 Безнал <span class="badge-cashless">+6%</span></label>
-            </div>
             <div class="currency-box">
                 <label>Курс $ → Br</label>
                 <input type="number" id="rateInput" value="3.5" step="0.01" min="1">
@@ -742,6 +722,20 @@
                 <option value="right" selected>➡ Справа (П)</option>
             </select>
         </div>
+        <div class="field-group">
+            <label for="sizeBySelect">Размер по</label>
+            <select id="sizeBySelect">
+                <option value="ВГШ" selected>ВГШ</option>
+                <option value="по ткани">по ткани</option>
+            </select>
+        </div>
+        <div class="field-group">
+            <label for="paymentSelect">Оплата</label>
+            <select id="paymentSelect">
+                <option value="Наличные" selected>Наличные</option>
+                <option value="Безналичные">Безналичные</option>
+            </select>
+        </div>
         <div class="field-group" style="justify-content:flex-end;">
             <button class="btn" id="addBtn">➕ Добавить</button>
         </div>
@@ -776,13 +770,15 @@
                         <th>Ширина</th>
                         <th>Высота</th>
                         <th>Сторона</th>
+                        <th>Размер по</th>
+                        <th>Оплата</th>
                         <th>Цена</th>
                         <th>Действия</th>
                     </tr>
                 </thead>
                 <tbody id="itemsBody">
                     <tr>
-                        <td colspan="8">
+                        <td colspan="10">
                             <div class="empty-state">
                                 <div class="icon">📭</div>
                                 <div>Нет добавленных изделий</div>
@@ -793,7 +789,7 @@
                 </tbody>
                 <tfoot id="itemsFoot" style="display:none;">
                     <tr class="total-row">
-                        <td colspan="7" style="text-align:right;">ИТОГО:</td>
+                        <td colspan="9" style="text-align:right;">ИТОГО:</td>
                         <td id="totalPrice">0.00 $ / 0.00 Br</td>
                     </tr>
                 </tfoot>
@@ -846,7 +842,6 @@
         <span>🧷 Доп. +25% за коричневую фурнитуру (не учтено)</span>
         <span>📐 свыше 2,0 м +10% за каждые 10 см</span>
         <span>🔄 40-44→40, 45-49→50</span>
-        <span>💰 Безнал +6%</span>
         <span>✏️ Нажмите ✏️ для редактирования</span>
     </div>
 </div>
@@ -969,8 +964,9 @@
         const widthInput = document.getElementById('widthInput');
         const heightInput = document.getElementById('heightInput');
         const sideSelect = document.getElementById('sideSelect');
+        const sizeBySelect = document.getElementById('sizeBySelect');
+        const paymentSelect = document.getElementById('paymentSelect');
         const rateInput = document.getElementById('rateInput');
-        const cashlessToggle = document.getElementById('cashlessToggle');
         const addBtn = document.getElementById('addBtn');
         const clearAllBtn = document.getElementById('clearAllBtn');
         const itemsBody = document.getElementById('itemsBody');
@@ -999,10 +995,6 @@
 
         function getRate() {
             return parseFloat(rateInput.value) || 3.5;
-        }
-
-        function isCashless() {
-            return cashlessToggle.checked;
         }
 
         function roundWidth(typeKey, width) {
@@ -1087,10 +1079,11 @@
             return basePrice + extra;
         }
 
-        function calculatePrice(typeKey, cat, width, height) {
-            const base = calculatePriceBase(typeKey, cat, width, height);
-            if (isCashless()) {
-                return base * 1.06;
+        // Оплата "Безналичные" добавляет +6%
+        function calculatePrice(item) {
+            let base = calculatePriceBase(item.type, item.cat, item.width, item.height);
+            if (item.payment === 'Безналичные') {
+                base = base * 1.06;
             }
             return base;
         }
@@ -1111,11 +1104,13 @@
             const cat = parseInt(catSelect.value, 10);
             const width = parseInt(widthInput.value, 10) || 80;
             const height = parseInt(heightInput.value, 10) || 170;
+            const payment = paymentSelect.value;
 
-            const price = calculatePrice(type, cat, width, height);
+            const fakeItem = { type, cat, width, height, payment };
+            const price = calculatePrice(fakeItem);
             const roundedW = roundWidth(type, width);
             const f = formatPrice(price);
-            const cashlessMark = isCashless() ? ' <span class="cashless-mark">+6%</span>' : '';
+            const cashlessMark = payment === 'Безналичные' ? ' <span class="cashless-mark">+6%</span>' : '';
 
             previewPrice.innerHTML = `
                 <span class="usd">${f.usdStr} <small>$</small></span>
@@ -1142,10 +1137,6 @@
             }
         }
 
-        // --------------------------------------------------------------
-        // Рендер SVG макета заказа
-        // УПРАВЛЕНИЕ ОБОЗНАЧАЕТСЯ БУКВОЙ П/Л ВНУТРИ ПРЯМОУГОЛЬНИКА
-        // --------------------------------------------------------------
         function renderLayout() {
             if (items.length === 0) {
                 layoutSvgWrap.innerHTML = `
@@ -1165,21 +1156,23 @@
 
             let totalUsd = 0;
             items.forEach(item => {
-                totalUsd += calculatePrice(item.type, item.cat, item.width, item.height);
+                totalUsd += calculatePrice(item);
             });
 
             const totalF = formatPrice(totalUsd);
-            const cashlessMarkTotal = isCashless() ? ' <span class="badge-cashless">+6%</span>' : '';
 
-            // Масштабирование
+            // Подсчёт кол-ва безналичных
+            const cashlessCount = items.filter(i => i.payment === 'Безналичные').length;
+            const cashlessMarkTotal = cashlessCount > 0 ? ` <span class="badge-cashless">${cashlessCount}×+6%</span>` : '';
+
             const maxWidth = Math.max(...items.map(i => i.width), 100);
             const maxHeight = Math.max(...items.map(i => i.height), 100);
             const displayMaxW = 120;
             const displayMaxH = 180;
             const scale = Math.min(displayMaxW / maxWidth, displayMaxH / maxHeight);
 
-            const cellW = 220;
-            const cellH = 340;
+            const cellW = 240;
+            const cellH = 360;
             const padX = 20;
             const padY = 20;
 
@@ -1191,12 +1184,14 @@
             let svgContent = '';
 
             items.forEach((item, index) => {
-                const price = calculatePrice(item.type, item.cat, item.width, item.height);
+                const price = calculatePrice(item);
                 const f = formatPrice(price);
                 const sideText = item.side === 'left' ? 'Слева' : 'Справа';
                 const sideLetter = item.side === 'left' ? 'Л' : 'П';
                 const typeName = getTypeName(item.type);
                 const roundedW = roundWidth(item.type, item.width);
+                const sizeByText = item.sizeBy === 'ВГШ' ? 'ВГШ' : 'По ткани';
+                const paymentText = item.payment;
 
                 const rectW = Math.max(item.width * scale, 50);
                 const rectH = Math.max(item.height * scale, 50);
@@ -1218,10 +1213,9 @@
                           fill="none" stroke="#93c5fd" stroke-width="0.5" stroke-dasharray="3,3" rx="2"/>
                 `;
 
-                // БУКВА П или Л внутри прямоугольника (в правом верхнем углу)
+                // Буква П или Л внутри
                 const letterX = rectX + rectW - 15;
                 const letterY = rectY + 18;
-                // Фон кружка для буквы
                 svgContent += `
                     <circle cx="${letterX}" cy="${letterY}" r="11" fill="#f59e0b" stroke="#d97706" stroke-width="1"/>
                     <text x="${letterX}" y="${letterY}" text-anchor="middle" dominant-baseline="middle" 
@@ -1259,9 +1253,10 @@
                           font-size="11" font-weight="700" fill="white">${index + 1}</text>
                 `;
 
-                // Информация снизу от прямоугольника
+                // Информация снизу
                 const infoY = rectY + rectH + 20;
-                const infoX = rectX - 20;
+                const infoX = rectX - 25;
+                const paymentColor = item.payment === 'Безналичные' ? '#dc2626' : '#065f46';
                 
                 svgContent += `
                     <text x="${infoX}" y="${infoY}" font-size="12" font-weight="700" fill="#1e293b">
@@ -1273,7 +1268,13 @@
                     <text x="${infoX}" y="${infoY + 31}" font-size="11" fill="#475569">
                         ${sideLetter === 'П' ? '➡' : '⬅'} Управление: ${sideText} (${sideLetter}) | Кат. ${item.cat}
                     </text>
-                    <text x="${infoX}" y="${infoY + 48}" font-size="12" font-weight="700" fill="#1e293b">
+                    <text x="${infoX}" y="${infoY + 46}" font-size="11" fill="#7c3aed">
+                        📏 Размер по: ${sizeByText}
+                    </text>
+                    <text x="${infoX}" y="${infoY + 61}" font-size="11" font-weight="600" fill="${paymentColor}">
+                        💰 Оплата: ${paymentText}
+                    </text>
+                    <text x="${infoX}" y="${infoY + 78}" font-size="12" font-weight="700" fill="#1e293b">
                         ${f.usdStr} $ / ${f.bynStr} Br
                     </text>
                 `;
@@ -1335,6 +1336,46 @@
                 `;
             }
 
+            // Размер по
+            const vgshCount = items.filter(i => i.sizeBy === 'ВГШ').length;
+            const fabricCount = items.filter(i => i.sizeBy === 'по ткани').length;
+            if (vgshCount > 0) {
+                summaryHtml += `
+                    <div class="row">
+                        <span class="label">📏 Размер по ВГШ:</span>
+                        <span class="value">${vgshCount} шт.</span>
+                    </div>
+                `;
+            }
+            if (fabricCount > 0) {
+                summaryHtml += `
+                    <div class="row">
+                        <span class="label">📏 Размер по ткани:</span>
+                        <span class="value">${fabricCount} шт.</span>
+                    </div>
+                `;
+            }
+
+            // Оплата
+            const cashCount = items.filter(i => i.payment === 'Наличные').length;
+            const cashlessCnt = items.filter(i => i.payment === 'Безналичные').length;
+            if (cashCount > 0) {
+                summaryHtml += `
+                    <div class="row">
+                        <span class="label">💵 Наличные:</span>
+                        <span class="value">${cashCount} шт.</span>
+                    </div>
+                `;
+            }
+            if (cashlessCnt > 0) {
+                summaryHtml += `
+                    <div class="row">
+                        <span class="label">💳 Безналичные (+6%):</span>
+                        <span class="value">${cashlessCnt} шт.</span>
+                    </div>
+                `;
+            }
+
             orderSummary.innerHTML = summaryHtml;
 
             orderTotalValue.innerHTML = `
@@ -1349,7 +1390,7 @@
             if (items.length === 0) {
                 itemsBody.innerHTML = `
                     <tr>
-                        <td colspan="8">
+                        <td colspan="10">
                             <div class="empty-state">
                                 <div class="icon">📭</div>
                                 <div>Нет добавленных изделий</div>
@@ -1368,14 +1409,18 @@
             let totalUsd = 0;
 
             items.forEach((item, index) => {
-                const price = calculatePrice(item.type, item.cat, item.width, item.height);
+                const price = calculatePrice(item);
                 totalUsd += price;
 
                 const typeName = getTypeName(item.type);
                 const roundedW = roundWidth(item.type, item.width);
                 const f = formatPrice(price);
-                const cashlessMark = isCashless() ? ' <span class="badge-cashless">+6%</span>' : '';
+                const cashlessMark = item.payment === 'Безналичные' ? ' <span class="badge-cashless">+6%</span>' : '';
                 const sideText = item.side === 'left' ? '⬅ Л' : '➡ П';
+                const sizeByText = item.sizeBy === 'ВГШ' ? 'ВГШ' : 'По ткани';
+                const paymentBadge = item.payment === 'Безналичные' 
+                    ? '<span class="badge-payment" style="background:#fee2e2;color:#991b1b;">💳 Безнал</span>' 
+                    : '<span class="badge-payment">💵 Наличные</span>';
 
                 if (editingId === item.id) {
                     html += `
@@ -1403,10 +1448,22 @@
                                     <option value="right" ${item.side === 'right' ? 'selected' : ''}>➡ П</option>
                                 </select>
                             </td>
+                            <td>
+                                <select id="edit_sizeby_${item.id}" class="edit-select">
+                                    <option value="ВГШ" ${item.sizeBy === 'ВГШ' ? 'selected' : ''}>ВГШ</option>
+                                    <option value="по ткани" ${item.sizeBy === 'по ткани' ? 'selected' : ''}>По ткани</option>
+                                </select>
+                            </td>
+                            <td>
+                                <select id="edit_payment_${item.id}" class="edit-select">
+                                    <option value="Наличные" ${item.payment === 'Наличные' ? 'selected' : ''}>Наличные</option>
+                                    <option value="Безналичные" ${item.payment === 'Безналичные' ? 'selected' : ''}>Безнал</option>
+                                </select>
+                            </td>
                             <td colspan="2">
                                 <div class="action-cell">
-                                    <button class="btn btn-success btn-xs" onclick="saveEdit(${item.id})">💾 Сохранить</button>
-                                    <button class="btn btn-danger btn-xs" onclick="cancelEdit()">✕ Отмена</button>
+                                    <button class="btn btn-success btn-xs" onclick="saveEdit(${item.id})">💾</button>
+                                    <button class="btn btn-danger btn-xs" onclick="cancelEdit()">✕</button>
                                 </div>
                             </td>
                         </tr>
@@ -1420,6 +1477,8 @@
                             <td>${item.width} → ${roundedW}</td>
                             <td>${item.height}</td>
                             <td><span class="badge-side">${sideText}</span></td>
+                            <td><span class="badge-size">${sizeByText}</span></td>
+                            <td>${paymentBadge}</td>
                             <td>
                                 <div class="price-both">
                                     <span class="usd-price">${f.usdStr} $</span>
@@ -1445,7 +1504,8 @@
             itemsCount.textContent = items.length;
             
             const totalF = formatPrice(totalUsd);
-            const cashlessMarkTotal = isCashless() ? ' <span class="badge-cashless">+6%</span>' : '';
+            const cashlessCount = items.filter(i => i.payment === 'Безналичные').length;
+            const cashlessMarkTotal = cashlessCount > 0 ? ` <span class="badge-cashless">${cashlessCount}×+6%</span>` : '';
             totalPrice.innerHTML = `
                 <div class="price-both">
                     <span class="usd-price">${totalF.usdStr} $</span>
@@ -1474,7 +1534,7 @@
 
         function getCatOptions(selected) {
             return [1,2,3,4].map(c => 
-                `<option value="${c}" ${c === selected ? 'selected' : ''}>${c} кат.</option>`
+                `<option value="${c}" ${c === selected ? 'selected' : ''}>${c}</option>`
             ).join('');
         }
 
@@ -1496,6 +1556,8 @@
             const width = parseInt(widthInput.value, 10) || 80;
             const height = parseInt(heightInput.value, 10) || 170;
             const side = sideSelect.value;
+            const sizeBy = sizeBySelect.value;
+            const payment = paymentSelect.value;
 
             const typeData = PRICES[type];
             if (!typeData) return;
@@ -1517,7 +1579,9 @@
                 cat: cat,
                 width: width,
                 height: height,
-                side: side
+                side: side,
+                sizeBy: sizeBy,
+                payment: payment
             });
 
             renderItems();
@@ -1534,6 +1598,8 @@
             const width = parseInt(document.getElementById(`edit_width_${id}`).value, 10);
             const height = parseInt(document.getElementById(`edit_height_${id}`).value, 10);
             const side = document.getElementById(`edit_side_${id}`).value;
+            const sizeBy = document.getElementById(`edit_sizeby_${id}`).value;
+            const payment = document.getElementById(`edit_payment_${id}`).value;
 
             const typeData = PRICES[type];
             if (!typeData) return;
@@ -1556,6 +1622,8 @@
                 item.width = width;
                 item.height = height;
                 item.side = side;
+                item.sizeBy = sizeBy;
+                item.payment = payment;
             }
 
             editingId = null;
@@ -1626,11 +1694,6 @@
 
         addBtn.addEventListener('click', addItem);
         
-        cashlessToggle.addEventListener('change', () => {
-            updatePreview();
-            renderItems();
-        });
-        
         rateInput.addEventListener('input', () => {
             updatePreview();
             renderItems();
@@ -1646,6 +1709,8 @@
         widthInput.addEventListener('input', updatePreview);
         heightInput.addEventListener('input', updatePreview);
         sideSelect.addEventListener('change', updatePreview);
+        sizeBySelect.addEventListener('change', updatePreview);
+        paymentSelect.addEventListener('change', updatePreview);
 
         document.querySelectorAll('#addForm input, #addForm select').forEach(el => {
             el.addEventListener('keydown', (e) => {
