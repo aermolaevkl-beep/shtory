@@ -496,12 +496,6 @@
             gap: 8px;
             flex-wrap: wrap;
         }
-        .order-layout h3 .hint {
-            font-size: 12px;
-            font-weight: 400;
-            color: #64748b;
-            margin-left: 8px;
-        }
         .layout-actions {
             margin-left: auto;
             display: flex;
@@ -544,7 +538,7 @@
         }
         .layout-svg-wrap {
             display: flex;
-            justify-content: flex-start;
+            justify-content: center;
             align-items: flex-start;
             padding: 20px;
             background: white;
@@ -599,19 +593,15 @@
         }
         .order-total .value {
             font-weight: 700;
-            color: #1e293b;
+            color: #2563eb;
             font-size: 22px;
             display: flex;
             align-items: center;
             gap: 10px;
             flex-wrap: wrap;
         }
-        .order-total .value .usd {
-            color: #1e293b;
-        }
         .order-total .value .byn {
             color: #2563eb;
-            font-size: 18px;
         }
         .order-total .value small {
             font-size: 14px;
@@ -865,9 +855,9 @@
 
     <!-- БЛОК МАКЕТА ЗАКАЗА -->
     <div class="order-layout" id="orderLayout">
-        <h3>
+        <h3 class="no-print">
             📐 Макет заказа
-            <div class="layout-actions no-print">
+            <div class="layout-actions">
                 <button class="btn btn-share btn-sm" id="shareBtn">📤 Поделиться / Сохранить</button>
                 <button class="btn btn-print btn-sm" id="savePngBtn">🖼 Скачать PNG</button>
                 <button class="btn btn-print btn-sm" id="printBtn">🖨 Печать</button>
@@ -895,8 +885,6 @@
             <div class="order-total">
                 <span class="label">💰 ИТОГО ПО ЗАКАЗУ:</span>
                 <span class="value" id="orderTotalValue">
-                    <span class="usd">0.00 <small>$</small></span>
-                    <span style="color:#94a3b8;">/</span>
                     <span class="byn">0.00 <small>Br</small></span>
                 </span>
             </div>
@@ -1060,7 +1048,6 @@
         const printBtn = document.getElementById('printBtn');
         const pwaNote = document.getElementById('pwaNote');
 
-        // Восстанавливаем сохранённую ткань
         if (savedFabric) {
             fabricInput.value = savedFabric;
         }
@@ -1221,7 +1208,7 @@
         }
 
         // --------------------------------------------------------------
-        // Рендер SVG макета — с группировкой по типу
+        // Рендер SVG макета — с группировкой по типу, центрированием
         // --------------------------------------------------------------
         function renderLayout() {
             if (items.length === 0) {
@@ -1233,8 +1220,6 @@
                 `;
                 orderSummary.innerHTML = '';
                 orderTotalValue.innerHTML = `
-                    <span class="usd">0.00 <small>$</small></span>
-                    <span style="color:#94a3b8;">/</span>
                     <span class="byn">0.00 <small>Br</small></span>
                 `;
                 return;
@@ -1257,43 +1242,47 @@
                 groups[item.type].push({ item, originalIndex: idx });
             });
 
-            // Параметры SVG
-            const padX = 30;
-            const padY = 20;
-            const cellW = 200;
-            const cellH = 320;
-            const groupTitleH = 50; // высота заголовка группы
-            const itemsPerRow = 5;
+            // Параметры SVG — уменьшены отступы
+            const padX = 20;
+            const padY = 15;
+            const cellW = 150;   // меньше ширина ячейки
+            const cellH = 260;   // меньше высота ячейки
+            const groupTitleH = 45;
+            const groupSpacingY = 10; // небольшой отступ между группами
+            const itemsPerRow = 6; // больше в ряд
 
-            // Считаем общую высоту
+            // Масштабирование
+            const allMaxWidth = Math.max(...items.map(i => i.width), 100);
+            const allMaxHeight = Math.max(...items.map(i => i.height), 100);
+            const displayMaxW = 80;
+            const displayMaxH = 120;
+            const scale = Math.min(displayMaxW / allMaxWidth, displayMaxH / allMaxHeight);
+
+            // Считаем общую ширину и высоту
+            let maxRowCount = 0;
             let totalHeight = padY * 2;
-            let groupLayouts = [];
-            let maxWidthUsed = 0;
+            const groupLayouts = [];
 
             for (const [type, groupItems] of Object.entries(groups)) {
                 const rows = Math.ceil(groupItems.length / itemsPerRow);
                 const groupHeight = groupTitleH + rows * cellH;
                 groupLayouts.push({ type, groupItems, rows, groupHeight, startY: totalHeight });
-                totalHeight += groupHeight + 20; // + отступ между группами
-                const rowW = Math.min(groupItems.length, itemsPerRow) * cellW;
-                if (rowW > maxWidthUsed) maxWidthUsed = rowW;
+                totalHeight += groupHeight + groupSpacingY;
+                if (groupItems.length > maxRowCount) {
+                    maxRowCount = Math.min(groupItems.length, itemsPerRow);
+                }
             }
 
-            const totalWidth = padX * 2 + maxWidthUsed;
+            const contentWidth = maxRowCount * cellW;
+            const totalWidth = padX * 2 + contentWidth;
 
             let svgContent = '';
 
-            // Масштабирование — одинаковое для всех
-            const allMaxWidth = Math.max(...items.map(i => i.width), 100);
-            const allMaxHeight = Math.max(...items.map(i => i.height), 100);
-            const displayMaxW = 100;
-            const displayMaxH = 150;
-            const scale = Math.min(displayMaxW / allMaxWidth, displayMaxH / allMaxHeight);
-
             groupLayouts.forEach(group => {
-                // Заголовок группы
+                // Заголовок группы — ПО ЦЕНТРУ
                 svgContent += `
-                    <text x="${padX}" y="${group.startY + 30}" font-size="20" font-weight="700" fill="#1e293b">
+                    <text x="${totalWidth / 2}" y="${group.startY + 30}" text-anchor="middle" 
+                          font-size="20" font-weight="700" fill="#1e293b">
                         ${getTypeName(group.type)}
                     </text>
                 `;
@@ -1303,13 +1292,18 @@
                     const row = Math.floor(i / itemsPerRow);
                     const col = i % itemsPerRow;
 
-                    const cellX = padX + col * cellW;
+                    // Центрируем ряды с меньшим количеством
+                    const itemsInThisRow = Math.min(itemsPerRow, group.groupItems.length - row * itemsPerRow);
+                    const rowWidth = itemsInThisRow * cellW;
+                    const rowStartX = padX + (contentWidth - rowWidth) / 2;
+
+                    const cellX = rowStartX + col * cellW;
                     const cellY = group.startY + groupTitleH + row * cellH;
 
-                    const rectW = Math.max(item.width * scale, 40);
-                    const rectH = Math.max(item.height * scale, 40);
+                    const rectW = Math.max(item.width * scale, 35);
+                    const rectH = Math.max(item.height * scale, 35);
                     const rectX = cellX + (cellW - rectW) / 2;
-                    const rectY = cellY + 30;
+                    const rectY = cellY + 25;
 
                     // Прямоугольник (окно)
                     svgContent += `
@@ -1319,60 +1313,68 @@
                               fill="none" stroke="#93c5fd" stroke-width="0.5" stroke-dasharray="3,3" rx="2"/>
                     `;
 
-                    // Стрелка управления внутри прямоугольника
-                    // ЛЕВАЯ — зелёная, ПРАВАЯ — оранжевая
-                    const isLeft = item.side === 'left';
-                    const arrowColor = isLeft ? '#22c55e' : '#f59e0b';
-                    const arrowStroke = isLeft ? '#16a34a' : '#d97706';
-                    const arrowX = isLeft ? rectX + 18 : rectX + rectW - 18;
-                    const arrowStartY = rectY + rectH - 32;
-                    const arrowEndY = rectY + rectH - 8;
-
-                    svgContent += `
-                        <line x1="${arrowX}" y1="${arrowStartY}" x2="${arrowX}" y2="${arrowEndY - 7}" 
-                              stroke="${arrowColor}" stroke-width="3" stroke-linecap="round"/>
-                        <polygon points="${arrowX - 7},${arrowEndY - 7} ${arrowX + 7},${arrowEndY - 7} ${arrowX},${arrowEndY}" 
-                                 fill="${arrowColor}" stroke="${arrowStroke}" stroke-width="1"/>
-                    `;
-
                     // Подпись ширины сверху
                     svgContent += `
-                        <text x="${rectX + rectW / 2}" y="${rectY - 8}" 
-                              text-anchor="middle" font-size="12" font-weight="700" fill="#1e293b">
+                        <text x="${rectX + rectW / 2}" y="${rectY - 6}" 
+                              text-anchor="middle" font-size="11" font-weight="700" fill="#1e293b">
                             ${item.width} см
                         </text>
                     `;
                     // Линия размера сверху
                     svgContent += `
-                        <line x1="${rectX}" y1="${rectY - 3}" x2="${rectX + rectW}" y2="${rectY - 3}" 
+                        <line x1="${rectX}" y1="${rectY - 2}" x2="${rectX + rectW}" y2="${rectY - 2}" 
                               stroke="#3b82f6" stroke-width="1"/>
                     `;
 
                     // Подпись высоты слева
                     svgContent += `
-                        <text x="${rectX - 8}" y="${rectY + rectH / 2}" 
-                              text-anchor="end" dominant-baseline="middle" font-size="12" font-weight="700" fill="#1e293b">
+                        <text x="${rectX - 6}" y="${rectY + rectH / 2}" 
+                              text-anchor="end" dominant-baseline="middle" font-size="11" font-weight="700" fill="#1e293b">
                             ${item.height} см
                         </text>
                     `;
                     // Линия размера слева
                     svgContent += `
-                        <line x1="${rectX - 3}" y1="${rectY}" x2="${rectX - 3}" y2="${rectY + rectH}" 
+                        <line x1="${rectX - 2}" y1="${rectY}" x2="${rectX - 2}" y2="${rectY + rectH}" 
                               stroke="#3b82f6" stroke-width="1"/>
                     `;
 
                     // Номер в левом верхнем углу
                     svgContent += `
-                        <circle cx="${rectX + 12}" cy="${rectY + 12}" r="10" fill="#3b82f6"/>
-                        <text x="${rectX + 12}" y="${rectY + 12}" text-anchor="middle" dominant-baseline="middle" 
-                              font-size="11" font-weight="700" fill="white">${originalIndex + 1}</text>
+                        <circle cx="${rectX + 11}" cy="${rectY + 11}" r="9" fill="#3b82f6"/>
+                        <text x="${rectX + 11}" y="${rectY + 11}" text-anchor="middle" dominant-baseline="middle" 
+                              font-size="10" font-weight="700" fill="white">${originalIndex + 1}</text>
                     `;
 
-                    // Подпись ткани снизу (без цены)
+                    // Стрелка управления внутри прямоугольника (снизу)
+                    const isLeft = item.side === 'left';
+                    const arrowColor = isLeft ? '#22c55e' : '#f59e0b';
+                    const arrowStroke = isLeft ? '#16a34a' : '#d97706';
+                    const arrowX = isLeft ? rectX + 15 : rectX + rectW - 15;
+                    const arrowStartY = rectY + rectH - 28;
+                    const arrowEndY = rectY + rectH - 8;
+
+                    svgContent += `
+                        <line x1="${arrowX}" y1="${arrowStartY}" x2="${arrowX}" y2="${arrowEndY - 6}" 
+                              stroke="${arrowColor}" stroke-width="2.5" stroke-linecap="round"/>
+                        <polygon points="${arrowX - 6},${arrowEndY - 6} ${arrowX + 6},${arrowEndY - 6} ${arrowX},${arrowEndY}" 
+                                 fill="${arrowColor}" stroke="${arrowStroke}" stroke-width="1"/>
+                    `;
+
+                    // Текст "Размер по" ВНУТРИ квадрата (вверху по центру)
+                    const sizeByText = item.sizeBy === 'ВГШ' ? 'ВГШ' : 'по ткани';
+                    svgContent += `
+                        <text x="${rectX + rectW / 2}" y="${rectY + 18}" text-anchor="middle" 
+                              font-size="10" font-weight="700" fill="#7c3aed">
+                            ${sizeByText}
+                        </text>
+                    `;
+
+                    // Ткань снизу от квадрата (если есть)
                     if (item.fabric) {
                         svgContent += `
-                            <text x="${rectX + rectW / 2}" y="${rectY + rectH + 18}" 
-                                  text-anchor="middle" font-size="11" font-weight="600" fill="#92400e">
+                            <text x="${rectX + rectW / 2}" y="${rectY + rectH + 14}" 
+                                  text-anchor="middle" font-size="10" font-weight="600" fill="#92400e">
                                 ${item.fabric}
                             </text>
                         `;
@@ -1469,9 +1471,8 @@
 
             orderSummary.innerHTML = summaryHtml;
 
+            // Итог — только в BYN
             orderTotalValue.innerHTML = `
-                <span class="usd">${totalF.usdStr} <small>$</small></span>
-                <span style="color:#94a3b8;">/</span>
                 <span class="byn">${totalF.bynStr} <small>Br</small></span>
                 ${cashlessMarkTotal}
             `;
@@ -1670,7 +1671,6 @@
                 return;
             }
 
-            // Сохраняем ткань
             if (fabric) {
                 localStorage.setItem('savedFabric', fabric);
                 savedFabric = fabric;
@@ -1732,7 +1732,6 @@
                 item.payment = payment;
             }
 
-            // Сохраняем ткань
             if (fabric) {
                 localStorage.setItem('savedFabric', fabric);
                 savedFabric = fabric;
