@@ -1058,14 +1058,12 @@
         <div id="orderCapture">
             <div class="layout-paper">
                 <div class="layout-header" id="layoutHeader">
-                    <!-- Левая часть -->
                     <div class="header-left">
                         <div class="order-title">Заказ № <span id="headerOrderNumber">—</span></div>
                         <div class="order-line">👤 Заказчик: <strong id="headerCustomer">—</strong></div>
                         <div class="order-line">📞 Телефон: <strong id="headerPhone">—</strong></div>
                     </div>
                     
-                    <!-- Центр — ЛОГОТИП -->
                     <div class="header-center">
                         <div class="brand-logo">
                             <span class="brand-line-1">ПРЕМЬЕР</span>
@@ -1073,7 +1071,6 @@
                         </div>
                     </div>
                     
-                    <!-- Правая часть -->
                     <div class="header-right">
                         <div>📅 Дата: <strong id="headerDate">—</strong></div>
                         <span class="urgent-badge" id="headerUrgent">⚡ СРОЧНО</span>
@@ -1087,7 +1084,6 @@
                     <!-- Сводка вставляется через JS -->
                 </div>
 
-                <!-- Итоговый блок в одну строку -->
                 <div class="order-total-block">
                     <div class="order-total-inline">
                         <div class="total-cell">
@@ -1470,6 +1466,10 @@
             renderItems();
         });
 
+        // --------------------------------------------------------------
+        // Рендер SVG макета
+        // ВСЕ КВАДРАТЫ ОДИНАКОВЫЕ, размеры точные (без округления)
+        // --------------------------------------------------------------
         function renderLayout() {
             if (items.length === 0) {
                 layoutSvgWrap.innerHTML = `
@@ -1513,11 +1513,9 @@
             const groupSpacingY = 5;
             const itemsPerRow = 6;
 
-            const allMaxWidth = Math.max(...items.map(i => i.width), 100);
-            const allMaxHeight = Math.max(...items.map(i => i.height), 100);
-            const displayMaxW = 110;
-            const displayMaxH = 160;
-            const scale = Math.min(displayMaxW / allMaxWidth, displayMaxH / allMaxHeight);
+            // ЕДИНЫЙ РАЗМЕР для всех квадратов
+            const BASE_WIDTH = 70;
+            const BASE_HEIGHT = 130;
 
             let maxRowCount = 0;
             let totalHeight = padY * 2;
@@ -1558,8 +1556,9 @@
                     const cellX = rowStartX + col * cellW;
                     const cellY = group.startY + groupTitleH + row * cellH;
 
-                    const rectW = Math.max(item.width * scale, 45);
-                    const rectH = Math.max(item.height * scale, 45);
+                    // Фиксированный размер квадрата
+                    const rectW = BASE_WIDTH;
+                    const rectH = BASE_HEIGHT;
                     const rectX = cellX + (cellW - rectW) / 2;
                     const rectY = cellY + 30;
 
@@ -1571,6 +1570,7 @@
                     `;
 
                     const widthLineY = rectY - 12;
+                    // ТОЧНЫЕ размеры без округления
                     svgContent += `
                         <text x="${rectX + rectW / 2}" y="${widthLineY - 6}" 
                               text-anchor="middle" font-size="11" font-weight="700" fill="#1e293b">
