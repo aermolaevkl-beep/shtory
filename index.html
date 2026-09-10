@@ -801,7 +801,7 @@
     <div class="order-layout" id="orderLayout">
         <h3>
             📐 Макет заказа
-            <span class="hint">(стрелка внизу показывает сторону управления)</span>
+            <span class="hint">(стрелка внизу внутри окна показывает сторону управления)</span>
             <div class="layout-actions no-print">
                 <button class="btn btn-print btn-sm" id="savePngBtn">🖼 Сохранить PNG</button>
                 <button class="btn btn-print btn-sm" id="printBtn">🖨 Печать</button>
@@ -1138,7 +1138,7 @@
 
         // --------------------------------------------------------------
         // Рендер SVG макета заказа
-        // СТРЕЛКА УПРАВЛЕНИЯ НАПРАВЛЕНА ВНИЗ — с той стороны, где управление
+        // СТРЕЛКА ВНИЗ ВНУТРИ ПРЯМОУГОЛЬНИКА
         // --------------------------------------------------------------
         function renderLayout() {
             if (items.length === 0) {
@@ -1174,7 +1174,7 @@
             const scale = Math.min(displayMaxW / maxWidth, displayMaxH / maxHeight);
 
             const cellW = 240;
-            const cellH = 380; // увеличено для стрелки вниз + текста
+            const cellH = 380;
             const padX = 20;
             const padY = 20;
 
@@ -1214,26 +1214,24 @@
                           fill="none" stroke="#93c5fd" stroke-width="0.5" stroke-dasharray="3,3" rx="2"/>
                 `;
 
-                // СТРЕЛКА ВНИЗ с той стороны, где управление
-                // Стрелка рисуется под прямоугольником
-                const arrowBaseX = item.side === 'left' ? rectX + 15 : rectX + rectW - 15;
-                const arrowStartY = rectY + rectH + 3;
-                const arrowEndY = arrowStartY + 25;
+                // СТРЕЛКА ВНИЗ ВНУТРИ ПРЯМОУГОЛЬНИКА (внизу с той стороны)
+                const arrowX = item.side === 'left' ? rectX + 20 : rectX + rectW - 20;
+                const arrowStartY = rectY + rectH - 35;
+                const arrowEndY = rectY + rectH - 8;
 
-                // Линия от низа прямоугольника
                 svgContent += `
-                    <line x1="${arrowBaseX}" y1="${arrowStartY}" x2="${arrowBaseX}" y2="${arrowEndY - 8}" 
-                          stroke="#f59e0b" stroke-width="2.5" stroke-linecap="round"/>
-                    <polygon points="${arrowBaseX - 7},${arrowEndY - 8} ${arrowBaseX + 7},${arrowEndY - 8} ${arrowBaseX},${arrowEndY}" 
+                    <line x1="${arrowX}" y1="${arrowStartY}" x2="${arrowX}" y2="${arrowEndY - 8}" 
+                          stroke="#f59e0b" stroke-width="3" stroke-linecap="round"/>
+                    <polygon points="${arrowX - 8},${arrowEndY - 8} ${arrowX + 8},${arrowEndY - 8} ${arrowX},${arrowEndY}" 
                              fill="#f59e0b" stroke="#d97706" stroke-width="1"/>
                 `;
 
-                // Подпись стороны управления рядом со стрелкой
-                const labelX = item.side === 'left' ? arrowBaseX + 12 : arrowBaseX - 12;
+                // Подпись стороны управления рядом со стрелкой внутри
+                const labelX = item.side === 'left' ? arrowX + 14 : arrowX - 14;
                 const labelAnchor = item.side === 'left' ? 'start' : 'end';
                 svgContent += `
-                    <text x="${labelX}" y="${arrowEndY - 3}" text-anchor="${labelAnchor}" 
-                          font-size="10" font-weight="600" fill="#92400e">
+                    <text x="${labelX}" y="${arrowEndY - 5}" text-anchor="${labelAnchor}" 
+                          font-size="10" font-weight="700" fill="#92400e">
                         ${sideText}
                     </text>
                 `;
@@ -1269,28 +1267,28 @@
                           font-size="11" font-weight="700" fill="white">${index + 1}</text>
                 `;
 
-                // Информация снизу (после стрелки)
-                const infoY = arrowEndY + 20;
+                // Информация снизу (под прямоугольником)
+                const infoY = rectY + rectH + 22;
                 const infoX = rectX - 25;
                 const paymentColor = item.payment === 'Безналичные' ? '#dc2626' : '#065f46';
                 
                 svgContent += `
-                    <text x="${infoX}" y="${infoY}" font-size="12" font-weight="700" fill="#1e293b">
+                    <text x="${infoX}" y="${infoY}" font-size="13" font-weight="700" fill="#1e293b">
                         ${typeName}
                     </text>
-                    <text x="${infoX}" y="${infoY + 16}" font-size="11" fill="#475569">
+                    <text x="${infoX}" y="${infoY + 17}" font-size="11" fill="#475569">
                         ${item.width}×${item.height} см (окр. ${roundedW})
                     </text>
-                    <text x="${infoX}" y="${infoY + 31}" font-size="11" fill="#475569">
+                    <text x="${infoX}" y="${infoY + 33}" font-size="11" fill="#475569">
                         Управление: ${sideText} | Кат. ${item.cat}
                     </text>
-                    <text x="${infoX}" y="${infoY + 46}" font-size="11" fill="#7c3aed">
+                    <text x="${infoX}" y="${infoY + 49}" font-size="11" fill="#7c3aed">
                         📏 Размер по: ${sizeByText}
                     </text>
-                    <text x="${infoX}" y="${infoY + 61}" font-size="11" font-weight="600" fill="${paymentColor}">
+                    <text x="${infoX}" y="${infoY + 65}" font-size="11" font-weight="600" fill="${paymentColor}">
                         💰 Оплата: ${paymentText}
                     </text>
-                    <text x="${infoX}" y="${infoY + 78}" font-size="12" font-weight="700" fill="#1e293b">
+                    <text x="${infoX}" y="${infoY + 84}" font-size="13" font-weight="700" fill="#1e293b">
                         ${f.usdStr} $ / ${f.bynStr} Br
                     </text>
                 `;
@@ -1667,6 +1665,9 @@
             }
         }
 
+        // --------------------------------------------------------------
+        // СОХРАНЕНИЕ PNG — исправлено для iPhone и высокое разрешение
+        // --------------------------------------------------------------
         savePngBtn.addEventListener('click', async () => {
             if (items.length === 0) {
                 alert('Добавьте изделия, чтобы сохранить макет');
@@ -1677,22 +1678,107 @@
             savePngBtn.textContent = '⏳ Сохранение...';
 
             try {
-                const canvas = await html2canvas(orderCapture, {
+                // Определяем мобильное устройство
+                const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+                const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+
+                // Для мобильных используем scale=3 для высокой чёткости
+                // Для десктопа scale=2 (достаточно)
+                const captureScale = isMobile ? 3 : 2;
+
+                // Получаем элемент для захвата
+                const captureElement = document.getElementById('orderCapture');
+
+                // Временно делаем элемент видимым и с фиксированной шириной для рендера
+                const originalWidth = captureElement.style.width;
+                captureElement.style.width = '1240px'; // фиксированная ширина для лучшего качества
+
+                const canvas = await html2canvas(captureElement, {
                     backgroundColor: '#ffffff',
-                    scale: 2,
+                    scale: captureScale,
                     useCORS: true,
-                    logging: false
+                    allowTaint: true,
+                    logging: false,
+                    width: captureElement.scrollWidth,
+                    height: captureElement.scrollHeight,
+                    windowWidth: captureElement.scrollWidth,
+                    windowHeight: captureElement.scrollHeight,
+                    onclone: function(clonedDoc) {
+                        // Убеждаемся, что все стили применились
+                        const clonedElement = clonedDoc.getElementById('orderCapture');
+                        if (clonedElement) {
+                            clonedElement.style.width = '1240px';
+                            clonedElement.style.background = '#ffffff';
+                        }
+                    }
                 });
 
-                const link = document.createElement('a');
+                // Возвращаем исходную ширину
+                captureElement.style.width = originalWidth;
+
+                // Формируем имя файла
                 const orderNum = orderNumber.value ? `заказ_${orderNumber.value}` : 'заказ';
                 const dateStr = new Date().toISOString().slice(0, 10);
-                link.download = `${orderNum}_${dateStr}.png`;
-                link.href = canvas.toDataURL('image/png');
-                link.click();
+                const fileName = `${orderNum}_${dateStr}.png`;
+
+                // Преобразуем canvas в blob (лучше работает на iOS, чем dataURL)
+                canvas.toBlob(function(blob) {
+                    if (!blob) {
+                        alert('Ошибка при создании файла');
+                        savePngBtn.disabled = false;
+                        savePngBtn.textContent = '🖼 Сохранить PNG';
+                        return;
+                    }
+
+                    // Для iOS используем особый подход через FileReader и ссылку
+                    if (isIOS) {
+                        const reader = new FileReader();
+                        reader.onloadend = function() {
+                            const dataUrl = reader.result;
+                            
+                            // Создаём ссылку для скачивания
+                            const link = document.createElement('a');
+                            link.href = dataUrl;
+                            link.download = fileName;
+                            link.style.display = 'none';
+                            document.body.appendChild(link);
+                            
+                            // Для iOS Safari это откроет изображение в новой вкладке,
+                            // откуда можно сохранить через "Поделиться → Сохранить в Фото"
+                            try {
+                                link.click();
+                            } catch (e) {
+                                // Fallback: открываем в новой вкладке
+                                window.open(dataUrl, '_blank');
+                            }
+                            
+                            setTimeout(() => {
+                                document.body.removeChild(link);
+                            }, 100);
+                        };
+                        reader.readAsDataURL(blob);
+                    } else {
+                        // Для Android и десктопа — стандартное скачивание
+                        const url = URL.createObjectURL(blob);
+                        const link = document.createElement('a');
+                        link.href = url;
+                        link.download = fileName;
+                        link.style.display = 'none';
+                        document.body.appendChild(link);
+                        link.click();
+                        setTimeout(() => {
+                            document.body.removeChild(link);
+                            URL.revokeObjectURL(url);
+                        }, 100);
+                    }
+
+                    savePngBtn.disabled = false;
+                    savePngBtn.textContent = '🖼 Сохранить PNG';
+                }, 'image/png', 1.0);
+
             } catch (e) {
+                console.error('Ошибка сохранения:', e);
                 alert('Ошибка при сохранении: ' + e.message);
-            } finally {
                 savePngBtn.disabled = false;
                 savePngBtn.textContent = '🖼 Сохранить PNG';
             }
