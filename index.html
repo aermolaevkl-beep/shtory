@@ -461,7 +461,6 @@
             flex-wrap: wrap;
         }
 
-        /* Информация о проблеме с PWA */
         .pwa-note {
             background: #fef3c7;
             border: 2px solid #fcd34d;
@@ -705,7 +704,6 @@
         </div>
     </h1>
 
-    <!-- Предупреждение для PWA -->
     <div class="pwa-note no-print" id="pwaNote">
         <strong>ℹ️ Вы открыли сайт как приложение на iPhone</strong>
         Для сохранения фото откроется системное меню «Поделиться». Выберите <b>«Сохранить в Фото»</b> или <b>«Сохранить в Файлы»</b>.
@@ -869,7 +867,6 @@
     <div class="order-layout" id="orderLayout">
         <h3>
             📐 Макет заказа
-            <span class="hint">(стрелка внизу внутри окна показывает сторону управления)</span>
             <div class="layout-actions no-print">
                 <button class="btn btn-share btn-sm" id="shareBtn">📤 Поделиться / Сохранить</button>
                 <button class="btn btn-print btn-sm" id="savePngBtn">🖼 Скачать PNG</button>
@@ -1026,7 +1023,7 @@
         let items = [];
         let nextId = 1;
         let editingId = null;
-        let lastCanvasBlob = null; // сохраняем последний сгенерированный blob
+        let savedFabric = localStorage.getItem('savedFabric') || '';
 
         // DOM
         const typeSelect = document.getElementById('typeSelect');
@@ -1063,13 +1060,16 @@
         const printBtn = document.getElementById('printBtn');
         const pwaNote = document.getElementById('pwaNote');
 
-        // Определяем PWA-режим (iPhone как приложение)
+        // Восстанавливаем сохранённую ткань
+        if (savedFabric) {
+            fabricInput.value = savedFabric;
+        }
+
         const isStandalone = window.matchMedia('(display-mode: standalone)').matches 
                             || window.navigator.standalone === true;
         const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
         const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
 
-        // Показываем подсказку для PWA на iPhone
         if (isIOS && isStandalone) {
             pwaNote.classList.add('show');
         }
@@ -1220,6 +1220,9 @@
             }
         }
 
+        // --------------------------------------------------------------
+        // Рендер SVG макета — с группировкой по типу
+        // --------------------------------------------------------------
         function renderLayout() {
             if (items.length === 0) {
                 layoutSvgWrap.innerHTML = `
@@ -1247,130 +1250,134 @@
             const cashlessCount = items.filter(i => i.payment === 'Безналичные').length;
             const cashlessMarkTotal = cashlessCount > 0 ? ` <span class="badge-cashless">${cashlessCount}×+6%</span>` : '';
 
-            const maxWidth = Math.max(...items.map(i => i.width), 100);
-            const maxHeight = Math.max(...items.map(i => i.height), 100);
-            const displayMaxW = 120;
-            const displayMaxH = 180;
-            const scale = Math.min(displayMaxW / maxWidth, displayMaxH / maxHeight);
+            // Группировка по типу
+            const groups = {};
+            items.forEach((item, idx) => {
+                if (!groups[item.type]) groups[item.type] = [];
+                groups[item.type].push({ item, originalIndex: idx });
+            });
 
-            const cellW = 260; // чуть шире для ткани
-            const cellH = 400;
-            const padX = 20;
+            // Параметры SVG
+            const padX = 30;
             const padY = 20;
+            const cellW = 200;
+            const cellH = 320;
+            const groupTitleH = 50; // высота заголовка группы
+            const itemsPerRow = 5;
 
-            const itemsPerRow = Math.max(1, Math.floor((1200 - padX * 2) / cellW));
-            const rows = Math.ceil(items.length / itemsPerRow);
-            const totalWidth = padX * 2 + itemsPerRow * cellW;
-            const totalHeight = padY * 2 + rows * cellH;
+            // Считаем общую высоту
+            let totalHeight = padY * 2;
+            let groupLayouts = [];
+            let maxWidthUsed = 0;
+
+            for (const [type, groupItems] of Object.entries(groups)) {
+                const rows = Math.ceil(groupItems.length / itemsPerRow);
+                const groupHeight = groupTitleH + rows * cellH;
+                groupLayouts.push({ type, groupItems, rows, groupHeight, startY: totalHeight });
+                totalHeight += groupHeight + 20; // + отступ между группами
+                const rowW = Math.min(groupItems.length, itemsPerRow) * cellW;
+                if (rowW > maxWidthUsed) maxWidthUsed = rowW;
+            }
+
+            const totalWidth = padX * 2 + maxWidthUsed;
 
             let svgContent = '';
 
-            items.forEach((item, index) => {
-                const price = calculatePrice(item);
-                const f = formatPrice(price);
-                const sideText = item.side === 'left' ? 'Слева' : 'Справа';
-                const typeName = getTypeName(item.type);
-                const roundedW = roundWidth(item.type, item.width);
-                const sizeByText = item.sizeBy === 'ВГШ' ? 'ВГШ' : 'По ткани';
-                const paymentText = item.payment;
-                const fabricText = item.fabric || '—';
+            // Масштабирование — одинаковое для всех
+            const allMaxWidth = Math.max(...items.map(i => i.width), 100);
+            const allMaxHeight = Math.max(...items.map(i => i.height), 100);
+            const displayMaxW = 100;
+            const displayMaxH = 150;
+            const scale = Math.min(displayMaxW / allMaxWidth, displayMaxH / allMaxHeight);
 
-                const rectW = Math.max(item.width * scale, 50);
-                const rectH = Math.max(item.height * scale, 50);
-
-                const row = Math.floor(index / itemsPerRow);
-                const col = index % itemsPerRow;
-
-                const cellCenterX = padX + col * cellW + cellW / 2;
-                const cellTopY = padY + row * cellH;
-
-                const rectX = cellCenterX - rectW / 2;
-                const rectY = cellTopY + 35;
-
+            groupLayouts.forEach(group => {
+                // Заголовок группы
                 svgContent += `
-                    <rect x="${rectX}" y="${rectY}" width="${rectW}" height="${rectH}" 
-                          fill="#f0f9ff" stroke="#3b82f6" stroke-width="2" rx="4"/>
-                    <rect x="${rectX + 3}" y="${rectY + 3}" width="${rectW - 6}" height="${rectH - 6}" 
-                          fill="none" stroke="#93c5fd" stroke-width="0.5" stroke-dasharray="3,3" rx="2"/>
-                `;
-
-                // Стрелка вниз ВНУТРИ прямоугольника
-                const arrowX = item.side === 'left' ? rectX + 20 : rectX + rectW - 20;
-                const arrowStartY = rectY + rectH - 35;
-                const arrowEndY = rectY + rectH - 8;
-
-                svgContent += `
-                    <line x1="${arrowX}" y1="${arrowStartY}" x2="${arrowX}" y2="${arrowEndY - 8}" 
-                          stroke="#f59e0b" stroke-width="3" stroke-linecap="round"/>
-                    <polygon points="${arrowX - 8},${arrowEndY - 8} ${arrowX + 8},${arrowEndY - 8} ${arrowX},${arrowEndY}" 
-                             fill="#f59e0b" stroke="#d97706" stroke-width="1"/>
-                `;
-
-                const labelX = item.side === 'left' ? arrowX + 14 : arrowX - 14;
-                const labelAnchor = item.side === 'left' ? 'start' : 'end';
-                svgContent += `
-                    <text x="${labelX}" y="${arrowEndY - 5}" text-anchor="${labelAnchor}" 
-                          font-size="10" font-weight="700" fill="#92400e">
-                        ${sideText}
+                    <text x="${padX}" y="${group.startY + 30}" font-size="20" font-weight="700" fill="#1e293b">
+                        ${getTypeName(group.type)}
                     </text>
                 `;
 
-                svgContent += `
-                    <text x="${rectX + rectW / 2}" y="${rectY - 8}" 
-                          text-anchor="middle" font-size="12" font-weight="600" fill="#1e293b">
-                        ${item.width} см
-                    </text>
-                `;
-                svgContent += `
-                    <line x1="${rectX}" y1="${rectY - 3}" x2="${rectX + rectW}" y2="${rectY - 3}" 
-                          stroke="#3b82f6" stroke-width="1"/>
-                `;
+                group.groupItems.forEach((entry, i) => {
+                    const { item, originalIndex } = entry;
+                    const row = Math.floor(i / itemsPerRow);
+                    const col = i % itemsPerRow;
 
-                svgContent += `
-                    <text x="${rectX - 8}" y="${rectY + rectH / 2}" 
-                          text-anchor="end" dominant-baseline="middle" font-size="12" font-weight="600" fill="#1e293b">
-                        ${item.height} см
-                    </text>
-                `;
-                svgContent += `
-                    <line x1="${rectX - 3}" y1="${rectY}" x2="${rectX - 3}" y2="${rectY + rectH}" 
-                          stroke="#3b82f6" stroke-width="1"/>
-                `;
+                    const cellX = padX + col * cellW;
+                    const cellY = group.startY + groupTitleH + row * cellH;
 
-                svgContent += `
-                    <circle cx="${rectX + 12}" cy="${rectY + 12}" r="10" fill="#3b82f6"/>
-                    <text x="${rectX + 12}" y="${rectY + 12}" text-anchor="middle" dominant-baseline="middle" 
-                          font-size="11" font-weight="700" fill="white">${index + 1}</text>
-                `;
+                    const rectW = Math.max(item.width * scale, 40);
+                    const rectH = Math.max(item.height * scale, 40);
+                    const rectX = cellX + (cellW - rectW) / 2;
+                    const rectY = cellY + 30;
 
-                // Информация снизу
-                const infoY = rectY + rectH + 22;
-                const infoX = rectX - 25;
-                const paymentColor = item.payment === 'Безналичные' ? '#dc2626' : '#065f46';
-                
-                svgContent += `
-                    <text x="${infoX}" y="${infoY}" font-size="13" font-weight="700" fill="#1e293b">
-                        ${typeName}
-                    </text>
-                    <text x="${infoX}" y="${infoY + 17}" font-size="11" fill="#92400e" font-weight="600">
-                        🖼 Ткань: ${fabricText}
-                    </text>
-                    <text x="${infoX}" y="${infoY + 33}" font-size="11" fill="#475569">
-                        ${item.width}×${item.height} см (окр. ${roundedW})
-                    </text>
-                    <text x="${infoX}" y="${infoY + 49}" font-size="11" fill="#475569">
-                        Управление: ${sideText} | Кат. ${item.cat}
-                    </text>
-                    <text x="${infoX}" y="${infoY + 65}" font-size="11" fill="#7c3aed">
-                        📏 Размер по: ${sizeByText}
-                    </text>
-                    <text x="${infoX}" y="${infoY + 81}" font-size="11" font-weight="600" fill="${paymentColor}">
-                        💰 Оплата: ${paymentText}
-                    </text>
-                    <text x="${infoX}" y="${infoY + 100}" font-size="13" font-weight="700" fill="#1e293b">
-                        ${f.usdStr} $ / ${f.bynStr} Br
-                    </text>
-                `;
+                    // Прямоугольник (окно)
+                    svgContent += `
+                        <rect x="${rectX}" y="${rectY}" width="${rectW}" height="${rectH}" 
+                              fill="#f0f9ff" stroke="#3b82f6" stroke-width="2" rx="4"/>
+                        <rect x="${rectX + 3}" y="${rectY + 3}" width="${rectW - 6}" height="${rectH - 6}" 
+                              fill="none" stroke="#93c5fd" stroke-width="0.5" stroke-dasharray="3,3" rx="2"/>
+                    `;
+
+                    // Стрелка управления внутри прямоугольника
+                    // ЛЕВАЯ — зелёная, ПРАВАЯ — оранжевая
+                    const isLeft = item.side === 'left';
+                    const arrowColor = isLeft ? '#22c55e' : '#f59e0b';
+                    const arrowStroke = isLeft ? '#16a34a' : '#d97706';
+                    const arrowX = isLeft ? rectX + 18 : rectX + rectW - 18;
+                    const arrowStartY = rectY + rectH - 32;
+                    const arrowEndY = rectY + rectH - 8;
+
+                    svgContent += `
+                        <line x1="${arrowX}" y1="${arrowStartY}" x2="${arrowX}" y2="${arrowEndY - 7}" 
+                              stroke="${arrowColor}" stroke-width="3" stroke-linecap="round"/>
+                        <polygon points="${arrowX - 7},${arrowEndY - 7} ${arrowX + 7},${arrowEndY - 7} ${arrowX},${arrowEndY}" 
+                                 fill="${arrowColor}" stroke="${arrowStroke}" stroke-width="1"/>
+                    `;
+
+                    // Подпись ширины сверху
+                    svgContent += `
+                        <text x="${rectX + rectW / 2}" y="${rectY - 8}" 
+                              text-anchor="middle" font-size="12" font-weight="700" fill="#1e293b">
+                            ${item.width} см
+                        </text>
+                    `;
+                    // Линия размера сверху
+                    svgContent += `
+                        <line x1="${rectX}" y1="${rectY - 3}" x2="${rectX + rectW}" y2="${rectY - 3}" 
+                              stroke="#3b82f6" stroke-width="1"/>
+                    `;
+
+                    // Подпись высоты слева
+                    svgContent += `
+                        <text x="${rectX - 8}" y="${rectY + rectH / 2}" 
+                              text-anchor="end" dominant-baseline="middle" font-size="12" font-weight="700" fill="#1e293b">
+                            ${item.height} см
+                        </text>
+                    `;
+                    // Линия размера слева
+                    svgContent += `
+                        <line x1="${rectX - 3}" y1="${rectY}" x2="${rectX - 3}" y2="${rectY + rectH}" 
+                              stroke="#3b82f6" stroke-width="1"/>
+                    `;
+
+                    // Номер в левом верхнем углу
+                    svgContent += `
+                        <circle cx="${rectX + 12}" cy="${rectY + 12}" r="10" fill="#3b82f6"/>
+                        <text x="${rectX + 12}" y="${rectY + 12}" text-anchor="middle" dominant-baseline="middle" 
+                              font-size="11" font-weight="700" fill="white">${originalIndex + 1}</text>
+                    `;
+
+                    // Подпись ткани снизу (без цены)
+                    if (item.fabric) {
+                        svgContent += `
+                            <text x="${rectX + rectW / 2}" y="${rectY + rectH + 18}" 
+                                  text-anchor="middle" font-size="11" font-weight="600" fill="#92400e">
+                                ${item.fabric}
+                            </text>
+                        `;
+                    }
+                });
             });
 
             const svg = `
@@ -1387,13 +1394,6 @@
             let summaryHtml = '';
             const totalItems = items.length;
 
-            const byType = {};
-            items.forEach(item => {
-                const name = getTypeName(item.type);
-                if (!byType[name]) byType[name] = 0;
-                byType[name]++;
-            });
-
             summaryHtml += `
                 <div class="row">
                     <span class="label">Всего изделий:</span>
@@ -1401,11 +1401,11 @@
                 </div>
             `;
 
-            for (const [typeName, count] of Object.entries(byType)) {
+            for (const [typeKey, groupItems] of Object.entries(groups)) {
                 summaryHtml += `
                     <div class="row">
-                        <span class="label">${typeName}:</span>
-                        <span class="value">${count} шт.</span>
+                        <span class="label">${getTypeName(typeKey)}:</span>
+                        <span class="value">${groupItems.length} шт.</span>
                     </div>
                 `;
             }
@@ -1570,7 +1570,7 @@
                             <td><span class="badge">${typeName}</span></td>
                             <td>${item.cat}</td>
                             <td><span class="badge-fabric" title="${fabricText}">${fabricText}</span></td>
-                            <td>${item.width} → ${roundedW}</td>
+                            <td>${item.width}</td>
                             <td>${item.height}</td>
                             <td><span class="badge-side">${sideText}</span></td>
                             <td><span class="badge-size">${sizeByText}</span></td>
@@ -1670,6 +1670,12 @@
                 return;
             }
 
+            // Сохраняем ткань
+            if (fabric) {
+                localStorage.setItem('savedFabric', fabric);
+                savedFabric = fabric;
+            }
+
             items.push({
                 id: nextId++,
                 type: type,
@@ -1681,9 +1687,6 @@
                 sizeBy: sizeBy,
                 payment: payment
             });
-
-            // Очищаем поле ткани
-            fabricInput.value = '';
 
             renderItems();
         }
@@ -1729,6 +1732,13 @@
                 item.payment = payment;
             }
 
+            // Сохраняем ткань
+            if (fabric) {
+                localStorage.setItem('savedFabric', fabric);
+                savedFabric = fabric;
+                fabricInput.value = fabric;
+            }
+
             editingId = null;
             renderItems();
         };
@@ -1756,9 +1766,6 @@
             }
         }
 
-        // --------------------------------------------------------------
-        // ГЕНЕРАЦИЯ КАРТИНКИ (общая функция)
-        // --------------------------------------------------------------
         async function generateCanvas() {
             if (items.length === 0) {
                 alert('Добавьте изделия, чтобы сохранить макет');
@@ -1801,9 +1808,6 @@
             return `${orderNum}_${dateStr}.png`;
         }
 
-        // --------------------------------------------------------------
-        // КНОПКА «ПОДЕЛИТЬСЯ / СОХРАНИТЬ» — работает везде, включая PWA на iPhone
-        // --------------------------------------------------------------
         shareBtn.addEventListener('click', async () => {
             shareBtn.disabled = true;
             shareBtn.textContent = '⏳ Подготовка...';
@@ -1828,7 +1832,6 @@
 
                     const file = new File([blob], fileName, { type: 'image/png' });
 
-                    // Проверяем поддержку Web Share API с файлами
                     if (navigator.canShare && navigator.canShare({ files: [file] })) {
                         try {
                             await navigator.share({
@@ -1840,17 +1843,14 @@
                             shareBtn.textContent = '📤 Поделиться / Сохранить';
                             return;
                         } catch (shareErr) {
-                            // Пользователь отменил или ошибка — пробуем скачать
                             if (shareErr.name === 'AbortError') {
                                 shareBtn.disabled = false;
                                 shareBtn.textContent = '📤 Поделиться / Сохранить';
                                 return;
                             }
-                            console.warn('Share failed, fallback to download', shareErr);
                         }
                     }
 
-                    // Fallback — обычное скачивание
                     const url = URL.createObjectURL(blob);
                     const link = document.createElement('a');
                     link.href = url;
@@ -1875,9 +1875,6 @@
             }
         });
 
-        // --------------------------------------------------------------
-        // КНОПКА «СКАЧАТЬ PNG» — обычное скачивание
-        // --------------------------------------------------------------
         savePngBtn.addEventListener('click', async () => {
             savePngBtn.disabled = true;
             savePngBtn.textContent = '⏳ Сохранение...';
