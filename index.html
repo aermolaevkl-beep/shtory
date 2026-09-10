@@ -119,6 +119,33 @@
             font-size: 11px;
             font-weight: 600;
         }
+
+        /* Блок заказчика */
+        .customer-block {
+            background: #f0fdf4;
+            border: 2px solid #86efac;
+            border-radius: 16px;
+            padding: 12px 16px;
+            margin-bottom: 12px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 12px;
+        }
+        .customer-block .field-group {
+            margin: 0;
+        }
+        .customer-block .field-group label {
+            color: #166534;
+            font-size: 12px;
+        }
+        .customer-block .field-group input {
+            border: 1px solid #86efac;
+            background: white;
+        }
+        .customer-block .field-group input:focus {
+            outline: 2px solid #22c55e;
+        }
+
         .grid-2 {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
@@ -196,6 +223,12 @@
         .btn-outline:hover {
             background: #3b82f6;
             color: white;
+        }
+        .btn-print {
+            background: #8b5cf6;
+        }
+        .btn-print:hover {
+            background: #7c3aed;
         }
         .btn-sm {
             padding: 4px 10px;
@@ -449,6 +482,7 @@
             display: flex;
             align-items: center;
             gap: 8px;
+            flex-wrap: wrap;
         }
         .order-layout h3 .hint {
             font-size: 12px;
@@ -456,17 +490,52 @@
             color: #64748b;
             margin-left: 8px;
         }
+        .layout-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 15px;
+            padding: 12px 16px;
+            background: white;
+            border-radius: 12px;
+            border: 1px solid #e9edf3;
+        }
+        .layout-header .order-info {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+        .layout-header .order-info .order-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: #1e293b;
+        }
+        .layout-header .order-info .order-line {
+            font-size: 13px;
+            color: #475569;
+        }
+        .layout-header .order-info .order-line strong {
+            color: #1e293b;
+        }
+        .layout-header .order-date {
+            font-size: 12px;
+            color: #64748b;
+            text-align: right;
+        }
         .layout-svg-wrap {
             display: flex;
-            justify-content: center;
-            align-items: center;
+            justify-content: flex-start;
+            align-items: flex-start;
             padding: 20px;
             background: white;
             border-radius: 12px;
             overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
         }
         .layout-svg-wrap svg {
-            max-width: 100%;
+            max-width: none;
             height: auto;
         }
         .order-summary {
@@ -540,6 +609,7 @@
             .top-controls { flex-direction: column; align-items: stretch; width: 100%; }
             .top-controls .currency-box,
             .top-controls .cashless-box { width: 100%; justify-content: center; }
+            .customer-block { grid-template-columns: 1fr; padding: 10px; gap: 8px; }
             .grid-2 { 
                 grid-template-columns: 1fr 1fr; 
                 gap: 8px 10px;
@@ -567,12 +637,15 @@
             .total-row { font-size: 12px; }
             .order-layout { padding: 12px; }
             .order-layout h3 { font-size: 15px; }
+            .layout-header { flex-direction: column; padding: 10px; }
+            .layout-header .order-date { text-align: left; }
             .layout-svg-wrap { padding: 10px; }
             .order-total { flex-direction: column; align-items: stretch; text-align: center; }
             .order-total .value { justify-content: center; font-size: 18px; }
         }
         
         @media (max-width: 480px) {
+            .customer-block { padding: 8px; }
             .grid-2 { grid-template-columns: 1fr 1fr; gap: 6px 8px; padding: 10px; }
             .field-group select, .field-group input { padding: 5px 6px; font-size: 12px; }
             .btn { padding: 5px 12px; font-size: 12px; }
@@ -590,11 +663,19 @@
             .price-both .byn-price { font-size: 10px; }
             .total-row { font-size: 11px; }
         }
+
+        /* Печать */
+        @media print {
+            body { background: white; padding: 0; }
+            .container { box-shadow: none; border-radius: 0; padding: 10px; }
+            .no-print { display: none !important; }
+            .order-layout { border: 1px solid #000; page-break-inside: avoid; }
+        }
     </style>
 </head>
 <body>
 <div class="container">
-    <h1>
+    <h1 class="no-print">
         🧮 Калькулятор жалюзи
         <small>несколько изделий</small>
         <div class="top-controls">
@@ -610,7 +691,27 @@
         </div>
     </h1>
 
-    <div class="grid-2" id="addForm">
+    <!-- Блок заказчика -->
+    <div class="customer-block no-print">
+        <div class="field-group">
+            <label for="customerName">👤 Заказчик</label>
+            <input type="text" id="customerName" placeholder="ФИО" value="">
+        </div>
+        <div class="field-group">
+            <label for="customerPhone">📞 Телефон</label>
+            <input type="tel" id="customerPhone" placeholder="+375 (__) ___-__-__" value="">
+        </div>
+        <div class="field-group">
+            <label for="orderNumber">📋 Номер заказа</label>
+            <input type="text" id="orderNumber" placeholder="№" value="">
+        </div>
+        <div class="field-group">
+            <label for="orderDate">📅 Дата</label>
+            <input type="date" id="orderDate">
+        </div>
+    </div>
+
+    <div class="grid-2 no-print" id="addForm">
         <div class="field-group">
             <label for="typeSelect">Тип жалюзи</label>
             <select id="typeSelect">
@@ -643,7 +744,7 @@
             <label for="sideSelect">Сторона управления</label>
             <select id="sideSelect">
                 <option value="left">⬅ Слева</option>
-                <option value="right" selected="selected">➡ Справа</option>
+                <option value="right" selected>➡ Справа</option>
             </select>
         </div>
         <div class="field-group" style="justify-content:flex-end;">
@@ -651,7 +752,7 @@
         </div>
     </div>
 
-    <div class="preview-box" id="previewBox">
+    <div class="preview-box no-print" id="previewBox">
         <div>
             <span class="label">💡 Предварительный расчёт</span>
             <span class="detail" id="previewDetail">80 см × 170 см → 80 см</span>
@@ -663,7 +764,7 @@
         </div>
     </div>
 
-    <div class="items-section">
+    <div class="items-section no-print">
         <div class="items-header">
             <h3>📋 Список изделий <span class="count" id="itemsCount">0</span></h3>
             <div class="controls">
@@ -711,6 +812,19 @@
             📐 Макет заказа
             <span class="hint">(визуальное представление с размерами и стороной управления)</span>
         </h3>
+
+        <!-- Шапка заказа с данными заказчика -->
+        <div class="layout-header" id="layoutHeader">
+            <div class="order-info">
+                <div class="order-title">Заказ № <span id="headerOrderNumber">—</span></div>
+                <div class="order-line">👤 Заказчик: <strong id="headerCustomer">—</strong></div>
+                <div class="order-line">📞 Телефон: <strong id="headerPhone">—</strong></div>
+            </div>
+            <div class="order-date">
+                📅 Дата: <span id="headerDate">—</span>
+            </div>
+        </div>
+
         <div class="layout-svg-wrap" id="layoutSvgWrap">
             <!-- SVG вставляется через JS -->
         </div>
@@ -727,7 +841,7 @@
         </div>
     </div>
 
-    <div class="footer-note">
+    <div class="footer-note no-print">
         <span>⚡ Все расценки из файла</span>
         <span>🧷 Доп. +25% за коричневую фурнитуру (не учтено)</span>
         <span>📐 свыше 2,0 м +10% за каждые 10 см</span>
@@ -866,6 +980,18 @@
         const layoutSvgWrap = document.getElementById('layoutSvgWrap');
         const orderSummary = document.getElementById('orderSummary');
         const orderTotalValue = document.getElementById('orderTotalValue');
+        const customerName = document.getElementById('customerName');
+        const customerPhone = document.getElementById('customerPhone');
+        const orderNumber = document.getElementById('orderNumber');
+        const orderDate = document.getElementById('orderDate');
+        const headerCustomer = document.getElementById('headerCustomer');
+        const headerPhone = document.getElementById('headerPhone');
+        const headerOrderNumber = document.getElementById('headerOrderNumber');
+        const headerDate = document.getElementById('headerDate');
+
+        // Установка даты по умолчанию (сегодня)
+        const today = new Date().toISOString().split('T')[0];
+        orderDate.value = today;
 
         function getRate() {
             return parseFloat(rateInput.value) || 3.5;
@@ -963,9 +1089,6 @@
             return basePrice + extra;
         }
 
-        // --------------------------------------------------------------
-        // Расчёт цены с учётом безнала
-        // --------------------------------------------------------------
         function calculatePrice(typeKey, cat, width, height) {
             const base = calculatePriceBase(typeKey, cat, width, height);
             if (isCashless()) {
@@ -1007,29 +1130,42 @@
             `;
             previewDetail.textContent = `${width} см × ${height} см → ${roundedW} см`;
 
-            // Обновляем макет
+            updateHeader();
             renderLayout();
         }
 
         // --------------------------------------------------------------
-        // Рендер SVG макета заказа
+        // Обновление шапки заказа
+        // --------------------------------------------------------------
+        function updateHeader() {
+            headerCustomer.textContent = customerName.value || '—';
+            headerPhone.textContent = customerPhone.value || '—';
+            headerOrderNumber.textContent = orderNumber.value || '—';
+            const d = orderDate.value;
+            if (d) {
+                const parts = d.split('-');
+                headerDate.textContent = `${parts[2]}.${parts[1]}.${parts[0]}`;
+            } else {
+                headerDate.textContent = '—';
+            }
+        }
+
+        // --------------------------------------------------------------
+        // Рендер SVG макета заказа (горизонтальное расположение)
         // --------------------------------------------------------------
         function renderLayout() {
             if (items.length === 0) {
                 layoutSvgWrap.innerHTML = `
-                    <div style="text-align: center; color: #94a3b8; padding: 20px;">
+                    <div style="text-align: center; color: #94a3b8; padding: 20px; width: 100%;">
                         <div style="font-size: 48px; margin-bottom: 8px;">📐</div>
                         <div>Добавьте изделия, чтобы увидеть макет</div>
                     </div>
                 `;
                 orderSummary.innerHTML = '';
-                const totalF = formatPrice(0);
-                const cashlessMarkTotal = isCashless() ? ' <span class="badge-cashless">+6%</span>' : '';
                 orderTotalValue.innerHTML = `
                     <span class="usd">0.00 <small>$</small></span>
                     <span style="color:#94a3b8;">/</span>
                     <span class="byn">0.00 <small>Br</small></span>
-                    ${cashlessMarkTotal}
                 `;
                 return;
             }
@@ -1043,8 +1179,29 @@
             const totalF = formatPrice(totalUsd);
             const cashlessMarkTotal = isCashless() ? ' <span class="badge-cashless">+6%</span>' : '';
 
-            // Строим SVG со всеми изделиями
-            const svgItems = items.map((item, index) => {
+            // Масштабирование — одинаковая шкала для всех изделий
+            const maxWidth = Math.max(...items.map(i => i.width), 100);
+            const maxHeight = Math.max(...items.map(i => i.height), 100);
+            const displayMaxW = 120; // макс. ширина прямоугольника на рисунке
+            const displayMaxH = 180; // макс. высота прямоугольника на рисунке
+            const scale = Math.min(displayMaxW / maxWidth, displayMaxH / maxHeight);
+
+            // Параметры сетки
+            const cellW = 200; // ширина одной ячейки
+            const cellH = 260; // высота одной ячейки
+            const padX = 20;
+            const padY = 20;
+            const infoBlockW = 170; // ширина блока с текстом справа
+
+            // Расположение: горизонтально, с переносом
+            const itemsPerRow = Math.max(1, Math.floor((1200 - padX * 2) / cellW));
+            const rows = Math.ceil(items.length / itemsPerRow);
+            const totalWidth = padX * 2 + itemsPerRow * cellW + infoBlockW;
+            const totalHeight = padY * 2 + rows * cellH;
+
+            let svgContent = '';
+
+            items.forEach((item, index) => {
                 const price = calculatePrice(item.type, item.cat, item.width, item.height);
                 const f = formatPrice(price);
                 const sideText = item.side === 'left' ? 'Слева' : 'Справа';
@@ -1052,117 +1209,91 @@
                 const typeName = getTypeName(item.type);
                 const roundedW = roundWidth(item.type, item.width);
 
-                // Масштабируем для отображения (макс. ширина 200px на рисунке)
-                const maxDisplayW = 200;
-                const maxDisplayH = 200;
-                const scaleW = maxDisplayW / Math.max(item.width, 100);
-                const scaleH = maxDisplayH / Math.max(item.height, 100);
-                const scale = Math.min(scaleW, scaleH, 1.2);
+                const rectW = Math.max(item.width * scale, 30);
+                const rectH = Math.max(item.height * scale, 30);
 
-                const rectW = Math.max(item.width * scale, 40);
-                const rectH = Math.max(item.height * scale, 40);
+                // Позиция ячейки
+                const row = Math.floor(index / itemsPerRow);
+                const col = index % itemsPerRow;
 
-                return {
-                    item,
-                    price,
-                    f,
-                    sideText,
-                    sideIcon,
-                    typeName,
-                    roundedW,
-                    rectW,
-                    rectH,
-                    scale,
-                    index
-                };
-            });
-
-            // Вычисляем размеры SVG
-            const maxRectW = Math.max(...svgItems.map(s => s.rectW), 100);
-            const maxRectH = Math.max(...svgItems.map(s => s.rectH), 100);
-            const padding = 60;
-            const labelSpace = 50;
-            const itemSpacing = 40;
-            const totalWidth = padding * 2 + maxRectW + labelSpace;
-            const totalHeight = padding * 2 + (maxRectH + labelSpace + itemSpacing) * items.length;
-
-            let svgContent = '';
-
-            svgItems.forEach((s, i) => {
-                const offsetY = padding + i * (maxRectH + labelSpace + itemSpacing);
-                const offsetX = padding;
+                // Центр ячейки для прямоугольника
+                const cellCenterX = padX + col * cellW + cellW / 2;
+                const cellCenterY = padY + row * cellH + cellH / 2;
+                const rectX = cellCenterX - rectW / 2;
+                const rectY = cellCenterY - rectH / 2;
 
                 // Прямоугольник
                 svgContent += `
-                    <rect x="${offsetX}" y="${offsetY}" width="${s.rectW}" height="${s.rectH}" 
+                    <rect x="${rectX}" y="${rectY}" width="${rectW}" height="${rectH}" 
                           fill="#f0f9ff" stroke="#3b82f6" stroke-width="2" rx="4"/>
-                `;
-
-                // Внутренняя штриховка (имитация ткани)
-                svgContent += `
-                    <rect x="${offsetX + 4}" y="${offsetY + 4}" width="${s.rectW - 8}" height="${s.rectH - 8}" 
+                    <rect x="${rectX + 3}" y="${rectY + 3}" width="${rectW - 6}" height="${rectH - 6}" 
                           fill="none" stroke="#93c5fd" stroke-width="0.5" stroke-dasharray="3,3" rx="2"/>
                 `;
 
-                // Стрелка стороны управления
-                const arrowX = s.item.side === 'left' ? offsetX + 12 : offsetX + s.rectW - 12;
-                const arrowY = offsetY + s.rectH / 2;
-                const arrowDir = s.item.side === 'left' ? -1 : 1;
+                // Стрелка управления
+                const arrowX = item.side === 'left' ? rectX - 3 : rectX + rectW + 3;
+                const arrowY = rectY + rectH / 2;
+                const arrowDir = item.side === 'left' ? -1 : 1;
                 svgContent += `
-                    <polygon points="${arrowX},${arrowY - 8} ${arrowX + arrowDir * 12},${arrowY} ${arrowX},${arrowY + 8}" 
+                    <polygon points="${arrowX},${arrowY - 7} ${arrowX + arrowDir * 11},${arrowY} ${arrowX},${arrowY + 7}" 
                              fill="#f59e0b" stroke="#d97706" stroke-width="1"/>
                 `;
 
-                // Подпись ширины (сверху)
+                // Подпись ширины сверху
                 svgContent += `
-                    <text x="${offsetX + s.rectW / 2}" y="${offsetY - 12}" 
-                          text-anchor="middle" font-size="13" font-weight="600" fill="#1e293b">
-                        ${s.item.width} см
+                    <text x="${rectX + rectW / 2}" y="${rectY - 8}" 
+                          text-anchor="middle" font-size="12" font-weight="600" fill="#1e293b">
+                        ${item.width} см
                     </text>
                 `;
                 // Линия размера сверху
                 svgContent += `
-                    <line x1="${offsetX}" y1="${offsetY - 6}" x2="${offsetX + s.rectW}" y2="${offsetY - 6}" 
-                          stroke="#3b82f6" stroke-width="1" marker-start="url(#arrowStart)" marker-end="url(#arrowEnd)"/>
+                    <line x1="${rectX}" y1="${rectY - 3}" x2="${rectX + rectW}" y2="${rectY - 3}" 
+                          stroke="#3b82f6" stroke-width="1"/>
                 `;
 
-                // Подпись высоты (слева)
+                // Подпись высоты слева
                 svgContent += `
-                    <text x="${offsetX - 10}" y="${offsetY + s.rectH / 2}" 
-                          text-anchor="end" dominant-baseline="middle" font-size="13" font-weight="600" fill="#1e293b">
-                        ${s.item.height} см
+                    <text x="${rectX - 8}" y="${rectY + rectH / 2}" 
+                          text-anchor="end" dominant-baseline="middle" font-size="12" font-weight="600" fill="#1e293b">
+                        ${item.height} см
                     </text>
                 `;
                 // Линия размера слева
                 svgContent += `
-                    <line x1="${offsetX - 6}" y1="${offsetY}" x2="${offsetX - 6}" y2="${offsetY + s.rectH}" 
+                    <line x1="${rectX - 3}" y1="${rectY}" x2="${rectX - 3}" y2="${rectY + rectH}" 
                           stroke="#3b82f6" stroke-width="1"/>
                 `;
 
-                // Информация справа
-                const infoX = offsetX + s.rectW + 20;
+                // Номер в углу
                 svgContent += `
-                    <text x="${infoX}" y="${offsetY + 18}" font-size="13" font-weight="600" fill="#1e293b">
-                        ${i + 1}. ${s.typeName}
+                    <circle cx="${rectX + 10}" cy="${rectY + 10}" r="9" fill="#3b82f6"/>
+                    <text x="${rectX + 10}" y="${rectY + 10}" text-anchor="middle" dominant-baseline="middle" 
+                          font-size="10" font-weight="700" fill="white">${index + 1}</text>
+                `;
+
+                // Информация снизу-справа от прямоугольника
+                const infoY = rectY + rectH + 20;
+                const infoX = rectX;
+                svgContent += `
+                    <text x="${infoX}" y="${infoY}" font-size="11" font-weight="600" fill="#1e293b">
+                        ${typeName}
                     </text>
-                    <text x="${infoX}" y="${offsetY + 38}" font-size="12" fill="#475569">
-                        ${s.item.width} × ${s.item.height} см (окр. ${s.roundedW} см)
+                    <text x="${infoX}" y="${infoY + 14}" font-size="10" fill="#475569">
+                        ${item.width}×${item.height} (окр. ${roundedW})
                     </text>
-                    <text x="${infoX}" y="${offsetY + 56}" font-size="12" fill="#475569">
-                        ${s.sideIcon} Управление: ${s.sideText}
+                    <text x="${infoX}" y="${infoY + 27}" font-size="10" fill="#475569">
+                        ${sideIcon} ${sideText} | Кат. ${item.cat}
                     </text>
-                    <text x="${infoX}" y="${offsetY + 74}" font-size="12" fill="#475569">
-                        Категория: ${s.item.cat}
-                    </text>
-                    <text x="${infoX}" y="${offsetY + 94}" font-size="13" font-weight="700" fill="#1e293b">
-                        ${s.f.usdStr} $ / ${s.f.bynStr} Br
+                    <text x="${infoX}" y="${infoY + 42}" font-size="11" font-weight="700" fill="#1e293b">
+                        ${f.usdStr} $ / ${f.bynStr} Br
                     </text>
                 `;
             });
 
             const svg = `
                 <svg width="${totalWidth}" height="${totalHeight}" viewBox="0 0 ${totalWidth} ${totalHeight}" 
-                     xmlns="http://www.w3.org/2000/svg" style="max-width: 100%; height: auto;">
+                     xmlns="http://www.w3.org/2000/svg" style="min-width: 100%;">
                     <defs>
                         <marker id="arrowStart" markerWidth="6" markerHeight="6" refX="0" refY="3" orient="auto">
                             <path d="M6,0 L0,3 L6,6" fill="none" stroke="#3b82f6" stroke-width="1"/>
@@ -1181,7 +1312,6 @@
             let summaryHtml = '';
             const totalItems = items.length;
 
-            // Группировка по типам
             const byType = {};
             items.forEach(item => {
                 const name = getTypeName(item.type);
@@ -1205,7 +1335,6 @@
                 `;
             }
 
-            // Стороны управления
             const leftCount = items.filter(i => i.side === 'left').length;
             const rightCount = items.filter(i => i.side === 'right').length;
             if (leftCount > 0) {
@@ -1227,7 +1356,6 @@
 
             orderSummary.innerHTML = summaryHtml;
 
-            // Итог
             orderTotalValue.innerHTML = `
                 <span class="usd">${totalF.usdStr} <small>$</small></span>
                 <span style="color:#94a3b8;">/</span>
@@ -1349,7 +1477,6 @@
                 </div>
             `;
 
-            // Обновляем макет
             renderLayout();
         }
 
@@ -1497,6 +1624,12 @@
             updatePreview();
             renderItems();
         });
+
+        // Обновление шапки при изменении данных заказчика
+        customerName.addEventListener('input', updateHeader);
+        customerPhone.addEventListener('input', updateHeader);
+        orderNumber.addEventListener('input', updateHeader);
+        orderDate.addEventListener('change', updateHeader);
 
         typeSelect.addEventListener('change', updatePreview);
         catSelect.addEventListener('change', updatePreview);
