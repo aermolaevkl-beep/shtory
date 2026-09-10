@@ -12,7 +12,7 @@
             font-family: 'Segoe UI', Roboto, Arial, sans-serif;
             background: #f4f7fb;
             margin: 0;
-            padding: 20px;
+            padding: 10px;
             display: flex;
             justify-content: center;
         }
@@ -20,12 +20,12 @@
             max-width: 1400px;
             width: 100%;
             background: white;
-            padding: 25px 30px;
+            padding: 15px 15px;
             border-radius: 24px;
             box-shadow: 0 12px 30px rgba(0,0,0,0.1);
         }
         h1 {
-            font-size: 26px;
+            font-size: 22px;
             color: #1e293b;
             margin-top: 0;
             display: flex;
@@ -34,39 +34,47 @@
             flex-wrap: wrap;
         }
         h1 small {
-            font-size: 16px;
+            font-size: 14px;
             font-weight: 400;
             color: #64748b;
-            margin-left: 12px;
+            margin-left: 8px;
         }
         .top-controls {
             display: flex;
             flex-wrap: wrap;
-            gap: 15px;
+            gap: 10px;
             align-items: center;
             margin-left: auto;
+            width: 100%;
+            justify-content: flex-start;
+        }
+        .top-controls .currency-box,
+        .top-controls .cashless-box {
+            flex: 1;
+            min-width: 140px;
         }
         .currency-box {
             background: #f1f5f9;
-            padding: 8px 16px;
+            padding: 6px 12px;
             border-radius: 12px;
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 8px;
+            flex-wrap: wrap;
         }
         .currency-box label {
             font-weight: 600;
-            font-size: 13px;
+            font-size: 12px;
             color: #1e293b;
             margin: 0;
             white-space: nowrap;
         }
         .currency-box input {
-            width: 80px;
-            padding: 6px 10px;
+            width: 70px;
+            padding: 4px 8px;
             border: 1px solid #d1d9e6;
             border-radius: 8px;
-            font-size: 15px;
+            font-size: 14px;
             text-align: center;
             background: white;
         }
@@ -77,76 +85,78 @@
         .currency-box .currency-label {
             font-weight: 600;
             color: #1e293b;
-            font-size: 14px;
+            font-size: 13px;
         }
         .cashless-box {
             background: #fef3c7;
-            padding: 8px 16px;
+            padding: 6px 12px;
             border-radius: 12px;
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 8px;
             border: 2px solid #fcd34d;
+            flex-wrap: wrap;
         }
         .cashless-box label {
             font-weight: 600;
-            font-size: 13px;
+            font-size: 12px;
             color: #92400e;
             margin: 0;
             white-space: nowrap;
             cursor: pointer;
         }
         .cashless-box input[type="checkbox"] {
-            width: 20px;
-            height: 20px;
+            width: 18px;
+            height: 18px;
             cursor: pointer;
             accent-color: #f59e0b;
         }
         .cashless-box .badge-cashless {
             background: #f59e0b;
             color: white;
-            padding: 2px 10px;
+            padding: 1px 8px;
             border-radius: 20px;
-            font-size: 12px;
+            font-size: 11px;
             font-weight: 600;
         }
         .grid-2 {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-            gap: 18px 20px;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 12px 15px;
             background: #f8fafc;
-            padding: 20px 20px 15px 20px;
+            padding: 15px 15px 10px 15px;
             border-radius: 18px;
-            margin-bottom: 15px;
+            margin-bottom: 12px;
         }
         .field-group {
             display: flex;
             flex-direction: column;
-            gap: 4px;
+            gap: 3px;
         }
         .field-group label {
             font-weight: 600;
-            font-size: 14px;
+            font-size: 12px;
             color: #0f172a;
             letter-spacing: 0.3px;
         }
         .field-group select, .field-group input {
-            padding: 10px 12px;
+            padding: 8px 10px;
             border: 1px solid #d1d9e6;
-            border-radius: 12px;
-            font-size: 15px;
+            border-radius: 10px;
+            font-size: 14px;
             background: white;
             width: 100%;
+            min-width: 0;
         }
         .field-group select:focus, .field-group input:focus {
             outline: 2px solid #3b82f6;
             border-color: transparent;
         }
         .btn {
-            padding: 10px 24px;
+            padding: 8px 18px;
             border: none;
-            border-radius: 12px;
-            font-size: 15px;
+            border-radius: 10px;
+            font-size: 14px;
             font-weight: 600;
             cursor: pointer;
             transition: 0.15s;
@@ -154,6 +164,7 @@
             color: white;
             align-self: flex-end;
             margin-top: auto;
+            white-space: nowrap;
         }
         .btn:hover {
             background: #2563eb;
@@ -177,121 +188,136 @@
         .btn-warning:hover {
             background: #d97706;
         }
-        .btn-sm {
-            padding: 6px 12px;
-            font-size: 13px;
+        .btn-outline {
+            background: transparent;
+            border: 2px solid #3b82f6;
+            color: #3b82f6;
         }
-        .btn-xs {
+        .btn-outline:hover {
+            background: #3b82f6;
+            color: white;
+        }
+        .btn-sm {
             padding: 4px 10px;
             font-size: 12px;
+        }
+        .btn-xs {
+            padding: 3px 8px;
+            font-size: 11px;
         }
         .preview-box {
             background: #eef2ff;
             border-radius: 14px;
-            padding: 12px 20px;
-            margin: 0 0 20px 0;
+            padding: 10px 15px;
+            margin: 0 0 15px 0;
             display: flex;
             flex-wrap: wrap;
             align-items: center;
             justify-content: space-between;
-            gap: 12px;
+            gap: 8px;
             border: 2px solid #dbeafe;
         }
         .preview-box .label {
             font-weight: 600;
             color: #1e293b;
-            font-size: 14px;
+            font-size: 13px;
         }
         .preview-box .price {
-            font-size: 28px;
+            font-size: 22px;
             font-weight: 700;
             color: #1e293b;
             background: white;
-            padding: 4px 20px;
+            padding: 4px 14px;
             border-radius: 30px;
             box-shadow: 0 2px 8px rgba(0,0,0,0.05);
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 8px;
             flex-wrap: wrap;
         }
         .preview-box .price .usd {
             color: #1e293b;
+            font-size: 20px;
         }
         .preview-box .price .byn {
             color: #2563eb;
-            font-size: 20px;
+            font-size: 18px;
         }
         .preview-box .price .cashless-mark {
             background: #fef3c7;
             color: #92400e;
-            padding: 2px 12px;
+            padding: 1px 10px;
             border-radius: 20px;
-            font-size: 14px;
+            font-size: 12px;
             font-weight: 600;
         }
         .preview-box .price small {
-            font-size: 16px;
+            font-size: 14px;
             font-weight: 400;
             color: #475569;
         }
         .preview-box .detail {
             color: #475569;
-            font-size: 14px;
+            font-size: 13px;
         }
         .items-section {
-            margin: 20px 0;
+            margin: 15px 0;
         }
         .items-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 12px;
+            margin-bottom: 10px;
             flex-wrap: wrap;
-            gap: 10px;
+            gap: 8px;
         }
         .items-header h3 {
             margin: 0;
             color: #1e293b;
+            font-size: 17px;
         }
         .items-header .count {
             background: #e2e8f0;
-            padding: 4px 16px;
+            padding: 2px 14px;
             border-radius: 30px;
-            font-size: 14px;
+            font-size: 13px;
             font-weight: 600;
         }
         .items-header .controls {
             display: flex;
-            gap: 10px;
+            gap: 8px;
             align-items: center;
             flex-wrap: wrap;
         }
         .table-wrap {
             overflow-x: auto;
-            border-radius: 16px;
+            border-radius: 14px;
             border: 1px solid #e9edf3;
+            -webkit-overflow-scrolling: touch;
         }
         table {
             width: 100%;
             border-collapse: collapse;
-            font-size: 14px;
+            font-size: 13px;
             background: white;
+            min-width: 700px;
         }
         th {
             background: #f1f5f9;
             color: #0f172a;
             font-weight: 600;
-            padding: 12px 10px;
+            padding: 8px 6px;
             text-align: center;
             border-bottom: 2px solid #dce2ec;
             white-space: nowrap;
+            font-size: 12px;
         }
         td {
-            padding: 10px 8px;
+            padding: 8px 6px;
             text-align: center;
             border-bottom: 1px solid #e9edf3;
             vertical-align: middle;
+            font-size: 12px;
         }
         tr:last-child td {
             border-bottom: none;
@@ -299,83 +325,98 @@
         .total-row {
             background: #f8fafc;
             font-weight: 700;
-            font-size: 16px;
+            font-size: 14px;
         }
         .total-row td {
             border-top: 2px solid #dce2ec;
-            padding: 14px 10px;
+            padding: 10px 6px;
         }
         .badge {
             background: #dbeafe;
             color: #1e4b8a;
             border-radius: 40px;
-            padding: 2px 14px;
-            font-size: 12px;
+            padding: 1px 12px;
+            font-size: 11px;
             font-weight: 500;
             white-space: nowrap;
+            display: inline-block;
+        }
+        .badge-side {
+            background: #e0e7ff;
+            color: #3730a3;
+            border-radius: 40px;
+            padding: 1px 10px;
+            font-size: 11px;
+            font-weight: 500;
+            display: inline-block;
         }
         .badge-cashless {
             background: #fef3c7;
             color: #92400e;
             border-radius: 40px;
-            padding: 2px 10px;
-            font-size: 11px;
+            padding: 1px 8px;
+            font-size: 10px;
             font-weight: 600;
-            margin-left: 4px;
+            margin-left: 3px;
+            display: inline-block;
         }
         .empty-state {
-            padding: 40px;
+            padding: 30px 15px;
             text-align: center;
             color: #94a3b8;
         }
         .empty-state .icon {
-            font-size: 48px;
-            margin-bottom: 12px;
+            font-size: 36px;
+            margin-bottom: 8px;
         }
         .footer-note {
-            margin-top: 20px;
-            font-size: 14px;
+            margin-top: 15px;
+            font-size: 12px;
             color: #475569;
             border-top: 1px solid #e2e8f0;
-            padding-top: 18px;
+            padding-top: 12px;
             display: flex;
             flex-wrap: wrap;
             justify-content: space-between;
-            gap: 12px;
+            gap: 8px;
         }
         .footer-note span {
             background: #f1f5f9;
-            padding: 4px 14px;
+            padding: 2px 12px;
             border-radius: 30px;
+            font-size: 11px;
         }
         .price-both {
             display: flex;
-            gap: 8px;
+            gap: 4px;
             align-items: center;
             flex-wrap: wrap;
             justify-content: center;
         }
         .price-both .usd-price {
             font-weight: 600;
+            font-size: 12px;
         }
         .price-both .byn-price {
             color: #2563eb;
             font-weight: 600;
+            font-size: 12px;
         }
         .price-both .divider {
             color: #94a3b8;
+            font-size: 11px;
         }
         .edit-row td {
             background: #fefce8;
-            padding: 8px 6px;
+            padding: 6px 4px;
         }
         .edit-row select, .edit-row input {
-            padding: 6px 8px;
+            padding: 4px 6px;
             border: 1px solid #d1d9e6;
-            border-radius: 8px;
-            font-size: 13px;
+            border-radius: 6px;
+            font-size: 12px;
             width: 100%;
-            max-width: 120px;
+            max-width: 100px;
             background: white;
         }
         .edit-row select:focus, .edit-row input:focus {
@@ -383,24 +424,171 @@
             border-color: transparent;
         }
         .edit-row .btn {
-            padding: 6px 14px;
-            font-size: 13px;
+            padding: 4px 10px;
+            font-size: 11px;
         }
         .action-cell {
             display: flex;
-            gap: 6px;
+            gap: 4px;
             justify-content: center;
             flex-wrap: wrap;
         }
+        
+        /* ========== БЛОК МАКЕТА ЗАКАЗА ========== */
+        .order-layout {
+            margin-top: 25px;
+            padding: 20px;
+            background: #fafbfc;
+            border-radius: 16px;
+            border: 2px dashed #cbd5e1;
+        }
+        .order-layout h3 {
+            margin: 0 0 15px 0;
+            color: #1e293b;
+            font-size: 18px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .order-layout h3 .hint {
+            font-size: 12px;
+            font-weight: 400;
+            color: #64748b;
+            margin-left: 8px;
+        }
+        .layout-svg-wrap {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            background: white;
+            border-radius: 12px;
+            overflow-x: auto;
+        }
+        .layout-svg-wrap svg {
+            max-width: 100%;
+            height: auto;
+        }
+        .order-summary {
+            margin-top: 15px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 10px;
+            font-size: 13px;
+        }
+        .order-summary .row {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 12px;
+            background: white;
+            border-radius: 8px;
+            border: 1px solid #e9edf3;
+        }
+        .order-summary .row .label {
+            color: #64748b;
+            font-weight: 500;
+        }
+        .order-summary .row .value {
+            color: #1e293b;
+            font-weight: 600;
+        }
+        .order-total {
+            margin-top: 15px;
+            padding: 15px 20px;
+            background: #eef2ff;
+            border-radius: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            border: 2px solid #dbeafe;
+        }
+        .order-total .label {
+            font-weight: 700;
+            color: #1e293b;
+            font-size: 16px;
+        }
+        .order-total .value {
+            font-weight: 700;
+            color: #1e293b;
+            font-size: 22px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .order-total .value .usd {
+            color: #1e293b;
+        }
+        .order-total .value .byn {
+            color: #2563eb;
+            font-size: 18px;
+        }
+        .order-total .value small {
+            font-size: 14px;
+            color: #475569;
+            font-weight: 400;
+        }
+
+        /* Мобильная адаптация */
         @media (max-width: 768px) {
-            .container { padding: 16px; }
-            .grid-2 { grid-template-columns: 1fr; }
-            .items-header { flex-direction: column; align-items: stretch; }
-            .items-header .controls { justify-content: space-between; }
-            .preview-box { flex-direction: column; align-items: stretch; text-align: center; }
-            .top-controls { margin-left: 0; width: 100%; justify-content: center; flex-wrap: wrap; }
-            .currency-box, .cashless-box { flex: 1; min-width: 180px; justify-content: center; }
-            .edit-row select, .edit-row input { max-width: 100%; }
+            body { padding: 6px; }
+            .container { padding: 10px; border-radius: 16px; }
+            h1 { font-size: 18px; }
+            h1 small { font-size: 12px; margin-left: 4px; }
+            .top-controls { flex-direction: column; align-items: stretch; width: 100%; }
+            .top-controls .currency-box,
+            .top-controls .cashless-box { width: 100%; justify-content: center; }
+            .grid-2 { 
+                grid-template-columns: 1fr 1fr; 
+                gap: 8px 10px;
+                padding: 12px;
+            }
+            .field-group label { font-size: 11px; }
+            .field-group select, .field-group input { padding: 6px 8px; font-size: 13px; }
+            .btn { padding: 6px 14px; font-size: 13px; }
+            .preview-box { flex-direction: column; align-items: stretch; text-align: center; padding: 10px; }
+            .preview-box .price { font-size: 18px; justify-content: center; }
+            .preview-box .price .usd { font-size: 17px; }
+            .preview-box .price .byn { font-size: 15px; }
+            .items-header h3 { font-size: 15px; }
+            .items-header .controls { width: 100%; justify-content: flex-end; }
+            .table-wrap { border-radius: 10px; }
+            table { font-size: 11px; min-width: 600px; }
+            th { font-size: 10px; padding: 6px 4px; }
+            td { font-size: 11px; padding: 6px 4px; }
+            .badge { font-size: 10px; padding: 1px 8px; }
+            .price-both .usd-price { font-size: 11px; }
+            .price-both .byn-price { font-size: 11px; }
+            .edit-row select, .edit-row input { max-width: 80px; font-size: 11px; }
+            .footer-note { flex-direction: column; align-items: center; text-align: center; }
+            .footer-note span { font-size: 10px; }
+            .total-row { font-size: 12px; }
+            .order-layout { padding: 12px; }
+            .order-layout h3 { font-size: 15px; }
+            .layout-svg-wrap { padding: 10px; }
+            .order-total { flex-direction: column; align-items: stretch; text-align: center; }
+            .order-total .value { justify-content: center; font-size: 18px; }
+        }
+        
+        @media (max-width: 480px) {
+            .grid-2 { grid-template-columns: 1fr 1fr; gap: 6px 8px; padding: 10px; }
+            .field-group select, .field-group input { padding: 5px 6px; font-size: 12px; }
+            .btn { padding: 5px 12px; font-size: 12px; }
+            table { font-size: 10px; min-width: 500px; }
+            th { font-size: 9px; padding: 4px 3px; }
+            td { font-size: 10px; padding: 4px 3px; }
+            .badge { font-size: 9px; padding: 1px 6px; }
+            .preview-box .price { font-size: 15px; padding: 4px 10px; }
+            .preview-box .price .usd { font-size: 14px; }
+            .preview-box .price .byn { font-size: 13px; }
+            .edit-row select, .edit-row input { max-width: 60px; font-size: 10px; padding: 3px 4px; }
+            .edit-row .btn { padding: 3px 6px; font-size: 10px; }
+            .action-cell { gap: 3px; }
+            .price-both .usd-price { font-size: 10px; }
+            .price-both .byn-price { font-size: 10px; }
+            .total-row { font-size: 11px; }
         }
     </style>
 </head>
@@ -451,6 +639,13 @@
             <label for="heightInput">Высота (см)</label>
             <input type="number" id="heightInput" value="170" min="50" max="250" step="1">
         </div>
+        <div class="field-group">
+            <label for="sideSelect">Сторона управления</label>
+            <select id="sideSelect">
+                <option value="left">⬅ Слева</option>
+                <option value="right" selected="selected">➡ Справа</option>
+            </select>
+        </div>
         <div class="field-group" style="justify-content:flex-end;">
             <button class="btn" id="addBtn">➕ Добавить</button>
         </div>
@@ -484,24 +679,25 @@
                         <th>Кат.</th>
                         <th>Ширина</th>
                         <th>Высота</th>
+                        <th>Сторона</th>
                         <th>Цена</th>
                         <th>Действия</th>
                     </tr>
                 </thead>
                 <tbody id="itemsBody">
                     <tr>
-                        <td colspan="7">
+                        <td colspan="8">
                             <div class="empty-state">
                                 <div class="icon">📭</div>
                                 <div>Нет добавленных изделий</div>
-                                <div style="font-size:13px; margin-top:6px;">Заполните форму выше и нажмите «Добавить»</div>
+                                <div style="font-size:12px; margin-top:4px;">Заполните форму выше и нажмите «Добавить»</div>
                             </div>
                         </td>
                     </tr>
                 </tbody>
                 <tfoot id="itemsFoot" style="display:none;">
                     <tr class="total-row">
-                        <td colspan="6" style="text-align:right;">ИТОГО:</td>
+                        <td colspan="7" style="text-align:right;">ИТОГО:</td>
                         <td id="totalPrice">0.00 $ / 0.00 Br</td>
                     </tr>
                 </tfoot>
@@ -509,12 +705,34 @@
         </div>
     </div>
 
+    <!-- БЛОК МАКЕТА ЗАКАЗА -->
+    <div class="order-layout" id="orderLayout">
+        <h3>
+            📐 Макет заказа
+            <span class="hint">(визуальное представление с размерами и стороной управления)</span>
+        </h3>
+        <div class="layout-svg-wrap" id="layoutSvgWrap">
+            <!-- SVG вставляется через JS -->
+        </div>
+        <div class="order-summary" id="orderSummary">
+            <!-- Сводка вставляется через JS -->
+        </div>
+        <div class="order-total">
+            <span class="label">💰 ИТОГО ПО ЗАКАЗУ:</span>
+            <span class="value" id="orderTotalValue">
+                <span class="usd">0.00 <small>$</small></span>
+                <span style="color:#94a3b8;">/</span>
+                <span class="byn">0.00 <small>Br</small></span>
+            </span>
+        </div>
+    </div>
+
     <div class="footer-note">
         <span>⚡ Все расценки из файла</span>
         <span>🧷 Доп. +25% за коричневую фурнитуру (не учтено)</span>
         <span>📐 свыше 2,0 м +10% за каждые 10 см</span>
-        <span>🔄 40-44→40, 45-49→50, 50-54→50, 55-59→60 и т.д.</span>
-        <span>💰 Безнал +6% (включается галочкой)</span>
+        <span>🔄 40-44→40, 45-49→50</span>
+        <span>💰 Безнал +6%</span>
         <span>✏️ Нажмите ✏️ для редактирования</span>
     </div>
 </div>
@@ -634,6 +852,7 @@
         const catSelect = document.getElementById('catSelect');
         const widthInput = document.getElementById('widthInput');
         const heightInput = document.getElementById('heightInput');
+        const sideSelect = document.getElementById('sideSelect');
         const rateInput = document.getElementById('rateInput');
         const cashlessToggle = document.getElementById('cashlessToggle');
         const addBtn = document.getElementById('addBtn');
@@ -644,6 +863,9 @@
         const totalPrice = document.getElementById('totalPrice');
         const previewPrice = document.getElementById('previewPrice');
         const previewDetail = document.getElementById('previewDetail');
+        const layoutSvgWrap = document.getElementById('layoutSvgWrap');
+        const orderSummary = document.getElementById('orderSummary');
+        const orderTotalValue = document.getElementById('orderTotalValue');
 
         function getRate() {
             return parseFloat(rateInput.value) || 3.5;
@@ -784,26 +1006,255 @@
                 ${cashlessMark}
             `;
             previewDetail.textContent = `${width} см × ${height} см → ${roundedW} см`;
+
+            // Обновляем макет
+            renderLayout();
         }
 
         // --------------------------------------------------------------
-        // Рендер списка (исправленный — без дублирования итога)
+        // Рендер SVG макета заказа
+        // --------------------------------------------------------------
+        function renderLayout() {
+            if (items.length === 0) {
+                layoutSvgWrap.innerHTML = `
+                    <div style="text-align: center; color: #94a3b8; padding: 20px;">
+                        <div style="font-size: 48px; margin-bottom: 8px;">📐</div>
+                        <div>Добавьте изделия, чтобы увидеть макет</div>
+                    </div>
+                `;
+                orderSummary.innerHTML = '';
+                const totalF = formatPrice(0);
+                const cashlessMarkTotal = isCashless() ? ' <span class="badge-cashless">+6%</span>' : '';
+                orderTotalValue.innerHTML = `
+                    <span class="usd">0.00 <small>$</small></span>
+                    <span style="color:#94a3b8;">/</span>
+                    <span class="byn">0.00 <small>Br</small></span>
+                    ${cashlessMarkTotal}
+                `;
+                return;
+            }
+
+            // Подсчёт общего количества и суммы
+            let totalUsd = 0;
+            items.forEach(item => {
+                totalUsd += calculatePrice(item.type, item.cat, item.width, item.height);
+            });
+
+            const totalF = formatPrice(totalUsd);
+            const cashlessMarkTotal = isCashless() ? ' <span class="badge-cashless">+6%</span>' : '';
+
+            // Строим SVG со всеми изделиями
+            const svgItems = items.map((item, index) => {
+                const price = calculatePrice(item.type, item.cat, item.width, item.height);
+                const f = formatPrice(price);
+                const sideText = item.side === 'left' ? 'Слева' : 'Справа';
+                const sideIcon = item.side === 'left' ? '⬅' : '➡';
+                const typeName = getTypeName(item.type);
+                const roundedW = roundWidth(item.type, item.width);
+
+                // Масштабируем для отображения (макс. ширина 200px на рисунке)
+                const maxDisplayW = 200;
+                const maxDisplayH = 200;
+                const scaleW = maxDisplayW / Math.max(item.width, 100);
+                const scaleH = maxDisplayH / Math.max(item.height, 100);
+                const scale = Math.min(scaleW, scaleH, 1.2);
+
+                const rectW = Math.max(item.width * scale, 40);
+                const rectH = Math.max(item.height * scale, 40);
+
+                return {
+                    item,
+                    price,
+                    f,
+                    sideText,
+                    sideIcon,
+                    typeName,
+                    roundedW,
+                    rectW,
+                    rectH,
+                    scale,
+                    index
+                };
+            });
+
+            // Вычисляем размеры SVG
+            const maxRectW = Math.max(...svgItems.map(s => s.rectW), 100);
+            const maxRectH = Math.max(...svgItems.map(s => s.rectH), 100);
+            const padding = 60;
+            const labelSpace = 50;
+            const itemSpacing = 40;
+            const totalWidth = padding * 2 + maxRectW + labelSpace;
+            const totalHeight = padding * 2 + (maxRectH + labelSpace + itemSpacing) * items.length;
+
+            let svgContent = '';
+
+            svgItems.forEach((s, i) => {
+                const offsetY = padding + i * (maxRectH + labelSpace + itemSpacing);
+                const offsetX = padding;
+
+                // Прямоугольник
+                svgContent += `
+                    <rect x="${offsetX}" y="${offsetY}" width="${s.rectW}" height="${s.rectH}" 
+                          fill="#f0f9ff" stroke="#3b82f6" stroke-width="2" rx="4"/>
+                `;
+
+                // Внутренняя штриховка (имитация ткани)
+                svgContent += `
+                    <rect x="${offsetX + 4}" y="${offsetY + 4}" width="${s.rectW - 8}" height="${s.rectH - 8}" 
+                          fill="none" stroke="#93c5fd" stroke-width="0.5" stroke-dasharray="3,3" rx="2"/>
+                `;
+
+                // Стрелка стороны управления
+                const arrowX = s.item.side === 'left' ? offsetX + 12 : offsetX + s.rectW - 12;
+                const arrowY = offsetY + s.rectH / 2;
+                const arrowDir = s.item.side === 'left' ? -1 : 1;
+                svgContent += `
+                    <polygon points="${arrowX},${arrowY - 8} ${arrowX + arrowDir * 12},${arrowY} ${arrowX},${arrowY + 8}" 
+                             fill="#f59e0b" stroke="#d97706" stroke-width="1"/>
+                `;
+
+                // Подпись ширины (сверху)
+                svgContent += `
+                    <text x="${offsetX + s.rectW / 2}" y="${offsetY - 12}" 
+                          text-anchor="middle" font-size="13" font-weight="600" fill="#1e293b">
+                        ${s.item.width} см
+                    </text>
+                `;
+                // Линия размера сверху
+                svgContent += `
+                    <line x1="${offsetX}" y1="${offsetY - 6}" x2="${offsetX + s.rectW}" y2="${offsetY - 6}" 
+                          stroke="#3b82f6" stroke-width="1" marker-start="url(#arrowStart)" marker-end="url(#arrowEnd)"/>
+                `;
+
+                // Подпись высоты (слева)
+                svgContent += `
+                    <text x="${offsetX - 10}" y="${offsetY + s.rectH / 2}" 
+                          text-anchor="end" dominant-baseline="middle" font-size="13" font-weight="600" fill="#1e293b">
+                        ${s.item.height} см
+                    </text>
+                `;
+                // Линия размера слева
+                svgContent += `
+                    <line x1="${offsetX - 6}" y1="${offsetY}" x2="${offsetX - 6}" y2="${offsetY + s.rectH}" 
+                          stroke="#3b82f6" stroke-width="1"/>
+                `;
+
+                // Информация справа
+                const infoX = offsetX + s.rectW + 20;
+                svgContent += `
+                    <text x="${infoX}" y="${offsetY + 18}" font-size="13" font-weight="600" fill="#1e293b">
+                        ${i + 1}. ${s.typeName}
+                    </text>
+                    <text x="${infoX}" y="${offsetY + 38}" font-size="12" fill="#475569">
+                        ${s.item.width} × ${s.item.height} см (окр. ${s.roundedW} см)
+                    </text>
+                    <text x="${infoX}" y="${offsetY + 56}" font-size="12" fill="#475569">
+                        ${s.sideIcon} Управление: ${s.sideText}
+                    </text>
+                    <text x="${infoX}" y="${offsetY + 74}" font-size="12" fill="#475569">
+                        Категория: ${s.item.cat}
+                    </text>
+                    <text x="${infoX}" y="${offsetY + 94}" font-size="13" font-weight="700" fill="#1e293b">
+                        ${s.f.usdStr} $ / ${s.f.bynStr} Br
+                    </text>
+                `;
+            });
+
+            const svg = `
+                <svg width="${totalWidth}" height="${totalHeight}" viewBox="0 0 ${totalWidth} ${totalHeight}" 
+                     xmlns="http://www.w3.org/2000/svg" style="max-width: 100%; height: auto;">
+                    <defs>
+                        <marker id="arrowStart" markerWidth="6" markerHeight="6" refX="0" refY="3" orient="auto">
+                            <path d="M6,0 L0,3 L6,6" fill="none" stroke="#3b82f6" stroke-width="1"/>
+                        </marker>
+                        <marker id="arrowEnd" markerWidth="6" markerHeight="6" refX="6" refY="3" orient="auto">
+                            <path d="M0,0 L6,3 L0,6" fill="none" stroke="#3b82f6" stroke-width="1"/>
+                        </marker>
+                    </defs>
+                    ${svgContent}
+                </svg>
+            `;
+
+            layoutSvgWrap.innerHTML = svg;
+
+            // Сводка
+            let summaryHtml = '';
+            const totalItems = items.length;
+
+            // Группировка по типам
+            const byType = {};
+            items.forEach(item => {
+                const name = getTypeName(item.type);
+                if (!byType[name]) byType[name] = 0;
+                byType[name]++;
+            });
+
+            summaryHtml += `
+                <div class="row">
+                    <span class="label">Всего изделий:</span>
+                    <span class="value">${totalItems} шт.</span>
+                </div>
+            `;
+
+            for (const [typeName, count] of Object.entries(byType)) {
+                summaryHtml += `
+                    <div class="row">
+                        <span class="label">${typeName}:</span>
+                        <span class="value">${count} шт.</span>
+                    </div>
+                `;
+            }
+
+            // Стороны управления
+            const leftCount = items.filter(i => i.side === 'left').length;
+            const rightCount = items.filter(i => i.side === 'right').length;
+            if (leftCount > 0) {
+                summaryHtml += `
+                    <div class="row">
+                        <span class="label">⬅ Управление слева:</span>
+                        <span class="value">${leftCount} шт.</span>
+                    </div>
+                `;
+            }
+            if (rightCount > 0) {
+                summaryHtml += `
+                    <div class="row">
+                        <span class="label">➡ Управление справа:</span>
+                        <span class="value">${rightCount} шт.</span>
+                    </div>
+                `;
+            }
+
+            orderSummary.innerHTML = summaryHtml;
+
+            // Итог
+            orderTotalValue.innerHTML = `
+                <span class="usd">${totalF.usdStr} <small>$</small></span>
+                <span style="color:#94a3b8;">/</span>
+                <span class="byn">${totalF.bynStr} <small>Br</small></span>
+                ${cashlessMarkTotal}
+            `;
+        }
+
+        // --------------------------------------------------------------
+        // Рендер списка
         // --------------------------------------------------------------
         function renderItems() {
             if (items.length === 0) {
                 itemsBody.innerHTML = `
                     <tr>
-                        <td colspan="7">
+                        <td colspan="8">
                             <div class="empty-state">
                                 <div class="icon">📭</div>
                                 <div>Нет добавленных изделий</div>
-                                <div style="font-size:13px; margin-top:6px;">Заполните форму выше и нажмите «Добавить»</div>
+                                <div style="font-size:12px; margin-top:4px;">Заполните форму выше и нажмите «Добавить»</div>
                             </div>
                         </td>
                     </tr>
                 `;
                 itemsFoot.style.display = 'none';
                 itemsCount.textContent = '0';
+                renderLayout();
                 return;
             }
 
@@ -818,8 +1269,8 @@
                 const roundedW = roundWidth(item.type, item.width);
                 const f = formatPrice(price);
                 const cashlessMark = isCashless() ? ' <span class="badge-cashless">+6%</span>' : '';
+                const sideText = item.side === 'left' ? '⬅ Слева' : '➡ Справа';
 
-                // Если этот элемент редактируется
                 if (editingId === item.id) {
                     html += `
                         <tr class="edit-row">
@@ -840,6 +1291,12 @@
                             <td>
                                 <input type="number" id="edit_height_${item.id}" value="${item.height}" min="50" max="250" step="1">
                             </td>
+                            <td>
+                                <select id="edit_side_${item.id}" class="edit-select">
+                                    <option value="left" ${item.side === 'left' ? 'selected' : ''}>⬅ Слева</option>
+                                    <option value="right" ${item.side === 'right' ? 'selected' : ''}>➡ Справа</option>
+                                </select>
+                            </td>
                             <td colspan="2">
                                 <div class="action-cell">
                                     <button class="btn btn-success btn-xs" onclick="saveEdit(${item.id})">💾 Сохранить</button>
@@ -854,8 +1311,9 @@
                             <td>${index + 1}</td>
                             <td><span class="badge">${typeName}</span></td>
                             <td>${item.cat}</td>
-                            <td>${item.width} см → ${roundedW} см</td>
-                            <td>${item.height} см</td>
+                            <td>${item.width} → ${roundedW}</td>
+                            <td>${item.height}</td>
+                            <td><span class="badge-side">${sideText}</span></td>
                             <td>
                                 <div class="price-both">
                                     <span class="usd-price">${f.usdStr} $</span>
@@ -875,14 +1333,11 @@
                 }
             });
 
-            // Только содержимое tbody (без итоговой строки)
             itemsBody.innerHTML = html;
             
-            // Показываем tfoot с итогом
             itemsFoot.style.display = 'table-row-group';
             itemsCount.textContent = items.length;
             
-            // Обновляем итог в tfoot (только одна строка ИТОГО)
             const totalF = formatPrice(totalUsd);
             const cashlessMarkTotal = isCashless() ? ' <span class="badge-cashless">+6%</span>' : '';
             totalPrice.innerHTML = `
@@ -893,6 +1348,9 @@
                     ${cashlessMarkTotal}
                 </div>
             `;
+
+            // Обновляем макет
+            renderLayout();
         }
 
         function getTypeOptions(selected) {
@@ -911,7 +1369,7 @@
 
         function getCatOptions(selected) {
             return [1,2,3,4].map(c => 
-                `<option value="${c}" ${c === selected ? 'selected' : ''}>${c} категория</option>`
+                `<option value="${c}" ${c === selected ? 'selected' : ''}>${c} кат.</option>`
             ).join('');
         }
 
@@ -935,6 +1393,7 @@
             const cat = parseInt(catSelect.value, 10);
             const width = parseInt(widthInput.value, 10) || 80;
             const height = parseInt(heightInput.value, 10) || 170;
+            const side = sideSelect.value;
 
             const typeData = PRICES[type];
             if (!typeData) return;
@@ -955,7 +1414,8 @@
                 type: type,
                 cat: cat,
                 width: width,
-                height: height
+                height: height,
+                side: side
             });
 
             renderItems();
@@ -971,6 +1431,7 @@
             const cat = parseInt(document.getElementById(`edit_cat_${id}`).value, 10);
             const width = parseInt(document.getElementById(`edit_width_${id}`).value, 10);
             const height = parseInt(document.getElementById(`edit_height_${id}`).value, 10);
+            const side = document.getElementById(`edit_side_${id}`).value;
 
             const typeData = PRICES[type];
             if (!typeData) return;
@@ -992,6 +1453,7 @@
                 item.cat = cat;
                 item.width = width;
                 item.height = height;
+                item.side = side;
             }
 
             editingId = null;
@@ -1040,6 +1502,7 @@
         catSelect.addEventListener('change', updatePreview);
         widthInput.addEventListener('input', updatePreview);
         heightInput.addEventListener('input', updatePreview);
+        sideSelect.addEventListener('change', updatePreview);
 
         document.querySelectorAll('#addForm input, #addForm select').forEach(el => {
             el.addEventListener('keydown', (e) => {
