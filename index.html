@@ -973,6 +973,7 @@
             <select id="sizeBySelect">
                 <option value="ВГШ" selected>ВГШ</option>
                 <option value="по ткани">по ткани</option>
+                <option value="по габаритам">по габаритам</option>
             </select>
         </div>
         <div class="field-group">
@@ -1318,19 +1319,31 @@
             if (val === undefined || val === null || val === '') return '0';
             const num = parseFloat(val);
             if (isNaN(num)) return '0';
-            // Если целое — без десятичных, иначе с запятой
             if (Number.isInteger(num)) return String(num);
-            // Убираем лишние нули в конце
             return num.toFixed(1).replace('.', ',').replace(/,0$/, '');
         }
 
-        // Для расчёта цены — округление ширины до ближайшего 10
+        // Сокращённый текст для макета
+        function getSizeByShort(sizeBy) {
+            if (sizeBy === 'ВГШ') return 'ВГШ';
+            if (sizeBy === 'по ткани') return 'по ткани';
+            if (sizeBy === 'по габаритам') return 'по габ.';
+            return sizeBy;
+        }
+
+        // Полный текст для таблицы
+        function getSizeByFull(sizeBy) {
+            if (sizeBy === 'ВГШ') return 'ВГШ';
+            if (sizeBy === 'по ткани') return 'По ткани';
+            if (sizeBy === 'по габаритам') return 'По габаритам';
+            return sizeBy;
+        }
+
         function roundWidth(typeKey, width) {
             const typeData = PRICES[typeKey];
             if (!typeData) return 40;
             const widths = typeData.widths;
             
-            // Округляем математически до 10
             let rounded = Math.round(width / 10) * 10;
             if (rounded < widths[0]) return widths[0];
             if (rounded > widths[widths.length - 1]) return widths[widths.length - 1];
@@ -1586,7 +1599,6 @@
                     `;
 
                     const widthLineY = rectY - 12;
-                    // ТОЧНЫЕ размеры без округления, с запятой
                     svgContent += `
                         <text x="${rectX + rectW / 2}" y="${widthLineY - 6}" 
                               text-anchor="middle" font-size="11" font-weight="700" fill="#1e293b">
@@ -1624,7 +1636,7 @@
                               font-size="10" font-weight="700" fill="white">${originalIndex + 1}</text>
                     `;
 
-                    const sizeByText = item.sizeBy === 'ВГШ' ? 'ВГШ' : 'по ткани';
+                    const sizeByText = getSizeByShort(item.sizeBy);
                     svgContent += `
                         <text x="${rectX + rectW / 2}" y="${rectY + 32}" text-anchor="middle" 
                               font-size="11" font-weight="700" fill="#7c3aed">
@@ -1704,8 +1716,10 @@
                 `;
             }
 
+            // Размер по — учитываем все три варианта
             const vgshCount = items.filter(i => i.sizeBy === 'ВГШ').length;
             const fabricCount = items.filter(i => i.sizeBy === 'по ткани').length;
+            const gabaritCount = items.filter(i => i.sizeBy === 'по габаритам').length;
             if (vgshCount > 0) {
                 summaryHtml += `
                     <div class="row">
@@ -1719,6 +1733,14 @@
                     <div class="row">
                         <span class="label">📏 Размер по ткани:</span>
                         <span class="value">${fabricCount} шт.</span>
+                    </div>
+                `;
+            }
+            if (gabaritCount > 0) {
+                summaryHtml += `
+                    <div class="row">
+                        <span class="label">📏 Размер по габаритам:</span>
+                        <span class="value">${gabaritCount} шт.</span>
                     </div>
                 `;
             }
@@ -1791,7 +1813,7 @@
                 const f = formatPrice(price);
                 const cashlessMark = item.payment === 'Безналичные' ? ' <span class="badge-cashless">+6%</span>' : '';
                 const sideText = item.side === 'left' ? '⬅ Слева' : '➡ Справа';
-                const sizeByText = item.sizeBy === 'ВГШ' ? 'ВГШ' : 'По ткани';
+                const sizeByText = getSizeByFull(item.sizeBy);
                 const paymentBadge = item.payment === 'Безналичные' 
                     ? '<span class="badge-payment" style="background:#fee2e2;color:#991b1b;">💳 Безнал</span>' 
                     : '<span class="badge-payment">💵 Наличные</span>';
@@ -1830,6 +1852,7 @@
                                 <select id="edit_sizeby_${item.id}" class="edit-select">
                                     <option value="ВГШ" ${item.sizeBy === 'ВГШ' ? 'selected' : ''}>ВГШ</option>
                                     <option value="по ткани" ${item.sizeBy === 'по ткани' ? 'selected' : ''}>По ткани</option>
+                                    <option value="по габаритам" ${item.sizeBy === 'по габаритам' ? 'selected' : ''}>По габаритам</option>
                                 </select>
                             </td>
                             <td>
