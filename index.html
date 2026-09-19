@@ -792,7 +792,7 @@
 
         /* Обёртка для захвата */
         #orderCapture {
-            display: inline-block;
+            display: block;
             width: 100%;
             background: transparent;
         }
@@ -2070,7 +2070,7 @@
         }
 
         // --------------------------------------------------------------
-        // СОХРАНЕНИЕ PNG — с обрезкой пустых полей (компактный макет)
+        // СОХРАНЕНИЕ PNG — с обрезкой пустых полей
         // --------------------------------------------------------------
         async function generateCanvas() {
             if (items.length === 0) {
@@ -2079,7 +2079,6 @@
             }
 
             // Создаём временный контейнер для захвата
-            // Он будет позиционирован вне экрана и не влиять на layout
             const wrapper = document.createElement('div');
             wrapper.style.position = 'fixed';
             wrapper.style.left = '-10000px';
@@ -2089,9 +2088,14 @@
             
             // Клонируем layout-paper
             const paperClone = layoutPaper.cloneNode(true);
-            paperClone.style.width = 'fit-content';
+            
+            // ВАЖНО: даём минимальную ширину, чтобы шапка поместилась целиком
+            paperClone.style.width = 'max-content';
+            paperClone.style.minWidth = '720px';   // ← минимум для шапки
             paperClone.style.maxWidth = 'none';
             paperClone.style.display = 'inline-block';
+            paperClone.style.boxShadow = 'none';
+            paperClone.style.border = 'none';
             
             wrapper.appendChild(paperClone);
             document.body.appendChild(wrapper);
@@ -2101,8 +2105,8 @@
 
             // Получаем реальные размеры
             const rect = paperClone.getBoundingClientRect();
-            const captureWidth = Math.ceil(rect.width);
-            const captureHeight = Math.ceil(rect.height);
+            const captureWidth = Math.max(Math.ceil(rect.width), paperClone.scrollWidth);
+            const captureHeight = Math.max(Math.ceil(rect.height), paperClone.scrollHeight);
 
             try {
                 const captureScale = isMobile ? 3 : 2;
