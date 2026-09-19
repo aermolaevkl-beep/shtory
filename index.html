@@ -568,6 +568,9 @@
             overflow: hidden;
             box-shadow: 0 4px 16px rgba(0,0,0,0.08);
             border: 1px solid #e2e8f0;
+            /* Центрируем макет по ширине */
+            display: inline-block;
+            min-width: 100%;
         }
         
         /* ====== ШАПКА МАКЕТА ====== */
@@ -1057,7 +1060,7 @@
         </h3>
 
         <div id="orderCapture">
-            <div class="layout-paper">
+            <div class="layout-paper" id="layoutPaper">
                 <div class="layout-header" id="layoutHeader">
                     <div class="header-left">
                         <div class="order-title">Заказ № <span id="headerOrderNumber">—</span></div>
@@ -1273,6 +1276,7 @@
         const headerDate = document.getElementById('headerDate');
         const headerUrgent = document.getElementById('headerUrgent');
         const orderCapture = document.getElementById('orderCapture');
+        const layoutPaper = document.getElementById('layoutPaper');
         const savePngBtn = document.getElementById('savePngBtn');
         const shareBtn = document.getElementById('shareBtn');
         const printBtn = document.getElementById('printBtn');
@@ -1336,7 +1340,7 @@
         }
 
         // Округление ширины до ближайшей расценки
-        // Если ширина МЕНЬШЕ минимальной — берём минимальную (40 см)
+        // Если ширина МЕНЬШЕ минимальной — берём минимальную
         function roundWidth(typeKey, width) {
             const typeData = PRICES[typeKey];
             if (!typeData) return 40;
@@ -2069,6 +2073,9 @@
             }
         }
 
+        // --------------------------------------------------------------
+        // СОХРАНЕНИЕ PNG — с обрезкой пустых полей (компактный макет)
+        // --------------------------------------------------------------
         async function generateCanvas() {
             if (items.length === 0) {
                 alert('Добавьте изделия, чтобы сохранить макет');
@@ -2076,8 +2083,26 @@
             }
 
             const captureElement = document.getElementById('orderCapture');
+            
+            // Сохраняем оригинальные стили
             const originalWidth = captureElement.style.width;
-            captureElement.style.width = '1240px';
+            const originalDisplay = captureElement.style.display;
+            
+            // Получаем реальные размеры содержимого (без растяжения)
+            // Сначала сбрасываем ширину на auto, чтобы контент занял свою естественную ширину
+            captureElement.style.width = 'auto';
+            captureElement.style.display = 'inline-block';
+            
+            // Даём браузеру применить стили
+            await new Promise(r => setTimeout(r, 50));
+            
+            // Получаем реальные размеры
+            const naturalWidth = layoutPaper.scrollWidth;
+            const naturalHeight = layoutPaper.scrollHeight;
+
+            // Устанавливаем точную ширину/высоту для захвата
+            captureElement.style.width = naturalWidth + 'px';
+            captureElement.style.display = 'block';
 
             try {
                 const captureScale = isMobile ? 3 : 2;
@@ -2087,14 +2112,14 @@
                     useCORS: true,
                     allowTaint: true,
                     logging: false,
-                    width: captureElement.scrollWidth,
-                    height: captureElement.scrollHeight,
-                    windowWidth: captureElement.scrollWidth,
-                    windowHeight: captureElement.scrollHeight,
+                    width: naturalWidth,
+                    height: naturalHeight,
+                    windowWidth: naturalWidth,
+                    windowHeight: naturalHeight,
                     onclone: function(clonedDoc) {
                         const clonedElement = clonedDoc.getElementById('orderCapture');
                         if (clonedElement) {
-                            clonedElement.style.width = '1240px';
+                            clonedElement.style.width = naturalWidth + 'px';
                             clonedElement.style.background = '#ffffff';
                         }
                     }
@@ -2102,6 +2127,7 @@
                 return canvas;
             } finally {
                 captureElement.style.width = originalWidth;
+                captureElement.style.display = originalDisplay;
             }
         }
 
