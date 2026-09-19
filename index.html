@@ -663,14 +663,14 @@
             50% { transform: scale(1.07); }
         }
 
-        /* ====== Основной контент макета: макет + сводка сбоку ====== */
+        /* ====== Основной контент: макет + сводка сбоку ====== */
         .layout-body {
-            display: grid;
-            grid-template-columns: 1fr auto;
-            gap: 0;
+            display: flex;
             align-items: stretch;
+            position: relative;
         }
         .layout-svg-wrap {
+            flex: 1;
             display: flex;
             justify-content: center;
             align-items: flex-start;
@@ -678,25 +678,28 @@
             background: transparent;
             overflow-x: auto;
             -webkit-overflow-scrolling: touch;
+            min-width: 0;
         }
         .layout-svg-wrap svg {
             max-width: none;
             height: auto;
             display: block;
             background: transparent;
+            margin: 0 auto;
         }
 
         /* ====== Компактная сводка сбоку ====== */
         .order-summary {
-            padding: 20px 20px 20px 0;
+            padding: 20px;
             display: flex;
             flex-direction: column;
             gap: 6px;
             font-size: 12px;
-            min-width: 200px;
-            max-width: 240px;
+            min-width: 220px;
+            max-width: 260px;
             border-left: 1px dashed rgba(226, 232, 240, 0.9);
-            margin-left: 10px;
+            background: rgba(248, 250, 252, 0.5);
+            flex-shrink: 0;
         }
         .order-summary .summary-header {
             font-size: 13px;
@@ -714,10 +717,9 @@
             align-items: center;
             gap: 8px;
             padding: 5px 10px;
-            background: rgba(255, 255, 255, 0.85);
+            background: rgba(255, 255, 255, 0.9);
             border-radius: 6px;
             border: 1px solid rgba(226, 232, 240, 0.7);
-            backdrop-filter: blur(4px);
             font-size: 12px;
         }
         .order-summary .row .label {
@@ -738,7 +740,6 @@
             padding: 16px 20px;
             background: linear-gradient(135deg, rgba(240, 249, 255, 0.95) 0%, rgba(224, 242, 254, 0.95) 100%);
             border-top: 3px solid #0ea5e9;
-            backdrop-filter: blur(4px);
         }
         .order-total-inline {
             display: flex;
@@ -867,14 +868,15 @@
             .layout-header .header-left { justify-self: center; text-align: center; }
             .layout-header .header-right { justify-self: center; align-items: center; text-align: center; }
             .layout-svg-wrap { padding: 10px; }
-            .layout-body { grid-template-columns: 1fr; }
+            /* На мобильных — сводка уходит вниз */
+            .layout-body { flex-direction: column; }
             .order-summary { 
-                padding: 10px 15px; 
+                padding: 12px 15px; 
                 border-left: none; 
                 border-top: 1px dashed rgba(226, 232, 240, 0.9);
                 min-width: 0;
                 max-width: none;
-                margin-left: 0;
+                background: rgba(248, 250, 252, 0.5);
             }
             .order-total-inline { flex-direction: column; }
             .total-cell { min-width: 0; width: 100%; }
@@ -1721,7 +1723,7 @@
 
             const svg = `
                 <svg width="${totalWidth}" height="${totalHeight}" viewBox="0 0 ${totalWidth} ${totalHeight}" 
-                     xmlns="http://www.w3.org/2000/svg" style="display: block; background: transparent;">
+                     xmlns="http://www.w3.org/2000/svg" style="display: block; background: transparent; margin: 0 auto;">
                     ${svgContent}
                 </svg>
             `;
@@ -2111,7 +2113,7 @@
         }
 
         // --------------------------------------------------------------
-        // СОХРАНЕНИЕ PNG — с обрезкой пустых полей
+        // СОХРАНЕНИЕ PNG
         // --------------------------------------------------------------
         async function generateCanvas() {
             if (items.length === 0) {
@@ -2119,7 +2121,6 @@
                 return null;
             }
 
-            // Создаём временный контейнер для захвата
             const wrapper = document.createElement('div');
             wrapper.style.position = 'fixed';
             wrapper.style.left = '-10000px';
@@ -2127,12 +2128,9 @@
             wrapper.style.background = '#ffffff';
             wrapper.style.zIndex = '-1';
             
-            // Клонируем layout-paper
             const paperClone = layoutPaper.cloneNode(true);
-            
-            // Даём ширину для полного отображения (шапка + макет + сводка сбоку)
             paperClone.style.width = 'max-content';
-            paperClone.style.minWidth = '900px';   // ← для шапки + сводки
+            paperClone.style.minWidth = '900px';
             paperClone.style.maxWidth = 'none';
             paperClone.style.display = 'inline-block';
             paperClone.style.boxShadow = 'none';
@@ -2141,10 +2139,8 @@
             wrapper.appendChild(paperClone);
             document.body.appendChild(wrapper);
 
-            // Даём браузеру отрисовать
             await new Promise(r => setTimeout(r, 150));
 
-            // Получаем реальные размеры
             const rect = paperClone.getBoundingClientRect();
             const captureWidth = Math.max(Math.ceil(rect.width), paperClone.scrollWidth);
             const captureHeight = Math.max(Math.ceil(rect.height), paperClone.scrollHeight);
