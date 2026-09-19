@@ -666,7 +666,7 @@
         /* ====== Основной контент: макет + сводка сбоку ====== */
         .layout-body {
             display: flex;
-            align-items: stretch;
+            align-items: flex-start;
             position: relative;
         }
         .layout-svg-wrap {
@@ -674,7 +674,7 @@
             display: flex;
             justify-content: center;
             align-items: flex-start;
-            padding: 20px;
+            padding: 15px 10px 15px 15px;
             background: transparent;
             overflow-x: auto;
             -webkit-overflow-scrolling: touch;
@@ -690,16 +690,15 @@
 
         /* ====== Компактная сводка сбоку ====== */
         .order-summary {
-            padding: 20px;
+            padding: 15px 15px 15px 5px;
             display: flex;
             flex-direction: column;
-            gap: 6px;
+            gap: 5px;
             font-size: 12px;
             min-width: 220px;
-            max-width: 260px;
-            border-left: 1px dashed rgba(226, 232, 240, 0.9);
-            background: rgba(248, 250, 252, 0.5);
+            max-width: 250px;
             flex-shrink: 0;
+            align-self: flex-start;
         }
         .order-summary .summary-header {
             font-size: 13px;
@@ -877,6 +876,7 @@
                 min-width: 0;
                 max-width: none;
                 background: rgba(248, 250, 252, 0.5);
+                align-self: stretch;
             }
             .order-total-inline { flex-direction: column; }
             .total-cell { min-width: 0; width: 100%; }
@@ -1605,7 +1605,8 @@
 
             for (const [type, groupItems] of Object.entries(groups)) {
                 const rows = Math.ceil(groupItems.length / itemsPerRow);
-                const groupHeight = groupTitleH + rows * cellH;
+                // Уменьшаем высоту группы на 40px, чтобы убрать пустое место снизу
+                const groupHeight = groupTitleH + rows * cellH - 40;
                 groupLayouts.push({ type, groupItems, rows, groupHeight, startY: totalHeight });
                 totalHeight += groupHeight + groupSpacingY;
                 if (groupItems.length > maxRowCount) {
