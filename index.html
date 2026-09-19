@@ -955,11 +955,11 @@
         </div>
         <div class="field-group">
             <label for="widthInput">Ширина (см)</label>
-            <input type="number" id="widthInput" value="80" min="30" max="200" step="0.1">
+            <input type="number" id="widthInput" value="80" min="10" max="250" step="0.1">
         </div>
         <div class="field-group">
             <label for="heightInput">Высота (см)</label>
-            <input type="number" id="heightInput" value="170" min="50" max="250" step="0.1">
+            <input type="number" id="heightInput" value="170" min="10" max="300" step="0.1">
         </div>
         <div class="field-group">
             <label for="sideSelect">Сторона управления</label>
@@ -1115,7 +1115,7 @@
         <span>⚡ Все расценки из файла</span>
         <span>🧷 Доп. +25% за коричневую фурнитуру (не учтено)</span>
         <span>📐 свыше 2,0 м +10% за каждые 10 см</span>
-        <span>🔄 40-44→40, 45-49→50</span>
+        <span>🔄 Если ширина &lt; 40 см — считается по 40 см</span>
         <span>💰 Итог округляется до 10 Br вверх</span>
         <span>⚡ Срочно — нажмите кнопку</span>
         <span>💵 Аванс — общий на весь заказ</span>
@@ -1306,7 +1306,6 @@
             return Math.ceil(byn / 10) * 10;
         }
 
-        // Парсинг чисел с запятой: "80,7" → 80.7
         function parseNum(val) {
             if (val === undefined || val === null || val === '') return 0;
             const str = String(val).replace(',', '.').trim();
@@ -1314,7 +1313,6 @@
             return isNaN(num) ? 0 : num;
         }
 
-        // Форматирование числа для отображения: 80.7 → "80,7"
         function formatNum(val) {
             if (val === undefined || val === null || val === '') return '0';
             const num = parseFloat(val);
@@ -1323,7 +1321,6 @@
             return num.toFixed(1).replace('.', ',').replace(/,0$/, '');
         }
 
-        // Сокращённый текст для макета
         function getSizeByShort(sizeBy) {
             if (sizeBy === 'ВГШ') return 'ВГШ';
             if (sizeBy === 'по ткани') return 'по ткани';
@@ -1331,7 +1328,6 @@
             return sizeBy;
         }
 
-        // Полный текст для таблицы
         function getSizeByFull(sizeBy) {
             if (sizeBy === 'ВГШ') return 'ВГШ';
             if (sizeBy === 'по ткани') return 'По ткани';
@@ -1339,11 +1335,19 @@
             return sizeBy;
         }
 
+        // Округление ширины до ближайшей расценки
+        // Если ширина МЕНЬШЕ минимальной — берём минимальную (40 см)
         function roundWidth(typeKey, width) {
             const typeData = PRICES[typeKey];
             if (!typeData) return 40;
             const widths = typeData.widths;
             
+            // Если ширина меньше минимальной — берём минимальную
+            if (width < widths[0]) return widths[0];
+            // Если больше максимальной — берём максимальную
+            if (width > widths[widths.length - 1]) return widths[widths.length - 1];
+            
+            // Математическое округление до 10
             let rounded = Math.round(width / 10) * 10;
             if (rounded < widths[0]) return widths[0];
             if (rounded > widths[widths.length - 1]) return widths[widths.length - 1];
@@ -1716,7 +1720,6 @@
                 `;
             }
 
-            // Размер по — учитываем все три варианта
             const vgshCount = items.filter(i => i.sizeBy === 'ВГШ').length;
             const fabricCount = items.filter(i => i.sizeBy === 'по ткани').length;
             const gabaritCount = items.filter(i => i.sizeBy === 'по габаритам').length;
@@ -1837,10 +1840,10 @@
                                 <input type="text" id="edit_fabric_${item.id}" value="${item.fabric || ''}" style="max-width:110px;" placeholder="Ткань">
                             </td>
                             <td>
-                                <input type="number" id="edit_width_${item.id}" value="${item.width}" min="30" max="200" step="0.1">
+                                <input type="number" id="edit_width_${item.id}" value="${item.width}" min="10" max="250" step="0.1">
                             </td>
                             <td>
-                                <input type="number" id="edit_height_${item.id}" value="${item.height}" min="50" max="250" step="0.1">
+                                <input type="number" id="edit_height_${item.id}" value="${item.height}" min="10" max="300" step="0.1">
                             </td>
                             <td>
                                 <select id="edit_side_${item.id}" class="edit-select">
@@ -1963,17 +1966,16 @@
             const sizeBy = sizeBySelect.value;
             const payment = paymentSelect.value;
 
-            const typeData = PRICES[type];
-            if (!typeData) return;
-            const maxWidth = typeData.widths[typeData.widths.length - 1];
-            const minWidth = typeData.widths[0];
-
-            if (width < minWidth || width > maxWidth) {
-                alert(`Ширина должна быть от ${minWidth} до ${maxWidth} см для выбранного типа`);
+            // УБРАНА ПРОВЕРКА МИНИМАЛЬНОЙ ШИРИНЫ
+            // Теперь можно вводить любое значение — цена будет считаться по ближайшей расценке
+            
+            // Проверяем только разумные пределы
+            if (width < 5 || width > 250) {
+                alert('Ширина должна быть от 5 до 250 см');
                 return;
             }
-            if (height < 50 || height > 250) {
-                alert('Высота должна быть от 50 до 250 см');
+            if (height < 5 || height > 300) {
+                alert('Высота должна быть от 5 до 300 см');
                 return;
             }
 
@@ -2012,17 +2014,13 @@
             const sizeBy = document.getElementById(`edit_sizeby_${id}`).value;
             const payment = document.getElementById(`edit_payment_${id}`).value;
 
-            const typeData = PRICES[type];
-            if (!typeData) return;
-            const maxWidth = typeData.widths[typeData.widths.length - 1];
-            const minWidth = typeData.widths[0];
-
-            if (width < minWidth || width > maxWidth) {
-                alert(`Ширина должна быть от ${minWidth} до ${maxWidth} см для выбранного типа`);
+            // УБРАНА ПРОВЕРКА МИНИМАЛЬНОЙ ШИРИНЫ
+            if (width < 5 || width > 250) {
+                alert('Ширина должна быть от 5 до 250 см');
                 return;
             }
-            if (height < 50 || height > 250) {
-                alert('Высота должна быть от 50 до 250 см');
+            if (height < 5 || height > 300) {
+                alert('Высота должна быть от 5 до 300 см');
                 return;
             }
 
