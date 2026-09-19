@@ -568,8 +568,6 @@
             overflow: hidden;
             box-shadow: 0 4px 16px rgba(0,0,0,0.08);
             border: 1px solid #e2e8f0;
-            width: 100%;
-            max-width: 100%;
         }
         
         /* ====== ШАПКА МАКЕТА ====== */
@@ -664,6 +662,14 @@
             0%, 100% { transform: scale(1); }
             50% { transform: scale(1.07); }
         }
+
+        /* ====== Основной контент макета: макет + сводка сбоку ====== */
+        .layout-body {
+            display: grid;
+            grid-template-columns: 1fr auto;
+            gap: 0;
+            align-items: stretch;
+        }
         .layout-svg-wrap {
             display: flex;
             justify-content: center;
@@ -679,32 +685,55 @@
             display: block;
             background: transparent;
         }
+
+        /* ====== Компактная сводка сбоку ====== */
         .order-summary {
-            padding: 0 20px 10px 20px;
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-            gap: 10px;
+            padding: 20px 20px 20px 0;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            font-size: 12px;
+            min-width: 200px;
+            max-width: 240px;
+            border-left: 1px dashed rgba(226, 232, 240, 0.9);
+            margin-left: 10px;
+        }
+        .order-summary .summary-header {
             font-size: 13px;
+            font-weight: 700;
+            color: #1e293b;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            padding-bottom: 6px;
+            border-bottom: 2px solid #0ea5e9;
+            margin-bottom: 4px;
         }
         .order-summary .row {
             display: flex;
             justify-content: space-between;
-            padding: 8px 12px;
+            align-items: center;
+            gap: 8px;
+            padding: 5px 10px;
             background: rgba(255, 255, 255, 0.85);
-            border-radius: 8px;
-            border: 1px solid rgba(226, 232, 240, 0.8);
+            border-radius: 6px;
+            border: 1px solid rgba(226, 232, 240, 0.7);
             backdrop-filter: blur(4px);
+            font-size: 12px;
         }
         .order-summary .row .label {
             color: #64748b;
             font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 4px;
         }
         .order-summary .row .value {
             color: #1e293b;
-            font-weight: 600;
+            font-weight: 700;
+            white-space: nowrap;
         }
 
-        /* === Итоговый блок с авансом в одну строку === */
+        /* === Итоговый блок с авансом === */
         .order-total-block {
             padding: 16px 20px;
             background: linear-gradient(135deg, rgba(240, 249, 255, 0.95) 0%, rgba(224, 242, 254, 0.95) 100%);
@@ -838,6 +867,15 @@
             .layout-header .header-left { justify-self: center; text-align: center; }
             .layout-header .header-right { justify-self: center; align-items: center; text-align: center; }
             .layout-svg-wrap { padding: 10px; }
+            .layout-body { grid-template-columns: 1fr; }
+            .order-summary { 
+                padding: 10px 15px; 
+                border-left: none; 
+                border-top: 1px dashed rgba(226, 232, 240, 0.9);
+                min-width: 0;
+                max-width: none;
+                margin-left: 0;
+            }
             .order-total-inline { flex-direction: column; }
             .total-cell { min-width: 0; width: 100%; }
         }
@@ -1087,11 +1125,14 @@
                     </div>
                 </div>
 
-                <div class="layout-svg-wrap" id="layoutSvgWrap">
-                    <!-- SVG вставляется через JS -->
-                </div>
-                <div class="order-summary" id="orderSummary">
-                    <!-- Сводка вставляется через JS -->
+                <!-- Макет + сводка сбоку -->
+                <div class="layout-body">
+                    <div class="layout-svg-wrap" id="layoutSvgWrap">
+                        <!-- SVG вставляется через JS -->
+                    </div>
+                    <div class="order-summary" id="orderSummary">
+                        <!-- Сводка вставляется через JS -->
+                    </div>
                 </div>
 
                 <div class="order-total-block">
@@ -1687,13 +1728,13 @@
 
             layoutSvgWrap.innerHTML = svg;
 
-            let summaryHtml = '';
-            const totalItems = items.length;
+            // ===== Компактная сводка сбоку =====
+            let summaryHtml = `<div class="summary-header">📊 Сводка</div>`;
 
             summaryHtml += `
                 <div class="row">
                     <span class="label">Всего изделий:</span>
-                    <span class="value">${totalItems} шт.</span>
+                    <span class="value">${items.length} шт.</span>
                 </div>
             `;
 
@@ -1711,7 +1752,7 @@
             if (leftCount > 0) {
                 summaryHtml += `
                     <div class="row">
-                        <span class="label">⬅ Управление слева:</span>
+                        <span class="label">⬅ Слева:</span>
                         <span class="value">${leftCount} шт.</span>
                     </div>
                 `;
@@ -1719,7 +1760,7 @@
             if (rightCount > 0) {
                 summaryHtml += `
                     <div class="row">
-                        <span class="label">➡ Управление справа:</span>
+                        <span class="label">➡ Справа:</span>
                         <span class="value">${rightCount} шт.</span>
                     </div>
                 `;
@@ -1731,7 +1772,7 @@
             if (vgshCount > 0) {
                 summaryHtml += `
                     <div class="row">
-                        <span class="label">📏 Размер по ВГШ:</span>
+                        <span class="label">📏 ВГШ:</span>
                         <span class="value">${vgshCount} шт.</span>
                     </div>
                 `;
@@ -1739,7 +1780,7 @@
             if (fabricCount > 0) {
                 summaryHtml += `
                     <div class="row">
-                        <span class="label">📏 Размер по ткани:</span>
+                        <span class="label">📏 По ткани:</span>
                         <span class="value">${fabricCount} шт.</span>
                     </div>
                 `;
@@ -1747,7 +1788,7 @@
             if (gabaritCount > 0) {
                 summaryHtml += `
                     <div class="row">
-                        <span class="label">📏 Размер по габаритам:</span>
+                        <span class="label">📏 По габаритам:</span>
                         <span class="value">${gabaritCount} шт.</span>
                     </div>
                 `;
@@ -1766,7 +1807,7 @@
             if (cashlessCnt > 0) {
                 summaryHtml += `
                     <div class="row">
-                        <span class="label">💳 Безналичные (+6%):</span>
+                        <span class="label">💳 Безнал +6%:</span>
                         <span class="value">${cashlessCnt} шт.</span>
                     </div>
                 `;
@@ -2089,9 +2130,9 @@
             // Клонируем layout-paper
             const paperClone = layoutPaper.cloneNode(true);
             
-            // ВАЖНО: даём минимальную ширину, чтобы шапка поместилась целиком
+            // Даём ширину для полного отображения (шапка + макет + сводка сбоку)
             paperClone.style.width = 'max-content';
-            paperClone.style.minWidth = '720px';   // ← минимум для шапки
+            paperClone.style.minWidth = '900px';   // ← для шапки + сводки
             paperClone.style.maxWidth = 'none';
             paperClone.style.display = 'inline-block';
             paperClone.style.boxShadow = 'none';
@@ -2101,7 +2142,7 @@
             document.body.appendChild(wrapper);
 
             // Даём браузеру отрисовать
-            await new Promise(r => setTimeout(r, 100));
+            await new Promise(r => setTimeout(r, 150));
 
             // Получаем реальные размеры
             const rect = paperClone.getBoundingClientRect();
