@@ -568,9 +568,8 @@
             overflow: hidden;
             box-shadow: 0 4px 16px rgba(0,0,0,0.08);
             border: 1px solid #e2e8f0;
-            /* Центрируем макет по ширине */
-            display: inline-block;
-            min-width: 100%;
+            width: 100%;
+            max-width: 100%;
         }
         
         /* ====== ШАПКА МАКЕТА ====== */
@@ -789,6 +788,13 @@
         .total-cell.remain-cell.paid .value {
             color: #065f46;
             font-size: 15px;
+        }
+
+        /* Обёртка для захвата */
+        #orderCapture {
+            display: inline-block;
+            width: 100%;
+            background: transparent;
         }
 
         @media (max-width: 768px) {
@@ -1339,19 +1345,14 @@
             return sizeBy;
         }
 
-        // Округление ширины до ближайшей расценки
-        // Если ширина МЕНЬШЕ минимальной — берём минимальную
         function roundWidth(typeKey, width) {
             const typeData = PRICES[typeKey];
             if (!typeData) return 40;
             const widths = typeData.widths;
             
-            // Если ширина меньше минимальной — берём минимальную
             if (width < widths[0]) return widths[0];
-            // Если больше максимальной — берём максимальную
             if (width > widths[widths.length - 1]) return widths[widths.length - 1];
             
-            // Математическое округление до 10
             let rounded = Math.round(width / 10) * 10;
             if (rounded < widths[0]) return widths[0];
             if (rounded > widths[widths.length - 1]) return widths[widths.length - 1];
@@ -1970,10 +1971,6 @@
             const sizeBy = sizeBySelect.value;
             const payment = paymentSelect.value;
 
-            // УБРАНА ПРОВЕРКА МИНИМАЛЬНОЙ ШИРИНЫ
-            // Теперь можно вводить любое значение — цена будет считаться по ближайшей расценке
-            
-            // Проверяем только разумные пределы
             if (width < 5 || width > 250) {
                 alert('Ширина должна быть от 5 до 250 см');
                 return;
@@ -2018,7 +2015,6 @@
             const sizeBy = document.getElementById(`edit_sizeby_${id}`).value;
             const payment = document.getElementById(`edit_payment_${id}`).value;
 
-            // УБРАНА ПРОВЕРКА МИНИМАЛЬНОЙ ШИРИНЫ
             if (width < 5 || width > 250) {
                 alert('Ширина должна быть от 5 до 250 см');
                 return;
@@ -2082,52 +2078,53 @@
                 return null;
             }
 
-            const captureElement = document.getElementById('orderCapture');
+            // Создаём временный контейнер для захвата
+            // Он будет позиционирован вне экрана и не влиять на layout
+            const wrapper = document.createElement('div');
+            wrapper.style.position = 'fixed';
+            wrapper.style.left = '-10000px';
+            wrapper.style.top = '0';
+            wrapper.style.background = '#ffffff';
+            wrapper.style.zIndex = '-1';
             
-            // Сохраняем оригинальные стили
-            const originalWidth = captureElement.style.width;
-            const originalDisplay = captureElement.style.display;
+            // Клонируем layout-paper
+            const paperClone = layoutPaper.cloneNode(true);
+            paperClone.style.width = 'fit-content';
+            paperClone.style.maxWidth = 'none';
+            paperClone.style.display = 'inline-block';
             
-            // Получаем реальные размеры содержимого (без растяжения)
-            // Сначала сбрасываем ширину на auto, чтобы контент занял свою естественную ширину
-            captureElement.style.width = 'auto';
-            captureElement.style.display = 'inline-block';
-            
-            // Даём браузеру применить стили
-            await new Promise(r => setTimeout(r, 50));
-            
-            // Получаем реальные размеры
-            const naturalWidth = layoutPaper.scrollWidth;
-            const naturalHeight = layoutPaper.scrollHeight;
+            wrapper.appendChild(paperClone);
+            document.body.appendChild(wrapper);
 
-            // Устанавливаем точную ширину/высоту для захвата
-            captureElement.style.width = naturalWidth + 'px';
-            captureElement.style.display = 'block';
+            // Даём браузеру отрисовать
+            await new Promise(r => setTimeout(r, 100));
+
+            // Получаем реальные размеры
+            const rect = paperClone.getBoundingClientRect();
+            const captureWidth = Math.ceil(rect.width);
+            const captureHeight = Math.ceil(rect.height);
 
             try {
                 const captureScale = isMobile ? 3 : 2;
-                const canvas = await html2canvas(captureElement, {
+                const canvas = await html2canvas(paperClone, {
                     backgroundColor: '#ffffff',
                     scale: captureScale,
                     useCORS: true,
                     allowTaint: true,
                     logging: false,
-                    width: naturalWidth,
-                    height: naturalHeight,
-                    windowWidth: naturalWidth,
-                    windowHeight: naturalHeight,
-                    onclone: function(clonedDoc) {
-                        const clonedElement = clonedDoc.getElementById('orderCapture');
-                        if (clonedElement) {
-                            clonedElement.style.width = naturalWidth + 'px';
-                            clonedElement.style.background = '#ffffff';
-                        }
-                    }
+                    width: captureWidth,
+                    height: captureHeight,
+                    windowWidth: captureWidth,
+                    windowHeight: captureHeight,
+                    scrollX: 0,
+                    scrollY: 0
                 });
                 return canvas;
+            } catch (e) {
+                console.error('Ошибка html2canvas:', e);
+                throw e;
             } finally {
-                captureElement.style.width = originalWidth;
-                captureElement.style.display = originalDisplay;
+                document.body.removeChild(wrapper);
             }
         }
 
