@@ -84,6 +84,7 @@
         .badge-size { background: #fce7f3; color: #9d174d; border-radius: 40px; padding: 1px 10px; font-size: 11px; font-weight: 500; display: inline-block; }
         .badge-payment { background: #d1fae5; color: #065f46; border-radius: 40px; padding: 1px 10px; font-size: 11px; font-weight: 500; display: inline-block; }
         .badge-fabric { background: #fef3c7; color: #92400e; border-radius: 40px; padding: 1px 10px; font-size: 11px; font-weight: 500; display: inline-block; max-width: 120px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .badge-fabrictype { background: #e0f2fe; color: #075985; border-radius: 40px; padding: 1px 10px; font-size: 11px; font-weight: 500; display: inline-block; max-width: 120px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
         .badge-cashless { background: #fef3c7; color: #92400e; border-radius: 40px; padding: 1px 8px; font-size: 10px; font-weight: 600; margin-left: 3px; display: inline-block; }
         .empty-state { padding: 30px 15px; text-align: center; color: #94a3b8; }
         .empty-state .icon { font-size: 36px; margin-bottom: 8px; }
@@ -256,7 +257,7 @@
             </datalist>
             <select id="fabricSelectProcomfort" style="display:none;"></select>
         </div>
-        <div class="field-group">
+        <div class="field-group" id="fabricTypeGroup" style="display:none;">
             <label for="fabricTypeInput">🧵 Вид ткани</label>
             <input type="text" id="fabricTypeInput" placeholder="Например: рогожка, блэкаут" value="">
         </div>
@@ -695,6 +696,7 @@
     const catLabel = document.getElementById('catLabel');
     const fabricInput = document.getElementById('fabricInput');
     const fabricTypeInput = document.getElementById('fabricTypeInput');
+    const fabricTypeGroup = document.getElementById('fabricTypeGroup');
     const fabricSelectPro = document.getElementById('fabricSelectProcomfort');
     const widthInput = document.getElementById('widthInput');
     const heightInput = document.getElementById('heightInput');
@@ -1186,7 +1188,7 @@
 <td><span class="badge">${typeName}</span></td>
 <td><span class="badge badge-group">${groupText}</span></td>
 <td><span class="badge-fabric" title="${escapeXml(fabricText)}">${escapeXml(fabricText)}</span></td>
-<td><span class="badge-fabric" title="${escapeXml(fabricTypeText)}" style="background:#e0f2fe;color:#075985;">${escapeXml(fabricTypeText)}</span></td>
+<td><span class="badge-fabrictype" title="${escapeXml(fabricTypeText)}">${escapeXml(fabricTypeText)}</span></td>
 <td>${formatNum(item.width)}</td>
 <td>${formatNum(item.height)}</td>
 <td><span class="badge-side">${sideText}</span></td>
@@ -1218,7 +1220,7 @@
         const type = typeSelect.value;
         const cat = catSelect.value;
         const fabric = manufacturer === 'procomfort' ? (fabricSelectPro.value || '') : fabricInput.value.trim();
-        const fabricType = fabricTypeInput.value.trim();
+        const fabricType = manufacturer === 'procomfort' ? fabricTypeInput.value.trim() : '';
         const width = parseNum(widthInput.value) || 80;
         const height = parseNum(heightInput.value) || 170;
         const side = sideSelect.value;
@@ -1342,6 +1344,7 @@
             catSelect.parentElement.style.display = '';
             fabricInput.style.display = '';
             fabricSelectPro.style.display = 'none';
+            fabricTypeGroup.style.display = 'none';
         } else if (mfr === 'szs') {
             const pD = SZS_PRICES[typeKey];
             const gs = pD && pD.groups ? pD.groups : ['0','1','2','3'];
@@ -1354,6 +1357,7 @@
             catSelect.parentElement.style.display = '';
             fabricInput.style.display = '';
             fabricSelectPro.style.display = 'none';
+            fabricTypeGroup.style.display = 'none';
         } else if (mfr === 'procomfort') {
             catSelect.parentElement.style.display = 'none';
             const opt = document.createElement('option');
@@ -1361,6 +1365,7 @@
             catSelect.appendChild(opt);
             fabricInput.style.display = 'none';
             fabricSelectPro.style.display = '';
+            fabricTypeGroup.style.display = '';
             fabricSelectPro.innerHTML = '';
             const fabrics = PROCOMFORT_PRICES[typeKey]?.fabrics || {};
             for (const name of Object.keys(fabrics)) {
