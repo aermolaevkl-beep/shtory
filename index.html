@@ -30,10 +30,12 @@
         .urgent-btn:hover { background: #fde68a; transform: scale(1.02); }
         .urgent-btn.active { background: #f59e0b; color: white; border-color: #d97706; box-shadow: 0 4px 12px rgba(245, 158, 11, 0.4); }
         .urgent-btn .icon { font-size: 16px; }
-        .grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px 15px; background: #f8fafc; padding: 15px 15px 10px 15px; border-radius: 18px; margin-bottom: 12px; }
+
+        /* Сетка формы — компактная */
+        .grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(155px, 1fr)); gap: 10px 12px; background: #f8fafc; padding: 14px 14px 10px 14px; border-radius: 18px; margin-bottom: 12px; }
         .field-group { display: flex; flex-direction: column; gap: 3px; }
         .field-group label { font-weight: 600; font-size: 12px; color: #0f172a; letter-spacing: 0.3px; }
-        .field-group select, .field-group input { padding: 8px 10px; border: 1px solid #d1d9e6; border-radius: 10px; font-size: 14px; background: white; width: 100%; min-width: 0; }
+        .field-group select, .field-group input[type="text"], .field-group input[type="number"], .field-group input[type="tel"], .field-group input[type="date"] { padding: 8px 10px; border: 1px solid #d1d9e6; border-radius: 10px; font-size: 14px; background: white; width: 100%; min-width: 0; }
         .field-group select:focus, .field-group input:focus { outline: 2px solid #3b82f6; border-color: transparent; }
         .field-group.manufacturer-field label { color: #7c3aed; }
         .field-group.manufacturer-field select { border: 2px solid #c4b5fd; background: #faf5ff; font-weight: 600; color: #6d28d9; }
@@ -41,6 +43,36 @@
         .field-group.group-field label { color: #0369a1; }
         .field-group.group-field select { border: 2px solid #7dd3fc; background: #f0f9ff; font-weight: 600; color: #0369a1; }
         .field-group.group-field select:focus { outline: 2px solid #0ea5e9; }
+
+        /* Галочка округления */
+        .checkbox-group { display: flex; align-items: flex-end; }
+        .checkbox-label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 12px;
+            background: #fef3c7;
+            border: 2px solid #fbbf24;
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: 600;
+            color: #92400e;
+            cursor: pointer;
+            width: 100%;
+            user-select: none;
+            transition: 0.15s;
+            white-space: nowrap;
+        }
+        .checkbox-label:hover { background: #fde68a; }
+        .checkbox-label input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            margin: 0;
+            cursor: pointer;
+            accent-color: #f59e0b;
+            flex-shrink: 0;
+        }
+
         .btn { padding: 8px 18px; border: none; border-radius: 10px; font-size: 14px; font-weight: 600; cursor: pointer; transition: 0.15s; background: #3b82f6; color: white; align-self: flex-end; margin-top: auto; white-space: nowrap; }
         .btn:hover { background: #2563eb; transform: scale(1.02); }
         .btn-danger { background: #ef4444; }
@@ -86,6 +118,7 @@
         .badge-fabric { background: #fef3c7; color: #92400e; border-radius: 40px; padding: 1px 10px; font-size: 11px; font-weight: 500; display: inline-block; max-width: 120px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
         .badge-fabrictype { background: #e0f2fe; color: #075985; border-radius: 40px; padding: 1px 10px; font-size: 11px; font-weight: 500; display: inline-block; max-width: 120px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
         .badge-cashless { background: #fef3c7; color: #92400e; border-radius: 40px; padding: 1px 8px; font-size: 10px; font-weight: 600; margin-left: 3px; display: inline-block; }
+        .badge-round { background: #dbeafe; color: #1e40af; border-radius: 40px; padding: 1px 8px; font-size: 10px; font-weight: 600; margin-left: 3px; display: inline-block; }
         .empty-state { padding: 30px 15px; text-align: center; color: #94a3b8; }
         .empty-state .icon { font-size: 36px; margin-bottom: 8px; }
         .footer-note { margin-top: 15px; font-size: 12px; color: #475569; border-top: 1px solid #e2e8f0; padding-top: 12px; display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px; }
@@ -159,6 +192,8 @@
             .price-both .usd-price { font-size: 10px; }
             .price-both .byn-price { font-size: 10px; }
             .total-row { font-size: 11px; }
+            .checkbox-label { font-size: 11px; padding: 6px 10px; }
+            .checkbox-label input[type="checkbox"] { width: 16px; height: 16px; }
         }
         @media print {
             body { background: white; padding: 0; }
@@ -260,6 +295,12 @@
         <div class="field-group" id="fabricTypeGroup" style="display:none;">
             <label for="fabricTypeInput">🧵 Вид ткани</label>
             <input type="text" id="fabricTypeInput" placeholder="Например: рогожка, блэкаут" value="">
+        </div>
+        <div class="field-group checkbox-group" id="roundGroup" style="display:none;">
+            <label class="checkbox-label" for="roundCheckbox">
+                <input type="checkbox" id="roundCheckbox" checked>
+                <span>Округлять до м²</span>
+            </label>
         </div>
         <div class="field-group">
             <label for="widthInput">Ширина (см)</label>
@@ -372,7 +413,7 @@
         <span>⚡ ПД + СЗС (×2) + ProComfort (×1)</span>
         <span>🏷 СЗС ДН: группы 0-3, СЗС РШ: группы 0-4</span>
         <span>💰 Итог округляется до 10 Br вверх</span>
-        <span>⚡ Срочно — нажмите кнопку</span>
+        <span>📐 ProComfort: округление площади до м²</span>
         <span>💵 Аванс — общий на весь заказ</span>
         <span>📏 Можно вводить мм (80,7 см)</span>
     </div>
@@ -697,6 +738,8 @@
     const fabricInput = document.getElementById('fabricInput');
     const fabricTypeInput = document.getElementById('fabricTypeInput');
     const fabricTypeGroup = document.getElementById('fabricTypeGroup');
+    const roundGroup = document.getElementById('roundGroup');
+    const roundCheckbox = document.getElementById('roundCheckbox');
     const fabricSelectPro = document.getElementById('fabricSelectProcomfort');
     const widthInput = document.getElementById('widthInput');
     const heightInput = document.getElementById('heightInput');
@@ -852,7 +895,7 @@
         return (basePrice + extra) * SZS_MULTIPLIER;
     }
 
-    function calcProComfortPrice(typeKey, fabricName, widthCm, heightCm) {
+    function calcProComfortPrice(typeKey, fabricName, widthCm, heightCm, roundArea) {
         const typeData = PROCOMFORT_PRICES[typeKey];
         if (!typeData) return 0;
         const pricePerM2 = typeData.fabrics[fabricName];
@@ -861,7 +904,7 @@
         if (heightM < 1) heightM = 1;
         let widthM = widthCm / 100;
         let area = widthM * heightM;
-        area = Math.ceil(area);
+        if (roundArea) area = Math.ceil(area);
         return area * pricePerM2;
     }
 
@@ -870,7 +913,7 @@
         if (item.manufacturer === 'premier_decor') {
             base = calcPremierPrice(item.type, item.cat, item.width, item.height);
         } else if (item.manufacturer === 'procomfort') {
-            base = calcProComfortPrice(item.type, item.fabric, item.width, item.height);
+            base = calcProComfortPrice(item.type, item.fabric, item.width, item.height, item.roundArea !== false);
         } else {
             base = calcSzSPrice(item.type, item.cat, item.width, item.height);
         }
@@ -1076,6 +1119,10 @@
         const clC = items.filter(i => i.payment === 'Безналичные').length;
         if (caC > 0) addRow('💵 Наличные:', caC + ' шт.');
         if (clC > 0) addRow('💳 Безнал +6%:', clC + ' шт.');
+        const pcRoundC = items.filter(i => i.manufacturer === 'procomfort' && i.roundArea !== false).length;
+        const pcNoRoundC = items.filter(i => i.manufacturer === 'procomfort' && i.roundArea === false).length;
+        if (pcRoundC > 0) addRow('📐 PC с округл.:', pcRoundC + ' шт.');
+        if (pcNoRoundC > 0) addRow('📐 PC без округл.:', pcNoRoundC + ' шт.');
 
         const tbY = HEADER_H + bodyH + PAD;
         svg += `<rect x="${PAD}" y="${tbY}" width="${totalW - PAD*2}" height="${TOTAL_BLOCK_H}" fill="url(#totGrad)" stroke="#0ea5e9" stroke-width="3" rx="8"/>`;
@@ -1143,6 +1190,7 @@
             const typeName = getTypeName(item.type);
             const f = formatPrice(price);
             const cashlessMark = item.payment === 'Безналичные' ? ' <span class="badge-cashless">+6%</span>' : '';
+            const roundMark = (item.manufacturer === 'procomfort' && item.roundArea === false) ? ' <span class="badge-round">без окр.</span>' : '';
             const sideText = item.side === 'left' ? '⬅ Слева' : '➡ Справа';
             const sizeByText = getSizeByFull(item.sizeBy);
             const paymentBadge = item.payment === 'Безналичные'
@@ -1194,7 +1242,7 @@
 <td><span class="badge-side">${sideText}</span></td>
 <td><span class="badge-size">${sizeByText}</span></td>
 <td>${paymentBadge}</td>
-<td><div class="price-both"><span class="usd-price">${f.usdStr} $</span><span class="divider">/</span><span class="byn-price">${f.bynStr} Br</span>${cashlessMark}</div></td>
+<td><div class="price-both"><span class="usd-price">${f.usdStr} $</span><span class="divider">/</span><span class="byn-price">${f.bynStr} Br</span>${cashlessMark}${roundMark}</div></td>
 <td><div class="action-cell"><button class="btn btn-warning btn-xs" onclick="startEdit(${item.id})">✏️</button><button class="btn btn-danger btn-xs" onclick="removeItem(${item.id})">✕</button></div></td>
 </tr>`;
             }
@@ -1221,6 +1269,7 @@
         const cat = catSelect.value;
         const fabric = manufacturer === 'procomfort' ? (fabricSelectPro.value || '') : fabricInput.value.trim();
         const fabricType = manufacturer === 'procomfort' ? fabricTypeInput.value.trim() : '';
+        const roundArea = manufacturer === 'procomfort' ? roundCheckbox.checked : true;
         const width = parseNum(widthInput.value) || 80;
         const height = parseNum(heightInput.value) || 170;
         const side = sideSelect.value;
@@ -1231,7 +1280,7 @@
         if (height < 5 || height > 400) { alert('Высота должна быть от 5 до 400 см'); return; }
         if (manufacturer === 'procomfort' && !fabric) { alert('Выберите ткань'); return; }
 
-        items.push({ id: nextId++, manufacturer, type, cat, fabric, fabricType, width, height, side, sizeBy, payment });
+        items.push({ id: nextId++, manufacturer, type, cat, fabric, fabricType, roundArea, width, height, side, sizeBy, payment });
         renderItems();
     }
 
@@ -1253,6 +1302,11 @@
         if (item) {
             item.manufacturer = manufacturer; item.type = type; item.cat = cat;
             item.fabric = fabric; item.fabricType = fabricType;
+            if (manufacturer === 'procomfort') {
+                if (typeof item.roundArea === 'undefined') item.roundArea = true;
+            } else {
+                item.roundArea = true;
+            }
             item.width = width; item.height = height;
             item.side = side; item.sizeBy = sizeBy; item.payment = payment;
         }
@@ -1345,6 +1399,7 @@
             fabricInput.style.display = '';
             fabricSelectPro.style.display = 'none';
             fabricTypeGroup.style.display = 'none';
+            roundGroup.style.display = 'none';
         } else if (mfr === 'szs') {
             const pD = SZS_PRICES[typeKey];
             const gs = pD && pD.groups ? pD.groups : ['0','1','2','3'];
@@ -1358,6 +1413,7 @@
             fabricInput.style.display = '';
             fabricSelectPro.style.display = 'none';
             fabricTypeGroup.style.display = 'none';
+            roundGroup.style.display = 'none';
         } else if (mfr === 'procomfort') {
             catSelect.parentElement.style.display = 'none';
             const opt = document.createElement('option');
@@ -1366,6 +1422,7 @@
             fabricInput.style.display = 'none';
             fabricSelectPro.style.display = '';
             fabricTypeGroup.style.display = '';
+            roundGroup.style.display = '';
             fabricSelectPro.innerHTML = '';
             const fabrics = PROCOMFORT_PRICES[typeKey]?.fabrics || {};
             for (const name of Object.keys(fabrics)) {
@@ -1386,8 +1443,9 @@
         const width = parseNum(widthInput.value) || 80;
         const height = parseNum(heightInput.value) || 170;
         const payment = paymentSelect.value;
+        const roundArea = mfr === 'procomfort' ? roundCheckbox.checked : true;
 
-        const fakeItem = { manufacturer: mfr, type, cat, fabric, width, height, payment };
+        const fakeItem = { manufacturer: mfr, type, cat, fabric, roundArea, width, height, payment };
         const price = calculatePrice(fakeItem);
         const roundedW = roundWidth(mfr, type, width);
         const f = formatPrice(price);
@@ -1397,8 +1455,10 @@
         if (mfr === 'procomfort') {
             const hM = Math.max(height / 100, 1);
             const wM = width / 100;
-            const area = Math.ceil(wM * hM);
-            previewDetail.textContent = `${formatNum(width)} × ${formatNum(height)} см → ${area} м² × ${PROCOMFORT_PRICES[type].fabrics[fabric] || 0} $/м²`;
+            const rawArea = wM * hM;
+            const area = roundArea ? Math.ceil(rawArea) : rawArea;
+            const areaStr = roundArea ? `${area} м²` : `${rawArea.toFixed(3)} м²`;
+            previewDetail.textContent = `${formatNum(width)} × ${formatNum(height)} см → ${areaStr} × ${PROCOMFORT_PRICES[type].fabrics[fabric] || 0} $/м²`;
         } else {
             previewDetail.textContent = `${formatNum(width)} см × ${formatNum(height)} см → ${roundedW} см`;
         }
@@ -1414,6 +1474,7 @@
     catSelect.addEventListener('change', updatePreview);
     fabricInput.addEventListener('input', updatePreview);
     fabricTypeInput.addEventListener('input', updatePreview);
+    roundCheckbox.addEventListener('change', updatePreview);
     fabricSelectPro.addEventListener('change', updatePreview);
     widthInput.addEventListener('input', updatePreview);
     heightInput.addEventListener('input', updatePreview);
