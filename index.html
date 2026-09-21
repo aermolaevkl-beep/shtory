@@ -412,191 +412,20 @@
         }
         .layout-actions { margin-left: auto; display: flex; gap: 8px; flex-wrap: wrap; }
 
-        .layout-paper {
-            background-color: #ffffff;
-            background-image: 
-                linear-gradient(rgba(59, 130, 246, 0.08) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(59, 130, 246, 0.08) 1px, transparent 1px),
-                linear-gradient(rgba(59, 130, 246, 0.04) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(59, 130, 246, 0.04) 1px, transparent 1px);
-            background-size: 40px 40px, 40px 40px, 8px 8px, 8px 8px;
-            background-position: -1px -1px, -1px -1px, -1px -1px, -1px -1px;
+        #layoutSvgContainer {
+            background: white;
             border-radius: 16px;
-            overflow: hidden;
-            box-shadow: 0 4px 16px rgba(0,0,0,0.08);
-            border: 1px solid #e2e8f0;
-        }
-
-        .layout-header {
-            display: grid;
-            grid-template-columns: 1fr auto 1fr;
-            align-items: center;
-            gap: 20px;
-            padding: 18px 24px;
-            background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
-            color: white;
-        }
-        .layout-header .header-left { display: flex; flex-direction: column; gap: 6px; justify-self: start; }
-        .layout-header .header-left .order-title { font-size: 18px; font-weight: 800; color: white; letter-spacing: 0.5px; }
-        .layout-header .header-left .order-line { font-size: 13px; color: rgba(255,255,255,0.9); }
-        .layout-header .header-left .order-line strong { color: white; font-weight: 700; }
-        .layout-header .header-center { display: flex; justify-content: center; align-items: center; }
-
-        .brand-logo {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 0;
-            line-height: 1;
-            padding: 8px 20px;
-            background: rgba(255, 255, 255, 0.95);
-            border-radius: 10px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-        }
-        .brand-logo .brand-line-1 {
-            font-family: 'Arial Black', 'Segoe UI', Arial, sans-serif;
-            font-weight: 900;
-            font-size: 22px;
-            letter-spacing: 2px;
-            color: #706E6A;
-            text-transform: uppercase;
-        }
-        .brand-logo .brand-line-2 {
-            font-family: 'Arial Black', 'Segoe UI', Arial, sans-serif;
-            font-weight: 900;
-            font-size: 22px;
-            letter-spacing: 2px;
-            color: #ff7e50;
-            text-transform: uppercase;
-            margin-top: 2px;
-        }
-
-        .layout-header .header-right {
-            justify-self: end;
-            font-size: 13px;
-            color: rgba(255,255,255,0.9);
-            display: flex;
-            flex-direction: column;
-            align-items: flex-end;
-            gap: 8px;
-        }
-        .urgent-badge {
-            display: none;
-            background: #f59e0b;
-            color: white;
-            padding: 5px 16px;
-            border-radius: 30px;
-            font-size: 13px;
-            font-weight: 800;
-            letter-spacing: 0.8px;
-            box-shadow: 0 2px 12px rgba(245, 158, 11, 0.6);
-            animation: pulse 1.5s ease-in-out infinite;
-        }
-        .urgent-badge.show { display: inline-block; }
-        @keyframes pulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.07); }
-        }
-
-        .layout-body { display: flex; align-items: flex-start; position: relative; }
-        .layout-svg-wrap {
-            flex: 1;
-            display: flex;
-            justify-content: center;
-            align-items: flex-start;
-            padding: 15px 10px 15px 15px;
-            background: transparent;
             overflow-x: auto;
             -webkit-overflow-scrolling: touch;
-            min-width: 0;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+            border: 1px solid #e2e8f0;
+            padding: 0;
         }
-        .layout-svg-wrap svg { max-width: none; height: auto; display: block; background: transparent; margin: 0 auto; }
-
-        .order-summary {
-            padding: 15px 15px 15px 5px;
-            display: flex;
-            flex-direction: column;
-            gap: 5px;
-            font-size: 12px;
-            min-width: 220px;
-            max-width: 260px;
-            flex-shrink: 0;
-            align-self: flex-start;
+        #layoutSvgContainer svg {
+            display: block;
+            max-width: none;
+            height: auto;
         }
-        .order-summary .summary-header {
-            font-size: 13px;
-            font-weight: 700;
-            color: #1e293b;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            padding-bottom: 6px;
-            border-bottom: 2px solid #0ea5e9;
-            margin-bottom: 4px;
-        }
-        .order-summary .row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 8px;
-            padding: 5px 10px;
-            background: rgba(255, 255, 255, 0.9);
-            border-radius: 6px;
-            border: 1px solid rgba(226, 232, 240, 0.7);
-            font-size: 12px;
-        }
-        .order-summary .row .label { color: #64748b; font-weight: 500; display: flex; align-items: center; gap: 4px; }
-        .order-summary .row .value { color: #1e293b; font-weight: 700; white-space: nowrap; }
-
-        .order-total-block {
-            padding: 16px 20px;
-            background: linear-gradient(135deg, rgba(240, 249, 255, 0.95) 0%, rgba(224, 242, 254, 0.95) 100%);
-            border-top: 3px solid #0ea5e9;
-        }
-        .order-total-inline {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            align-items: stretch;
-            justify-content: space-between;
-        }
-        .total-cell {
-            flex: 1;
-            min-width: 180px;
-            padding: 12px 18px;
-            background: white;
-            border-radius: 12px;
-            border: 2px solid #bae6fd;
-            box-shadow: 0 2px 6px rgba(14, 165, 233, 0.08);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 8px;
-        }
-        .total-cell .label { font-weight: 700; color: #0c4a6e; font-size: 13px; white-space: nowrap; }
-        .total-cell .value {
-            font-weight: 800;
-            color: #0c4a6e;
-            font-size: 20px;
-            display: flex;
-            align-items: baseline;
-            gap: 4px;
-            white-space: nowrap;
-        }
-        .total-cell .value small { font-size: 12px; color: #0369a1; font-weight: 600; }
-        .total-cell.advance-cell { background: #fef9c3; border-color: #fde047; }
-        .total-cell.advance-cell .label { color: #854d0e; }
-        .total-cell.advance-cell .value { color: #854d0e; }
-        .total-cell.advance-cell .value small { color: #a16207; }
-        .total-cell.remain-cell { background: #fee2e2; border-color: #fca5a5; }
-        .total-cell.remain-cell .label { color: #991b1b; }
-        .total-cell.remain-cell .value { color: #991b1b; }
-        .total-cell.remain-cell .value small { color: #b91c1c; }
-        .total-cell.remain-cell.paid { background: #dcfce7; border-color: #86efac; }
-        .total-cell.remain-cell.paid .label { color: #065f46; }
-        .total-cell.remain-cell.paid .value { color: #065f46; font-size: 15px; }
-
-        #orderCapture { display: block; width: 100%; background: transparent; }
 
         @media (max-width: 768px) {
             body { padding: 6px; }
@@ -631,22 +460,6 @@
             .order-layout { padding: 12px; }
             .order-layout h3 { font-size: 15px; }
             .layout-actions { width: 100%; margin-left: 0; justify-content: flex-end; }
-            .layout-header { grid-template-columns: 1fr; padding: 14px 16px; gap: 12px; }
-            .layout-header .header-left { justify-self: center; text-align: center; }
-            .layout-header .header-right { justify-self: center; align-items: center; text-align: center; }
-            .layout-svg-wrap { padding: 10px; }
-            .layout-body { flex-direction: column; }
-            .order-summary { 
-                padding: 12px 15px; 
-                border-left: none; 
-                border-top: 1px dashed rgba(226, 232, 240, 0.9);
-                min-width: 0;
-                max-width: none;
-                background: rgba(248, 250, 252, 0.5);
-                align-self: stretch;
-            }
-            .order-total-inline { flex-direction: column; }
-            .total-cell { min-width: 0; width: 100%; }
         }
         @media (max-width: 480px) {
             .customer-block { padding: 8px; }
@@ -672,7 +485,6 @@
             .container { box-shadow: none; border-radius: 0; padding: 10px; }
             .no-print { display: none !important; }
             .order-layout { border: none; padding: 0; background: none; }
-            .layout-paper { box-shadow: none; border: none; }
         }
     </style>
 </head>
@@ -866,49 +678,7 @@
             </div>
         </h3>
 
-        <div id="orderCapture">
-            <div class="layout-paper" id="layoutPaper">
-                <div class="layout-header" id="layoutHeader">
-                    <div class="header-left">
-                        <div class="order-title">Заказ № <span id="headerOrderNumber">—</span></div>
-                        <div class="order-line">👤 Заказчик: <strong id="headerCustomer">—</strong></div>
-                        <div class="order-line">📞 Телефон: <strong id="headerPhone">—</strong></div>
-                    </div>
-                    <div class="header-center">
-                        <div class="brand-logo">
-                            <span class="brand-line-1">ПРЕМЬЕР</span>
-                            <span class="brand-line-2">ДЕКОР</span>
-                        </div>
-                    </div>
-                    <div class="header-right">
-                        <div>📅 Дата: <strong id="headerDate">—</strong></div>
-                        <span class="urgent-badge" id="headerUrgent">⚡ СРОЧНО</span>
-                    </div>
-                </div>
-
-                <div class="layout-body">
-                    <div class="layout-svg-wrap" id="layoutSvgWrap"></div>
-                    <div class="order-summary" id="orderSummary"></div>
-                </div>
-
-                <div class="order-total-block">
-                    <div class="order-total-inline">
-                        <div class="total-cell">
-                            <span class="label">💰 ВСЕГО:</span>
-                            <span class="value" id="orderTotalValue"><span class="byn">0</span> <small>Br</small></span>
-                        </div>
-                        <div class="total-cell advance-cell">
-                            <span class="label">💵 АВАНС:</span>
-                            <span class="value" id="orderAdvanceValue"><span class="byn">0</span> <small>Br</small></span>
-                        </div>
-                        <div class="total-cell remain-cell" id="remainCell">
-                            <span class="label">📌 ОСТАТОК:</span>
-                            <span class="value" id="orderRemainValue"><span class="byn">0</span> <small>Br</small></span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+        <div id="layoutSvgContainer"></div>
     </div>
 
     <div class="footer-note no-print">
@@ -920,8 +690,6 @@
         <span>📏 Можно вводить мм (80,7 см)</span>
     </div>
 </div>
-
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
 <script>
 (function() {
@@ -1026,7 +794,6 @@
     // ==================================================================
     const SZS_MULTIPLIER = 2;
     const SZS_PRICES = {
-        // ================= РШ (Рулонные шторы) — группы 0,1,2,3,4 =================
         v19: {
             name: 'В19 (открытая 19вал Mini)',
             groups: ['0','1','2','3','4'],
@@ -1425,8 +1192,6 @@
                 }
             }
         },
-
-        // ================= ДН (День-Ночь) — группы 0,1,2,3 =================
         dn_v19: {
             name: '🔸 ДН В19 (открытая 19вал Mini)',
             groups: ['0','1','2','3'],
@@ -1720,7 +1485,6 @@
         szs: {
             name: 'СЗС (SZS.by)',
             types: {
-                // РШ (группы 0-4)
                 v19:        { name: '🟢 В19 (открытая 19вал Mini)', catLabel: 'Группа серии' },
                 ku1:        { name: '🟢 КЮ1 (кассетная Uni плоские)', catLabel: 'Группа серии' },
                 ku2:        { name: '🟢 КЮ2 (кассетная Uni П-образные)', catLabel: 'Группа серии' },
@@ -1730,7 +1494,6 @@
                 v32:        { name: '🟢 В32 (открытая 32вал)', catLabel: 'Группа серии' },
                 kv38:       { name: '🟢 КВ38 (кассетная 38вал)', catLabel: 'Группа серии' },
                 v45:        { name: '🟢 В45 (открытая 45вал)', catLabel: 'Группа серии' },
-                // ДН (группы 0-3)
                 dn_v19:     { name: '🔸 ДН В19 (открытая 19вал Mini)', catLabel: 'Группа серии' },
                 dn_ku1:     { name: '🔸 ДН КЮ1 (кассетная Uni плоские)', catLabel: 'Группа серии' },
                 dn_ku2:     { name: '🔸 ДН КЮ2 (кассетная Uni П-образные)', catLabel: 'Группа серии' },
@@ -1750,6 +1513,7 @@
     let editingId = null;
     let savedFabric = localStorage.getItem('savedFabric') || '';
     let isUrgent = false;
+    let currentSvgString = '';
 
     const manufacturerSelect = document.getElementById('manufacturerSelect');
     const typeSelect = document.getElementById('typeSelect');
@@ -1772,23 +1536,11 @@
     const totalPrice = document.getElementById('totalPrice');
     const previewPrice = document.getElementById('previewPrice');
     const previewDetail = document.getElementById('previewDetail');
-    const layoutSvgWrap = document.getElementById('layoutSvgWrap');
-    const orderSummary = document.getElementById('orderSummary');
-    const orderTotalValue = document.getElementById('orderTotalValue');
-    const orderAdvanceValue = document.getElementById('orderAdvanceValue');
-    const orderRemainValue = document.getElementById('orderRemainValue');
-    const remainCell = document.getElementById('remainCell');
+    const layoutSvgContainer = document.getElementById('layoutSvgContainer');
     const customerName = document.getElementById('customerName');
     const customerPhone = document.getElementById('customerPhone');
     const orderNumber = document.getElementById('orderNumber');
     const orderDate = document.getElementById('orderDate');
-    const headerCustomer = document.getElementById('headerCustomer');
-    const headerPhone = document.getElementById('headerPhone');
-    const headerOrderNumber = document.getElementById('headerOrderNumber');
-    const headerDate = document.getElementById('headerDate');
-    const headerUrgent = document.getElementById('headerUrgent');
-    const orderCapture = document.getElementById('orderCapture');
-    const layoutPaper = document.getElementById('layoutPaper');
     const savePngBtn = document.getElementById('savePngBtn');
     const shareBtn = document.getElementById('shareBtn');
     const printBtn = document.getElementById('printBtn');
@@ -1823,6 +1575,15 @@
         if (isNaN(num)) return '0';
         if (Number.isInteger(num)) return String(num);
         return num.toFixed(1).replace('.', ',').replace(/,0$/, '');
+    }
+    function escapeXml(str) {
+        if (str === undefined || str === null) return '';
+        return String(str)
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&apos;');
     }
     function getSizeByShort(sizeBy) {
         if (sizeBy === 'ВГШ') return 'ВГШ';
@@ -1982,127 +1743,23 @@
     }
 
     // ==================================================================
-    // UI
+    // РЕНДЕР МАКЕТА КАК ЕДИНЫЙ SVG
     // ==================================================================
-    function updateManufacturerUI() {
-        const mfr = manufacturerSelect.value;
-        const mfrData = MANUFACTURERS[mfr];
-        typeSelect.innerHTML = '';
-        for (const [key, t] of Object.entries(mfrData.types)) {
-            const opt = document.createElement('option');
-            opt.value = key;
-            opt.textContent = t.name;
-            typeSelect.appendChild(opt);
-        }
-        updateCatUI();
-    }
-
-    function updateCatUI() {
-        const mfr = manufacturerSelect.value;
-        const mfrData = MANUFACTURERS[mfr];
-        const typeKey = typeSelect.value;
-        const typeData = mfrData.types[typeKey];
-        if (!typeData) return;
-
-        catLabel.textContent = typeData.catLabel;
-
-        catSelect.innerHTML = '';
-        if (mfr === 'premier_decor') {
-            for (const c of ['1','2','3','4']) {
-                const opt = document.createElement('option');
-                opt.value = c;
-                opt.textContent = c + ' категория';
-                catSelect.appendChild(opt);
-            }
-        } else {
-            // СЗС: группы зависят от типа (0-3 для ДН, 0-4 для РШ)
-            const priceData = SZS_PRICES[typeKey];
-            const groups = priceData && priceData.groups ? priceData.groups : ['0','1','2','3'];
-            const labels = {
-                '0': 'Группа 0 (базовая)',
-                '1': 'Группа 1',
-                '2': 'Группа 2',
-                '3': 'Группа 3',
-                '4': 'Группа 4 (премиум)'
-            };
-            for (const g of groups) {
-                const opt = document.createElement('option');
-                opt.value = g;
-                opt.textContent = labels[g] || ('Группа ' + g);
-                catSelect.appendChild(opt);
-            }
-        }
-        updatePreview();
-    }
-
-    function updatePreview() {
-        const mfr = manufacturerSelect.value;
-        const type = typeSelect.value;
-        const cat = catSelect.value;
-        const width = parseNum(widthInput.value) || 80;
-        const height = parseNum(heightInput.value) || 170;
-        const payment = paymentSelect.value;
-
-        const fakeItem = { manufacturer: mfr, type, cat, width, height, payment };
-        const price = calculatePrice(fakeItem);
-        const roundedW = roundWidth(mfr, type, width);
-        const f = formatPrice(price);
-        const cashlessMark = payment === 'Безналичные' ? ' <span class="cashless-mark">+6%</span>' : '';
-
-        previewPrice.innerHTML = `
-            <span class="usd">${f.usdStr} <small>$</small></span>
-            <span style="color:#94a3b8;">/</span>
-            <span class="byn">${f.bynStr} <small>Br</small></span>
-            ${cashlessMark}
-        `;
-        previewDetail.textContent = `${formatNum(width)} см × ${formatNum(height)} см → ${roundedW} см`;
-
-        updateHeader();
-        renderLayout();
-    }
-
-    function updateHeader() {
-        headerCustomer.textContent = customerName.value || '—';
-        headerPhone.textContent = customerPhone.value || '—';
-        headerOrderNumber.textContent = orderNumber.value || '—';
-        const d = orderDate.value;
-        if (d) {
-            const parts = d.split('-');
-            headerDate.textContent = `${parts[2]}.${parts[1]}.${parts[0]}`;
-        } else headerDate.textContent = '—';
-        if (isUrgent) headerUrgent.classList.add('show');
-        else headerUrgent.classList.remove('show');
-    }
-
-    // ==================================================================
-    // РЕНДЕР МАКЕТА
-    // ==================================================================
-    function renderLayout() {
+    function buildLayoutSvg() {
         if (items.length === 0) {
-            layoutSvgWrap.innerHTML = `
-                <div style="text-align: center; color: #94a3b8; padding: 20px; width: 100%;">
-                    <div style="font-size: 48px; margin-bottom: 8px;">📐</div>
-                    <div>Добавьте изделия, чтобы увидеть макет</div>
-                </div>
-            `;
-            orderSummary.innerHTML = '';
-            orderTotalValue.innerHTML = `<span class="byn">0</span> <small>Br</small>`;
-            orderAdvanceValue.innerHTML = `<span class="byn">0</span> <small>Br</small>`;
-            orderRemainValue.innerHTML = `<span class="byn">0</span> <small>Br</small>`;
-            remainCell.classList.remove('paid');
-            return;
+            return '';
         }
 
+        // ===== 1. Считаем данные =====
         let totalUsd = 0;
         items.forEach(item => { totalUsd += calculatePrice(item); });
-
         const totalF = formatPrice(totalUsd);
         const totalBynRounded = roundUpTo10(totalF.byn);
         const advance = getAdvance();
         const remain = Math.max(0, totalBynRounded - advance);
-        const cashlessCount = items.filter(i => i.payment === 'Безналичные').length;
-        const cashlessMarkTotal = cashlessCount > 0 ? ` <span class="badge-cashless">${cashlessCount}×+6%</span>` : '';
+        const isPaid = remain <= 0;
 
+        // Группировка по производителю + типу
         const groups = {};
         items.forEach((item, idx) => {
             const key = item.manufacturer + '_' + item.type;
@@ -2110,163 +1767,304 @@
             groups[key].items.push({ item, originalIndex: idx });
         });
 
-        const padX = 15, padY = 10, cellW = 170, cellH = 250;
-        const groupTitleH = 60, groupSpacingY = 5, itemsPerRow = 6;
-        const BASE_WIDTH = 70, BASE_HEIGHT = 130;
+        // ===== 2. Геометрия =====
+        const HEADER_H = 90;
+        const PAD = 20;
+        const ITEMS_PER_ROW = 6;
+        const CELL_W = 180;
+        const CELL_H = 210;
+        const GROUP_TITLE_H = 60;
+        const GROUP_GAP = 15;
+        const BASE_W = 80;
+        const BASE_H = 110;
+        const SUMMARY_W = 260;
+        const TOTAL_BLOCK_H = 80;
 
-        let maxRowCount = 0;
-        let totalHeight = padY * 2;
+        // Считаем ширину
+        let maxItemsInRow = 0;
+        Object.values(groups).forEach(g => {
+            const cnt = Math.min(g.items.length, ITEMS_PER_ROW);
+            if (cnt > maxItemsInRow) maxItemsInRow = cnt;
+        });
+        const contentW = Math.max(maxItemsInRow * CELL_W, 400);
+        const bodyW = contentW + SUMMARY_W + PAD * 3;
+        const totalW = Math.max(bodyW, 900);
+
+        // Считаем высоту
+        let bodyContentH = 0;
         const groupLayouts = [];
+        Object.values(groups).forEach(g => {
+            const rows = Math.ceil(g.items.length / ITEMS_PER_ROW);
+            const groupH = GROUP_TITLE_H + rows * CELL_H;
+            groupLayouts.push({ group: g, height: groupH, startY: bodyContentH });
+            bodyContentH += groupH + GROUP_GAP;
+        });
+        bodyContentH = Math.max(bodyContentH, 200);
 
-        for (const [key, group] of Object.entries(groups)) {
-            const groupItems = group.items;
-            const rows = Math.ceil(groupItems.length / itemsPerRow);
-            const groupHeight = groupTitleH + rows * cellH - 40;
-            groupLayouts.push({ manufacturer: group.manufacturer, type: group.type, groupItems, rows, groupHeight, startY: totalHeight });
-            totalHeight += groupHeight + groupSpacingY;
-            if (groupItems.length > maxRowCount) maxRowCount = Math.min(groupItems.length, itemsPerRow);
+        const summaryH = Math.max(bodyContentH, 60 + Object.keys(groups).length * 22 + 200);
+        const bodyH = Math.max(bodyContentH, summaryH);
+        const totalH = HEADER_H + bodyH + TOTAL_BLOCK_H + PAD * 2;
+
+        // ===== 3. Собираем SVG =====
+        let svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${totalW}" height="${totalH}" viewBox="0 0 ${totalW} ${totalH}">
+<defs>
+    <linearGradient id="headerGrad" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0%" stop-color="#1e3a8a"/>
+        <stop offset="100%" stop-color="#3b82f6"/>
+    </linearGradient>
+    <linearGradient id="totalGrad" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0%" stop-color="#f0f9ff"/>
+        <stop offset="100%" stop-color="#e0f2fe"/>
+    </linearGradient>
+    <pattern id="paperGrid" width="40" height="40" patternUnits="userSpaceOnUse">
+        <rect width="40" height="40" fill="#ffffff"/>
+        <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#dbeafe" stroke-width="0.5"/>
+    </pattern>
+</defs>
+
+<!-- Фон -->
+<rect width="${totalW}" height="${totalH}" fill="#ffffff"/>
+
+<!-- HEADER -->
+<rect x="0" y="0" width="${totalW}" height="${HEADER_H}" fill="url(#headerGrad)"/>
+`;
+
+        // Логотип по центру
+        const logoW = 200;
+        const logoH = 56;
+        const logoX = (totalW - logoW) / 2;
+        const logoY = (HEADER_H - logoH) / 2;
+        svg += `
+<rect x="${logoX}" y="${logoY}" width="${logoW}" height="${logoH}" rx="8" fill="rgba(255,255,255,0.95)"/>
+<text x="${logoX + logoW/2}" y="${logoY + 24}" text-anchor="middle" font-family="Arial Black, Arial, sans-serif" font-weight="900" font-size="20" letter-spacing="2" fill="#706E6A">ПРЕМЬЕР</text>
+<text x="${logoX + logoW/2}" y="${logoY + 48}" text-anchor="middle" font-family="Arial Black, Arial, sans-serif" font-weight="900" font-size="20" letter-spacing="2" fill="#ff7e50">ДЕКОР</text>
+`;
+
+        // Левая часть — заказ
+        const customerName_ = escapeXml(customerName.value || '—');
+        const customerPhone_ = escapeXml(customerPhone.value || '—');
+        const orderNumber_ = escapeXml(orderNumber.value || '—');
+        let dateStr = '—';
+        if (orderDate.value) {
+            const parts = orderDate.value.split('-');
+            dateStr = `${parts[2]}.${parts[1]}.${parts[0]}`;
+        }
+        svg += `
+<text x="${PAD}" y="28" font-family="Arial, sans-serif" font-size="17" font-weight="800" fill="#ffffff">Заказ № ${orderNumber_}</text>
+<text x="${PAD}" y="52" font-family="Arial, sans-serif" font-size="12" fill="rgba(255,255,255,0.9)">👤 Заказчик: <tspan font-weight="700" fill="#ffffff">${customerName_}</tspan></text>
+<text x="${PAD}" y="72" font-family="Arial, sans-serif" font-size="12" fill="rgba(255,255,255,0.9)">📞 Телефон: <tspan font-weight="700" fill="#ffffff">${customerPhone_}</tspan></text>
+`;
+
+        // Правая часть — дата и срочность
+        svg += `
+<text x="${totalW - PAD}" y="30" text-anchor="end" font-family="Arial, sans-serif" font-size="12" fill="rgba(255,255,255,0.9)">📅 Дата: <tspan font-weight="700" fill="#ffffff">${dateStr}</tspan></text>
+`;
+        if (isUrgent) {
+            const urgW = 130;
+            const urgH = 26;
+            const urgX = totalW - PAD - urgW;
+            const urgY = 45;
+            svg += `
+<rect x="${urgX}" y="${urgY}" width="${urgW}" height="${urgH}" rx="13" fill="#f59e0b"/>
+<text x="${urgX + urgW/2}" y="${urgY + 18}" text-anchor="middle" font-family="Arial, sans-serif" font-size="13" font-weight="800" fill="#ffffff" letter-spacing="0.8">⚡ СРОЧНО</text>
+`;
         }
 
-        const contentWidth = maxRowCount * cellW;
-        const totalWidth = padX * 2 + contentWidth;
-        let svgContent = '';
+        // ===== BODY: чертёж + сводка =====
+        const bodyY = HEADER_H + PAD;
+        const summaryX = totalW - SUMMARY_W - PAD;
+        const svgAreaX = PAD;
+        const svgAreaW = summaryX - PAD * 2;
 
-        groupLayouts.forEach(group => {
-            const mfrName = getManufacturerName(group.manufacturer);
-            const typeName = getTypeName(group.type);
-            svgContent += `
-                <text x="${totalWidth / 2}" y="${group.startY + 20}" text-anchor="middle" font-size="13" font-weight="600" fill="#7c3aed">
-                    ${mfrName}
-                </text>
-                <text x="${totalWidth / 2}" y="${group.startY + 42}" text-anchor="middle" font-size="16" font-weight="700" fill="#1e293b">
-                    ${typeName}
-                </text>
-            `;
+        // Бумажная сетка под чертежом
+        svg += `<rect x="${svgAreaX}" y="${bodyY}" width="${svgAreaW}" height="${bodyH - PAD}" fill="url(#paperGrid)" rx="8"/>`;
 
-            group.groupItems.forEach((entry, i) => {
+        // Рисуем группы
+        groupLayouts.forEach(gl => {
+            const g = gl.group;
+            const groupY = bodyY + gl.startY;
+            const mfrName = getManufacturerName(g.manufacturer);
+            const typeName = getTypeName(g.type);
+
+            // Заголовок группы
+            svg += `
+<text x="${svgAreaX + svgAreaW/2}" y="${groupY + 22}" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" font-weight="600" fill="#7c3aed">${escapeXml(mfrName)}</text>
+<text x="${svgAreaX + svgAreaW/2}" y="${groupY + 44}" text-anchor="middle" font-family="Arial, sans-serif" font-size="15" font-weight="700" fill="#1e293b">${escapeXml(typeName)}</text>
+`;
+
+            // Изделия
+            g.items.forEach((entry, i) => {
                 const { item, originalIndex } = entry;
-                const row = Math.floor(i / itemsPerRow);
-                const col = i % itemsPerRow;
-                const itemsInThisRow = Math.min(itemsPerRow, group.groupItems.length - row * itemsPerRow);
-                const rowWidth = itemsInThisRow * cellW;
-                const rowStartX = padX + (contentWidth - rowWidth) / 2;
-                const cellX = rowStartX + col * cellW;
-                const cellY = group.startY + groupTitleH + row * cellH;
+                const row = Math.floor(i / ITEMS_PER_ROW);
+                const col = i % ITEMS_PER_ROW;
+                const itemsInThisRow = Math.min(ITEMS_PER_ROW, g.items.length - row * ITEMS_PER_ROW);
+                const rowWidth = itemsInThisRow * CELL_W;
+                const rowStartX = svgAreaX + (svgAreaW - rowWidth) / 2;
+                const cellX = rowStartX + col * CELL_W;
+                const cellY = groupY + GROUP_TITLE_H + row * CELL_H;
 
-                const rectW = BASE_WIDTH, rectH = BASE_HEIGHT;
-                const rectX = cellX + (cellW - rectW) / 2;
-                const rectY = cellY + 30;
+                const rectX = cellX + (CELL_W - BASE_W) / 2;
+                const rectY = cellY + 20;
 
-                svgContent += `
-                    <rect x="${rectX}" y="${rectY}" width="${rectW}" height="${rectH}" 
-                          fill="rgba(240, 249, 255, 0.85)" stroke="#3b82f6" stroke-width="2" rx="4"/>
-                    <rect x="${rectX + 3}" y="${rectY + 3}" width="${rectW - 6}" height="${rectH - 6}" 
-                          fill="none" stroke="#93c5fd" stroke-width="0.5" stroke-dasharray="3,3" rx="2"/>
-                `;
+                // Рамка изделия
+                svg += `
+<rect x="${rectX}" y="${rectY}" width="${BASE_W}" height="${BASE_H}" rx="4" fill="rgba(240,249,255,0.9)" stroke="#3b82f6" stroke-width="2"/>
+<rect x="${rectX + 3}" y="${rectY + 3}" width="${BASE_W - 6}" height="${BASE_H - 6}" rx="2" fill="none" stroke="#93c5fd" stroke-width="0.5" stroke-dasharray="3,3"/>
+`;
 
-                const widthLineY = rectY - 12;
-                svgContent += `
-                    <text x="${rectX + rectW / 2}" y="${widthLineY - 6}" text-anchor="middle" font-size="11" font-weight="700" fill="#1e293b">
-                        ${formatNum(item.width)} см
-                    </text>
-                    <line x1="${rectX}" y1="${widthLineY}" x2="${rectX + rectW}" y2="${widthLineY}" stroke="#3b82f6" stroke-width="1"/>
-                    <line x1="${rectX}" y1="${widthLineY - 3}" x2="${rectX}" y2="${widthLineY + 3}" stroke="#3b82f6" stroke-width="1"/>
-                    <line x1="${rectX + rectW}" y1="${widthLineY - 3}" x2="${rectX + rectW}" y2="${widthLineY + 3}" stroke="#3b82f6" stroke-width="1"/>
-                `;
+                // Размер ширины сверху
+                const wLineY = rectY - 10;
+                svg += `
+<text x="${rectX + BASE_W/2}" y="${wLineY - 6}" text-anchor="middle" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#1e293b">${formatNum(item.width)} см</text>
+<line x1="${rectX}" y1="${wLineY}" x2="${rectX + BASE_W}" y2="${wLineY}" stroke="#3b82f6" stroke-width="1"/>
+<line x1="${rectX}" y1="${wLineY - 3}" x2="${rectX}" y2="${wLineY + 3}" stroke="#3b82f6" stroke-width="1"/>
+<line x1="${rectX + BASE_W}" y1="${wLineY - 3}" x2="${rectX + BASE_W}" y2="${wLineY + 3}" stroke="#3b82f6" stroke-width="1"/>
+`;
 
-                const heightLineX = rectX - 12;
-                svgContent += `
-                    <text x="${heightLineX - 6}" y="${rectY + rectH / 2}" text-anchor="end" dominant-baseline="middle" font-size="11" font-weight="700" fill="#1e293b">
-                        ${formatNum(item.height)} см
-                    </text>
-                    <line x1="${heightLineX}" y1="${rectY}" x2="${heightLineX}" y2="${rectY + rectH}" stroke="#3b82f6" stroke-width="1"/>
-                    <line x1="${heightLineX - 3}" y1="${rectY}" x2="${heightLineX + 3}" y2="${rectY}" stroke="#3b82f6" stroke-width="1"/>
-                    <line x1="${heightLineX - 3}" y1="${rectY + rectH}" x2="${heightLineX + 3}" y2="${rectY + rectH}" stroke="#3b82f6" stroke-width="1"/>
-                `;
+                // Размер высоты слева
+                const hLineX = rectX - 10;
+                svg += `
+<text x="${hLineX - 4}" y="${rectY + BASE_H/2}" text-anchor="end" dominant-baseline="middle" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#1e293b">${formatNum(item.height)} см</text>
+<line x1="${hLineX}" y1="${rectY}" x2="${hLineX}" y2="${rectY + BASE_H}" stroke="#3b82f6" stroke-width="1"/>
+<line x1="${hLineX - 3}" y1="${rectY}" x2="${hLineX + 3}" y2="${rectY}" stroke="#3b82f6" stroke-width="1"/>
+<line x1="${hLineX - 3}" y1="${rectY + BASE_H}" x2="${hLineX + 3}" y2="${rectY + BASE_H}" stroke="#3b82f6" stroke-width="1"/>
+`;
 
-                svgContent += `
-                    <circle cx="${rectX + 11}" cy="${rectY + 11}" r="10" fill="#3b82f6"/>
-                    <text x="${rectX + 11}" y="${rectY + 11}" text-anchor="middle" dominant-baseline="middle" font-size="10" font-weight="700" fill="white">${originalIndex + 1}</text>
-                `;
+                // Номер
+                svg += `
+<circle cx="${rectX + 12}" cy="${rectY + 12}" r="10" fill="#3b82f6"/>
+<text x="${rectX + 12}" y="${rectY + 12}" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif" font-size="10" font-weight="700" fill="#ffffff">${originalIndex + 1}</text>
+`;
 
-                const sizeByText = getSizeByShort(item.sizeBy);
-                svgContent += `
-                    <text x="${rectX + rectW / 2}" y="${rectY + 32}" text-anchor="middle" font-size="11" font-weight="700" fill="#7c3aed">
-                        ${sizeByText}
-                    </text>
-                `;
+                // Тип размера
+                svg += `
+<text x="${rectX + BASE_W/2}" y="${rectY + 32}" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" font-weight="700" fill="#7c3aed">${getSizeByShort(item.sizeBy)}</text>
+`;
 
+                // Стрелка управления
                 const isLeft = item.side === 'left';
                 const arrowColor = isLeft ? '#22c55e' : '#f59e0b';
-                const arrowStroke = isLeft ? '#16a34a' : '#d97706';
-                const arrowX = isLeft ? rectX + 15 : rectX + rectW - 15;
-                const arrowStartY = rectY + rectH - 25;
-                const arrowEndY = rectY + rectH - 7;
+                const arrowX = isLeft ? rectX + 15 : rectX + BASE_W - 15;
+                const arrowTopY = rectY + BASE_H - 25;
+                const arrowBotY = rectY + BASE_H - 8;
+                svg += `
+<line x1="${arrowX}" y1="${arrowTopY}" x2="${arrowX}" y2="${arrowBotY - 6}" stroke="${arrowColor}" stroke-width="2.5" stroke-linecap="round"/>
+<polygon points="${arrowX - 6},${arrowBotY - 6} ${arrowX + 6},${arrowBotY - 6} ${arrowX},${arrowBotY}" fill="${arrowColor}"/>
+`;
 
-                svgContent += `
-                    <line x1="${arrowX}" y1="${arrowStartY}" x2="${arrowX}" y2="${arrowEndY - 6}" stroke="${arrowColor}" stroke-width="2.5" stroke-linecap="round"/>
-                    <polygon points="${arrowX - 6},${arrowEndY - 6} ${arrowX + 6},${arrowEndY - 6} ${arrowX},${arrowEndY}" fill="${arrowColor}" stroke="${arrowStroke}" stroke-width="1"/>
-                `;
-
+                // Ткань под прямоугольником
                 if (item.fabric) {
-                    svgContent += `
-                        <text x="${rectX + rectW / 2}" y="${rectY + rectH + 14}" text-anchor="middle" font-size="10" font-weight="600" fill="#92400e">
-                            ${item.fabric}
-                        </text>
-                    `;
+                    svg += `
+<text x="${rectX + BASE_W/2}" y="${rectY + BASE_H + 16}" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" font-weight="600" fill="#92400e">${escapeXml(item.fabric)}</text>
+`;
                 }
             });
         });
 
-        const svg = `
-            <svg width="${totalWidth}" height="${totalHeight}" viewBox="0 0 ${totalWidth} ${totalHeight}" 
-                 xmlns="http://www.w3.org/2000/svg" style="display: block; background: transparent; margin: 0 auto;">
-                ${svgContent}
-            </svg>
-        `;
-        layoutSvgWrap.innerHTML = svg;
+        // ===== СВОДКА =====
+        const sumY = bodyY;
+        svg += `
+<rect x="${summaryX}" y="${sumY}" width="${SUMMARY_W}" height="${bodyH - PAD}" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1" rx="8"/>
+<text x="${summaryX + 15}" y="${sumY + 25}" font-family="Arial, sans-serif" font-size="13" font-weight="700" fill="#1e293b">📊 СВОДКА</text>
+<line x1="${summaryX + 15}" y1="${sumY + 32}" x2="${summaryX + SUMMARY_W - 15}" y2="${sumY + 32}" stroke="#0ea5e9" stroke-width="2"/>
+`;
 
-        let summaryHtml = `<div class="summary-header">📊 Сводка</div>`;
-        summaryHtml += `<div class="row"><span class="label">Всего изделий:</span><span class="value">${items.length} шт.</span></div>`;
+        let summaryRowY = sumY + 55;
+        const sumRowH = 22;
 
-        for (const group of Object.values(groups)) {
-            summaryHtml += `
-                <div class="row">
-                    <span class="label">${getManufacturerShort(group.manufacturer)} / ${getTypeName(group.type)}:</span>
-                    <span class="value">${group.items.length} шт.</span>
-                </div>
-            `;
+        function addSummaryRow(label, value) {
+            svg += `
+<rect x="${summaryX + 10}" y="${summaryRowY - 15}" width="${SUMMARY_W - 20}" height="${sumRowH - 2}" rx="4" fill="#ffffff" stroke="#e2e8f0" stroke-width="0.5"/>
+<text x="${summaryX + 18}" y="${summaryRowY}" font-family="Arial, sans-serif" font-size="11" fill="#64748b">${escapeXml(label)}</text>
+<text x="${summaryX + SUMMARY_W - 18}" y="${summaryRowY}" text-anchor="end" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#1e293b">${escapeXml(value)}</text>
+`;
+            summaryRowY += sumRowH;
         }
+
+        addSummaryRow('Всего изделий:', items.length + ' шт.');
+
+        Object.values(groups).forEach(g => {
+            addSummaryRow(`${getManufacturerShort(g.manufacturer)} / ${getTypeName(g.type)}:`, g.items.length + ' шт.');
+        });
 
         const leftCount = items.filter(i => i.side === 'left').length;
         const rightCount = items.filter(i => i.side === 'right').length;
-        if (leftCount > 0) summaryHtml += `<div class="row"><span class="label">⬅ Слева:</span><span class="value">${leftCount} шт.</span></div>`;
-        if (rightCount > 0) summaryHtml += `<div class="row"><span class="label">➡ Справа:</span><span class="value">${rightCount} шт.</span></div>`;
+        if (leftCount > 0) addSummaryRow('⬅ Слева:', leftCount + ' шт.');
+        if (rightCount > 0) addSummaryRow('➡ Справа:', rightCount + ' шт.');
 
         const vgshCount = items.filter(i => i.sizeBy === 'ВГШ').length;
-        const fabricCount = items.filter(i => i.sizeBy === 'по ткани').length;
-        const gabaritCount = items.filter(i => i.sizeBy === 'по габаритам').length;
-        if (vgshCount > 0) summaryHtml += `<div class="row"><span class="label">📏 ВГШ:</span><span class="value">${vgshCount} шт.</span></div>`;
-        if (fabricCount > 0) summaryHtml += `<div class="row"><span class="label">📏 По ткани:</span><span class="value">${fabricCount} шт.</span></div>`;
-        if (gabaritCount > 0) summaryHtml += `<div class="row"><span class="label">📏 По габаритам:</span><span class="value">${gabaritCount} шт.</span></div>`;
+        const fabricCnt = items.filter(i => i.sizeBy === 'по ткани').length;
+        const gabCount = items.filter(i => i.sizeBy === 'по габаритам').length;
+        if (vgshCount > 0) addSummaryRow('📏 ВГШ:', vgshCount + ' шт.');
+        if (fabricCnt > 0) addSummaryRow('📏 По ткани:', fabricCnt + ' шт.');
+        if (gabCount > 0) addSummaryRow('📏 По габаритам:', gabCount + ' шт.');
 
-        const cashCount = items.filter(i => i.payment === 'Наличные').length;
+        const cashCnt = items.filter(i => i.payment === 'Наличные').length;
         const cashlessCnt = items.filter(i => i.payment === 'Безналичные').length;
-        if (cashCount > 0) summaryHtml += `<div class="row"><span class="label">💵 Наличные:</span><span class="value">${cashCount} шт.</span></div>`;
-        if (cashlessCnt > 0) summaryHtml += `<div class="row"><span class="label">💳 Безнал +6%:</span><span class="value">${cashlessCnt} шт.</span></div>`;
+        if (cashCnt > 0) addSummaryRow('💵 Наличные:', cashCnt + ' шт.');
+        if (cashlessCnt > 0) addSummaryRow('💳 Безнал +6%:', cashlessCnt + ' шт.');
 
-        orderSummary.innerHTML = summaryHtml;
+        // ===== ИТОГОВЫЙ БЛОК =====
+        const totalBlockY = HEADER_H + bodyH + PAD;
+        const totalBlockH = TOTAL_BLOCK_H;
+        svg += `
+<rect x="${PAD}" y="${totalBlockY}" width="${totalW - PAD*2}" height="${totalBlockH}" fill="url(#totalGrad)" stroke="#0ea5e9" stroke-width="3" rx="8"/>
+`;
 
-        orderTotalValue.innerHTML = `<span class="byn">${totalBynRounded}</span> <small>Br</small>${cashlessMarkTotal}`;
-        orderAdvanceValue.innerHTML = `<span class="byn">${advance}</span> <small>Br</small>`;
+        const cellW = (totalW - PAD * 2 - 40) / 3;
+        const cellH = 60;
+        const cellY = totalBlockY + 10;
+        const cell1X = PAD + 10;
+        const cell2X = cell1X + cellW + 10;
+        const cell3X = cell2X + cellW + 10;
 
-        if (remain > 0) {
-            orderRemainValue.innerHTML = `<span class="byn">${remain}</span> <small>Br</small>`;
-            remainCell.classList.remove('paid');
+        // ВСЕГО
+        svg += `
+<rect x="${cell1X}" y="${cellY}" width="${cellW}" height="${cellH}" rx="8" fill="#ffffff" stroke="#bae6fd" stroke-width="2"/>
+<text x="${cell1X + 12}" y="${cellY + 24}" font-family="Arial, sans-serif" font-size="12" font-weight="700" fill="#0c4a6e">💰 ВСЕГО:</text>
+<text x="${cell1X + 12}" y="${cellY + 48}" font-family="Arial, sans-serif" font-size="20" font-weight="800" fill="#0c4a6e">${totalBynRounded} <tspan font-size="12" font-weight="600" fill="#0369a1">Br</tspan></text>
+`;
+
+        // АВАНС
+        svg += `
+<rect x="${cell2X}" y="${cellY}" width="${cellW}" height="${cellH}" rx="8" fill="#fef9c3" stroke="#fde047" stroke-width="2"/>
+<text x="${cell2X + 12}" y="${cellY + 24}" font-family="Arial, sans-serif" font-size="12" font-weight="700" fill="#854d0e">💵 АВАНС:</text>
+<text x="${cell2X + 12}" y="${cellY + 48}" font-family="Arial, sans-serif" font-size="20" font-weight="800" fill="#854d0e">${advance} <tspan font-size="12" font-weight="600" fill="#a16207">Br</tspan></text>
+`;
+
+        // ОСТАТОК
+        if (isPaid) {
+            svg += `
+<rect x="${cell3X}" y="${cellY}" width="${cellW}" height="${cellH}" rx="8" fill="#dcfce7" stroke="#86efac" stroke-width="2"/>
+<text x="${cell3X + 12}" y="${cellY + 24}" font-family="Arial, sans-serif" font-size="12" font-weight="700" fill="#065f46">📌 ОСТАТОК:</text>
+<text x="${cell3X + 12}" y="${cellY + 48}" font-family="Arial, sans-serif" font-size="16" font-weight="800" fill="#065f46">✅ ОПЛАЧЕНО</text>
+`;
         } else {
-            orderRemainValue.innerHTML = `✅ ОПЛАЧЕНО`;
-            remainCell.classList.add('paid');
+            svg += `
+<rect x="${cell3X}" y="${cellY}" width="${cellW}" height="${cellH}" rx="8" fill="#fee2e2" stroke="#fca5a5" stroke-width="2"/>
+<text x="${cell3X + 12}" y="${cellY + 24}" font-family="Arial, sans-serif" font-size="12" font-weight="700" fill="#991b1b">📌 ОСТАТОК:</text>
+<text x="${cell3X + 12}" y="${cellY + 48}" font-family="Arial, sans-serif" font-size="20" font-weight="800" fill="#991b1b">${remain} <tspan font-size="12" font-weight="600" fill="#b91c1c">Br</tspan></text>
+`;
         }
+
+        svg += '</svg>';
+        return svg;
+    }
+
+    function renderLayout() {
+        if (items.length === 0) {
+            layoutSvgContainer.innerHTML = `
+                <div style="text-align: center; color: #94a3b8; padding: 40px 20px;">
+                    <div style="font-size: 48px; margin-bottom: 8px;">📐</div>
+                    <div>Добавьте изделия, чтобы увидеть макет</div>
+                </div>
+            `;
+            currentSvgString = '';
+            return;
+        }
+        const svg = buildLayoutSvg();
+        currentSvgString = svg;
+        layoutSvgContainer.innerHTML = svg;
     }
 
     // ==================================================================
@@ -2305,8 +2103,8 @@
             const cashlessMark = item.payment === 'Безналичные' ? ' <span class="badge-cashless">+6%</span>' : '';
             const sideText = item.side === 'left' ? '⬅ Слева' : '➡ Справа';
             const sizeByText = getSizeByFull(item.sizeBy);
-            const paymentBadge = item.payment === 'Безналичные' 
-                ? '<span class="badge-payment" style="background:#fee2e2;color:#991b1b;">💳 Безнал</span>' 
+            const paymentBadge = item.payment === 'Безналичные'
+                ? '<span class="badge-payment" style="background:#fee2e2;color:#991b1b;">💳 Безнал</span>'
                 : '<span class="badge-payment">💵 Наличные</span>';
             const fabricText = item.fabric || '—';
             const groupText = item.manufacturer === 'szs' ? getGroupLabel(item.cat) : item.cat + ' кат.';
@@ -2315,13 +2113,13 @@
                 const mfrData = MANUFACTURERS[item.manufacturer];
                 let catOptions = '';
                 if (item.manufacturer === 'premier_decor') {
-                    catOptions = ['1','2','3','4'].map(c => 
+                    catOptions = ['1','2','3','4'].map(c =>
                         `<option value="${c}" ${item.cat == c ? 'selected' : ''}>${c}</option>`
                     ).join('');
                 } else {
                     const priceData = SZS_PRICES[item.type];
                     const groups = priceData && priceData.groups ? priceData.groups : ['0','1','2','3'];
-                    catOptions = groups.map(g => 
+                    catOptions = groups.map(g =>
                         `<option value="${g}" ${item.cat == g ? 'selected' : ''}>Гр. ${g}</option>`
                     ).join('');
                 }
@@ -2337,7 +2135,7 @@
                         </td>
                         <td>
                             <select id="edit_type_${item.id}" class="edit-select">
-                                ${Object.entries(mfrData.types).map(([k, t]) => 
+                                ${Object.entries(mfrData.types).map(([k, t]) =>
                                     `<option value="${k}" ${item.type === k ? 'selected' : ''}>${t.name.substring(0, 25)}</option>`
                                 ).join('')}
                             </select>
@@ -2348,7 +2146,7 @@
                             </select>
                         </td>
                         <td>
-                            <input type="text" id="edit_fabric_${item.id}" value="${item.fabric || ''}" style="max-width:90px;" placeholder="Ткань">
+                            <input type="text" id="edit_fabric_${item.id}" value="${escapeXml(item.fabric || '')}" style="max-width:90px;" placeholder="Ткань">
                         </td>
                         <td>
                             <input type="number" id="edit_width_${item.id}" value="${item.width}" min="10" max="350" step="0.1">
@@ -2390,7 +2188,7 @@
                         <td><span class="badge ${mfrClass}">${mfrName}</span></td>
                         <td><span class="badge">${typeName}</span></td>
                         <td><span class="badge badge-group">${groupText}</span></td>
-                        <td><span class="badge-fabric" title="${fabricText}">${fabricText}</span></td>
+                        <td><span class="badge-fabric" title="${escapeXml(fabricText)}">${escapeXml(fabricText)}</span></td>
                         <td>${formatNum(item.width)}</td>
                         <td>${formatNum(item.height)}</td>
                         <td><span class="badge-side">${sideText}</span></td>
@@ -2514,98 +2312,47 @@
     }
 
     // ==================================================================
-    // СОХРАНЕНИЕ PNG
+    // ЭКСПОРТ PNG ИЗ SVG
     // ==================================================================
-    async function generateCanvas() {
-    if (items.length === 0) { alert('Добавьте изделия, чтобы сохранить макет'); return null; }
+    function svgToPngBlob(svgString, scale, callback) {
+        if (!svgString) { callback(null); return; }
 
-    // Запоминаем оригинальные стили, чтобы потом вернуть
-    const origStyles = {
-        layoutPaper: {
-            overflow: layoutPaper.style.overflow,
-            maxWidth: layoutPaper.style.maxWidth,
-            width: layoutPaper.style.width
-        }
-    };
+        // Создаём Image из SVG
+        const svgBlob = new Blob([svgString], { type: 'image/svg+xml;charset=utf-8' });
+        const url = URL.createObjectURL(svgBlob);
+        const img = new Image();
 
-    // Получаем ссылки на вложенные элементы
-    const layoutBody = layoutPaper.querySelector('.layout-body');
-    const svgWrap = layoutPaper.querySelector('.layout-svg-wrap');
-    const orderSummaryEl = layoutPaper.querySelector('.order-summary');
+        img.onload = function() {
+            const canvas = document.createElement('canvas');
+            const w = img.naturalWidth || parseInt(svgString.match(/width="(\d+)"/)[1]);
+            const h = img.naturalHeight || parseInt(svgString.match(/height="(\d+)"/)[1]);
+            canvas.width = w * scale;
+            canvas.height = h * scale;
+            const ctx = canvas.getContext('2d');
+            ctx.fillStyle = '#ffffff';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+            URL.revokeObjectURL(url);
+            canvas.toBlob(function(blob) {
+                callback(blob);
+            }, 'image/png', 1.0);
+        };
 
-    const bodyOrig = layoutBody ? { display: layoutBody.style.display, flexDirection: layoutBody.style.flexDirection } : null;
-    const svgOrig = svgWrap ? { overflow: svgWrap.style.overflow, overflowX: svgWrap.style.overflowX } : null;
-    const summaryOrig = orderSummaryEl ? { minWidth: orderSummaryEl.style.minWidth, maxWidth: orderSummaryEl.style.maxWidth } : null;
+        img.onerror = function(e) {
+            console.error('SVG load error', e);
+            URL.revokeObjectURL(url);
+            callback(null);
+        };
 
-    // === ВРЕМЕННО РАЗВОРАЧИВАЕМ ===
-    layoutPaper.style.overflow = 'visible';
-    layoutPaper.style.maxWidth = 'none';
-    layoutPaper.style.width = 'max-content';
-
-    if (layoutBody) {
-        layoutBody.style.display = 'block';
-        layoutBody.style.width = '100%';
-    }
-    if (svgWrap) {
-        svgWrap.style.overflow = 'visible';
-        svgWrap.style.overflowX = 'visible';
-        svgWrap.style.display = 'block';
-        svgWrap.style.width = '100%';
-        svgWrap.style.padding = '20px';
-    }
-    if (orderSummaryEl) {
-        orderSummaryEl.style.minWidth = '0';
-        orderSummaryEl.style.maxWidth = 'none';
-        orderSummaryEl.style.width = '100%';
+        img.src = url;
     }
 
-    // Даём браузеру пересчитать
-    await new Promise(r => setTimeout(r, 200));
-
-    const rect = layoutPaper.getBoundingClientRect();
-    const captureWidth = Math.ceil(rect.width);
-    const captureHeight = Math.ceil(rect.height);
-
-    try {
-        const captureScale = isMobile ? 3 : 2;
-        const canvas = await html2canvas(layoutPaper, {
-            backgroundColor: '#ffffff',
-            scale: captureScale,
-            useCORS: true,
-            allowTaint: true,
-            logging: false,
-            width: captureWidth,
-            height: captureHeight,
-            windowWidth: captureWidth,
-            windowHeight: captureHeight,
-            scrollX: -window.scrollX,
-            scrollY: -window.scrollY
-        });
-        return canvas;
-    } catch (err) {
-        console.error('html2canvas error:', err);
-        alert('Ошибка захвата: ' + err.message);
-        return null;
-    } finally {
-        // === ВОЗВРАЩАЕМ ОРИГИНАЛЬНЫЕ СТИЛИ ===
-        layoutPaper.style.overflow = origStyles.layoutPaper.overflow;
-        layoutPaper.style.maxWidth = origStyles.layoutPaper.maxWidth;
-        layoutPaper.style.width = origStyles.layoutPaper.width;
-
-        if (layoutBody && bodyOrig) {
-            layoutBody.style.display = bodyOrig.display;
-            layoutBody.style.flexDirection = bodyOrig.flexDirection;
-        }
-        if (svgWrap && svgOrig) {
-            svgWrap.style.overflow = svgOrig.overflow;
-            svgWrap.style.overflowX = svgOrig.overflowX;
-        }
-        if (orderSummaryEl && summaryOrig) {
-            orderSummaryEl.style.minWidth = summaryOrig.minWidth;
-            orderSummaryEl.style.maxWidth = summaryOrig.maxWidth;
-        }
+    function getFileName() {
+        const orderNum = orderNumber.value ? `заказ_${orderNumber.value}` : 'заказ';
+        const dateStr = new Date().toISOString().slice(0, 10);
+        const urgentStr = isUrgent ? '_СРОЧНО' : '';
+        return `${orderNum}${urgentStr}_${dateStr}.png`;
     }
-}
 
     // ==================================================================
     // СОБЫТИЯ
@@ -2632,15 +2379,15 @@
             urgentBtn.classList.remove('active');
             urgentBtn.innerHTML = '<span class="icon">⚡</span> СРОЧНО';
         }
-        updateHeader();
+        renderLayout();
     });
 
     advanceInput.addEventListener('input', () => { renderLayout(); renderItems(); });
     rateInput.addEventListener('input', () => { updatePreview(); renderItems(); });
-    customerName.addEventListener('input', updateHeader);
-    customerPhone.addEventListener('input', updateHeader);
-    orderNumber.addEventListener('input', updateHeader);
-    orderDate.addEventListener('change', updateHeader);
+    customerName.addEventListener('input', renderLayout);
+    customerPhone.addEventListener('input', renderLayout);
+    orderNumber.addEventListener('input', renderLayout);
+    orderDate.addEventListener('change', renderLayout);
     addBtn.addEventListener('click', addItem);
 
     document.querySelectorAll('#addForm input, #addForm select').forEach(el => {
@@ -2649,65 +2396,184 @@
 
     clearAllBtn.addEventListener('click', clearAll);
 
-    shareBtn.addEventListener('click', async () => {
-        shareBtn.disabled = true;
-        shareBtn.textContent = '⏳ Подготовка...';
-        try {
-            const canvas = await generateCanvas();
-            if (!canvas) { shareBtn.disabled = false; shareBtn.textContent = '📤 Поделиться / Сохранить'; return; }
-            const fileName = getFileName();
-            canvas.toBlob(async function(blob) {
-                if (!blob) { alert('Ошибка при создании файла'); shareBtn.disabled = false; shareBtn.textContent = '📤 Поделиться / Сохранить'; return; }
-                const file = new File([blob], fileName, { type: 'image/png' });
-                if (navigator.canShare && navigator.canShare({ files: [file] })) {
-                    try {
-                        await navigator.share({ files: [file], title: isUrgent ? 'Заказ жалюзи (СРОЧНО)' : 'Заказ жалюзи', text: `Заказ № ${orderNumber.value || '—'}${isUrgent ? ' (СРОЧНО)' : ''}` });
-                        shareBtn.disabled = false; shareBtn.textContent = '📤 Поделиться / Сохранить'; return;
-                    } catch (shareErr) {
-                        if (shareErr.name === 'AbortError') { shareBtn.disabled = false; shareBtn.textContent = '📤 Поделиться / Сохранить'; return; }
-                    }
-                }
-                const url = URL.createObjectURL(blob);
-                const link = document.createElement('a');
-                link.href = url; link.download = fileName; link.style.display = 'none';
-                document.body.appendChild(link); link.click();
-                setTimeout(() => { document.body.removeChild(link); URL.revokeObjectURL(url); }, 100);
-                shareBtn.disabled = false; shareBtn.textContent = '📤 Поделиться / Сохранить';
-            }, 'image/png', 1.0);
-        } catch (e) {
-            console.error('Ошибка:', e);
-            alert('Ошибка: ' + e.message);
-            shareBtn.disabled = false; shareBtn.textContent = '📤 Поделиться / Сохранить';
-        }
-    });
-
-    savePngBtn.addEventListener('click', async () => {
+    savePngBtn.addEventListener('click', () => {
+        if (items.length === 0) { alert('Добавьте изделия, чтобы сохранить макет'); return; }
         savePngBtn.disabled = true;
         savePngBtn.textContent = '⏳ Сохранение...';
-        try {
-            const canvas = await generateCanvas();
-            if (!canvas) { savePngBtn.disabled = false; savePngBtn.textContent = '🖼 Скачать PNG'; return; }
+
+        const scale = isMobile ? 3 : 2;
+        svgToPngBlob(currentSvgString, scale, (blob) => {
+            if (!blob) {
+                alert('Ошибка при создании файла');
+                savePngBtn.disabled = false;
+                savePngBtn.textContent = '🖼 Скачать PNG';
+                return;
+            }
             const fileName = getFileName();
-            canvas.toBlob(function(blob) {
-                if (!blob) { alert('Ошибка при создании файла'); savePngBtn.disabled = false; savePngBtn.textContent = '🖼 Скачать PNG'; return; }
-                const url = URL.createObjectURL(blob);
-                const link = document.createElement('a');
-                link.href = url; link.download = fileName; link.style.display = 'none';
-                document.body.appendChild(link); link.click();
-                setTimeout(() => { document.body.removeChild(link); URL.revokeObjectURL(url); }, 100);
-                savePngBtn.disabled = false; savePngBtn.textContent = '🖼 Скачать PNG';
-            }, 'image/png', 1.0);
-        } catch (e) {
-            console.error('Ошибка:', e);
-            alert('Ошибка: ' + e.message);
-            savePngBtn.disabled = false; savePngBtn.textContent = '🖼 Скачать PNG';
-        }
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = fileName;
+            link.style.display = 'none';
+            document.body.appendChild(link);
+            link.click();
+            setTimeout(() => {
+                document.body.removeChild(link);
+                URL.revokeObjectURL(url);
+            }, 100);
+            savePngBtn.disabled = false;
+            savePngBtn.textContent = '🖼 Скачать PNG';
+        });
+    });
+
+    shareBtn.addEventListener('click', () => {
+        if (items.length === 0) { alert('Добавьте изделия, чтобы поделиться макетом'); return; }
+        shareBtn.disabled = true;
+        shareBtn.textContent = '⏳ Подготовка...';
+
+        const scale = isMobile ? 3 : 2;
+        svgToPngBlob(currentSvgString, scale, async (blob) => {
+            if (!blob) {
+                alert('Ошибка при создании файла');
+                shareBtn.disabled = false;
+                shareBtn.textContent = '📤 Поделиться / Сохранить';
+                return;
+            }
+            const fileName = getFileName();
+            const file = new File([blob], fileName, { type: 'image/png' });
+
+            if (navigator.canShare && navigator.canShare({ files: [file] })) {
+                try {
+                    await navigator.share({
+                        files: [file],
+                        title: isUrgent ? 'Заказ жалюзи (СРОЧНО)' : 'Заказ жалюзи',
+                        text: `Заказ № ${orderNumber.value || '—'}${isUrgent ? ' (СРОЧНО)' : ''}`
+                    });
+                    shareBtn.disabled = false;
+                    shareBtn.textContent = '📤 Поделиться / Сохранить';
+                    return;
+                } catch (err) {
+                    if (err.name === 'AbortError') {
+                        shareBtn.disabled = false;
+                        shareBtn.textContent = '📤 Поделиться / Сохранить';
+                        return;
+                    }
+                }
+            }
+
+            // Fallback
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = fileName;
+            link.style.display = 'none';
+            document.body.appendChild(link);
+            link.click();
+            setTimeout(() => {
+                document.body.removeChild(link);
+                URL.revokeObjectURL(url);
+            }, 100);
+            shareBtn.disabled = false;
+            shareBtn.textContent = '📤 Поделиться / Сохранить';
+        });
     });
 
     printBtn.addEventListener('click', () => {
         if (items.length === 0) { alert('Добавьте изделия, чтобы распечатать макет'); return; }
-        window.print();
+        const win = window.open('', '_blank');
+        if (!win) { alert('Разрешите всплывающие окна для печати'); return; }
+        win.document.write(`
+            <!DOCTYPE html>
+            <html><head><title>Печать макета</title>
+            <style>
+                @page { margin: 10mm; }
+                body { margin: 0; padding: 0; }
+                svg { max-width: 100%; height: auto; }
+            </style>
+            </head><body>${currentSvgString}</body></html>
+        `);
+        win.document.close();
+        win.focus();
+        setTimeout(() => { win.print(); }, 300);
     });
+
+    // ==================================================================
+    // UI helpers
+    // ==================================================================
+    function updateManufacturerUI() {
+        const mfr = manufacturerSelect.value;
+        const mfrData = MANUFACTURERS[mfr];
+        typeSelect.innerHTML = '';
+        for (const [key, t] of Object.entries(mfrData.types)) {
+            const opt = document.createElement('option');
+            opt.value = key;
+            opt.textContent = t.name;
+            typeSelect.appendChild(opt);
+        }
+        updateCatUI();
+    }
+
+    function updateCatUI() {
+        const mfr = manufacturerSelect.value;
+        const mfrData = MANUFACTURERS[mfr];
+        const typeKey = typeSelect.value;
+        const typeData = mfrData.types[typeKey];
+        if (!typeData) return;
+
+        catLabel.textContent = typeData.catLabel;
+
+        catSelect.innerHTML = '';
+        if (mfr === 'premier_decor') {
+            for (const c of ['1','2','3','4']) {
+                const opt = document.createElement('option');
+                opt.value = c;
+                opt.textContent = c + ' категория';
+                catSelect.appendChild(opt);
+            }
+        } else {
+            const priceData = SZS_PRICES[typeKey];
+            const groups = priceData && priceData.groups ? priceData.groups : ['0','1','2','3'];
+            const labels = {
+                '0': 'Группа 0 (базовая)',
+                '1': 'Группа 1',
+                '2': 'Группа 2',
+                '3': 'Группа 3',
+                '4': 'Группа 4 (премиум)'
+            };
+            for (const g of groups) {
+                const opt = document.createElement('option');
+                opt.value = g;
+                opt.textContent = labels[g] || ('Группа ' + g);
+                catSelect.appendChild(opt);
+            }
+        }
+        updatePreview();
+    }
+
+    function updatePreview() {
+        const mfr = manufacturerSelect.value;
+        const type = typeSelect.value;
+        const cat = catSelect.value;
+        const width = parseNum(widthInput.value) || 80;
+        const height = parseNum(heightInput.value) || 170;
+        const payment = paymentSelect.value;
+
+        const fakeItem = { manufacturer: mfr, type, cat, width, height, payment };
+        const price = calculatePrice(fakeItem);
+        const roundedW = roundWidth(mfr, type, width);
+        const f = formatPrice(price);
+        const cashlessMark = payment === 'Безналичные' ? ' <span class="cashless-mark">+6%</span>' : '';
+
+        previewPrice.innerHTML = `
+            <span class="usd">${f.usdStr} <small>$</small></span>
+            <span style="color:#94a3b8;">/</span>
+            <span class="byn">${f.bynStr} <small>Br</small></span>
+            ${cashlessMark}
+        `;
+        previewDetail.textContent = `${formatNum(width)} см × ${formatNum(height)} см → ${roundedW} см`;
+
+        renderLayout();
+    }
 
     // ==================================================================
     // СТАРТ
