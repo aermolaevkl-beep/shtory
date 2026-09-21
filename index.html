@@ -2517,52 +2517,100 @@
     // СОХРАНЕНИЕ PNG
     // ==================================================================
     async function generateCanvas() {
-        if (items.length === 0) { alert('Добавьте изделия, чтобы сохранить макет'); return null; }
+    if (items.length === 0) { alert('Добавьте изделия, чтобы сохранить макет'); return null; }
 
-        const wrapper = document.createElement('div');
-        wrapper.style.position = 'fixed';
-        wrapper.style.left = '-10000px';
-        wrapper.style.top = '0';
-        wrapper.style.background = '#ffffff';
-        wrapper.style.zIndex = '-1';
+    const wrapper = document.createElement('div');
+    wrapper.style.position = 'fixed';
+    wrapper.style.left = '-10000px';
+    wrapper.style.top = '0';
+    wrapper.style.background = '#ffffff';
+    wrapper.style.zIndex = '-1';
+    wrapper.style.padding = '0';
+    wrapper.style.margin = '0';
 
-        const paperClone = layoutPaper.cloneNode(true);
-        paperClone.style.width = 'max-content';
-        paperClone.style.minWidth = '900px';
-        paperClone.style.maxWidth = 'none';
-        paperClone.style.display = 'inline-block';
-        paperClone.style.boxShadow = 'none';
-        paperClone.style.border = 'none';
+    const paperClone = layoutPaper.cloneNode(true);
 
-        wrapper.appendChild(paperClone);
-        document.body.appendChild(wrapper);
+    // === Ключевые правки для корректного захвата ===
+    paperClone.style.width = 'max-content';
+    paperClone.style.minWidth = '900px';
+    paperClone.style.maxWidth = 'none';
+    paperClone.style.display = 'block';
+    paperClone.style.boxShadow = 'none';
+    paperClone.style.border = 'none';
+    paperClone.style.borderRadius = '0';
+    paperClone.style.overflow = 'visible';        // ← отключаем обрезку
+    paperClone.style.margin = '0';
+    paperClone.style.padding = '0';
 
-        await new Promise(r => setTimeout(r, 150));
-
-        const rect = paperClone.getBoundingClientRect();
-        const captureWidth = Math.max(Math.ceil(rect.width), paperClone.scrollWidth);
-        const captureHeight = Math.max(Math.ceil(rect.height), paperClone.scrollHeight);
-
-        try {
-            const captureScale = isMobile ? 3 : 2;
-            const canvas = await html2canvas(paperClone, {
-                backgroundColor: '#ffffff',
-                scale: captureScale,
-                useCORS: true,
-                allowTaint: true,
-                logging: false,
-                width: captureWidth,
-                height: captureHeight,
-                windowWidth: captureWidth,
-                windowHeight: captureHeight,
-                scrollX: 0,
-                scrollY: 0
-            });
-            return canvas;
-        } finally {
-            document.body.removeChild(wrapper);
-        }
+    // Разворачиваем body в колонку, чтобы сводка не сжимала SVG
+    const bodyClone = paperClone.querySelector('.layout-body');
+    if (bodyClone) {
+        bodyClone.style.display = 'block';
+        bodyClone.style.width = '100%';
     }
+
+    // SVG-обёртка — убираем скролл и ограничения
+    const svgWrapClone = paperClone.querySelector('.layout-svg-wrap');
+    if (svgWrapClone) {
+        svgWrapClone.style.overflow = 'visible';
+        svgWrapClone.style.display = 'flex';
+        svgWrapClone.style.justifyContent = 'center';
+        svgWrapClone.style.width = '100%';
+        svgWrapClone.style.padding = '20px';
+    }
+
+    // Сводка — растягиваем на всю ширину
+    const summaryClone = paperClone.querySelector('.order-summary');
+    if (summaryClone) {
+        summaryClone.style.maxWidth = 'none';
+        summaryClone.style.minWidth = '0';
+        summaryClone.style.width = '100%';
+        summaryClone.style.alignSelf = 'stretch';
+        summaryClone.style.padding = '15px 20px';
+        summaryClone.style.borderTop = '1px dashed #e2e8f0';
+        summaryClone.style.borderLeft = 'none';
+    }
+
+    // Итоговый блок — растягиваем
+    const totalBlockClone = paperClone.querySelector('.order-total-block');
+    if (totalBlockClone) {
+        totalBlockClone.style.width = '100%';
+    }
+
+    wrapper.appendChild(paperClone);
+    document.body.appendChild(wrapper);
+
+    // Даём браузеру пересчитать layout
+    await new Promise(r => setTimeout(r, 300));
+
+    // Реальные размеры клона
+    const rect = paperClone.getBoundingClientRect();
+    const captureWidth = Math.ceil(rect.width);
+    const captureHeight = Math.ceil(rect.height);
+
+    try {
+        const captureScale = isMobile ? 3 : 2;
+        const canvas = await html2canvas(paperClone, {
+            backgroundColor: '#ffffff',
+            scale: captureScale,
+            useCORS: true,
+            allowTaint: true,
+            logging: false,
+            width: captureWidth,
+            height: captureHeight,
+            windowWidth: captureWidth,
+            windowHeight: captureHeight,
+            scrollX: 0,
+            scrollY: 0,
+            // Важно: захватываем весь элемент целиком
+            x: 0,
+            y: 0
+        });
+        return canvas;
+    } finally {
+        document.body.removeChild(wrapper);
+    }
+}
 
     function getFileName() {
         const orderNum = orderNumber.value ? `заказ_${orderNumber.value}` : 'заказ';
