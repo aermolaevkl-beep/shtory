@@ -2519,78 +2519,56 @@
     async function generateCanvas() {
     if (items.length === 0) { alert('Добавьте изделия, чтобы сохранить макет'); return null; }
 
-    const wrapper = document.createElement('div');
-    wrapper.style.position = 'fixed';
-    wrapper.style.left = '-10000px';
-    wrapper.style.top = '0';
-    wrapper.style.background = '#ffffff';
-    wrapper.style.zIndex = '-1';
-    wrapper.style.padding = '0';
-    wrapper.style.margin = '0';
+    // Запоминаем оригинальные стили, чтобы потом вернуть
+    const origStyles = {
+        layoutPaper: {
+            overflow: layoutPaper.style.overflow,
+            maxWidth: layoutPaper.style.maxWidth,
+            width: layoutPaper.style.width
+        }
+    };
 
-    const paperClone = layoutPaper.cloneNode(true);
+    // Получаем ссылки на вложенные элементы
+    const layoutBody = layoutPaper.querySelector('.layout-body');
+    const svgWrap = layoutPaper.querySelector('.layout-svg-wrap');
+    const orderSummaryEl = layoutPaper.querySelector('.order-summary');
 
-    // === Ключевые правки для корректного захвата ===
-    paperClone.style.width = 'max-content';
-    paperClone.style.minWidth = '900px';
-    paperClone.style.maxWidth = 'none';
-    paperClone.style.display = 'block';
-    paperClone.style.boxShadow = 'none';
-    paperClone.style.border = 'none';
-    paperClone.style.borderRadius = '0';
-    paperClone.style.overflow = 'visible';        // ← отключаем обрезку
-    paperClone.style.margin = '0';
-    paperClone.style.padding = '0';
+    const bodyOrig = layoutBody ? { display: layoutBody.style.display, flexDirection: layoutBody.style.flexDirection } : null;
+    const svgOrig = svgWrap ? { overflow: svgWrap.style.overflow, overflowX: svgWrap.style.overflowX } : null;
+    const summaryOrig = orderSummaryEl ? { minWidth: orderSummaryEl.style.minWidth, maxWidth: orderSummaryEl.style.maxWidth } : null;
 
-    // Разворачиваем body в колонку, чтобы сводка не сжимала SVG
-    const bodyClone = paperClone.querySelector('.layout-body');
-    if (bodyClone) {
-        bodyClone.style.display = 'block';
-        bodyClone.style.width = '100%';
+    // === ВРЕМЕННО РАЗВОРАЧИВАЕМ ===
+    layoutPaper.style.overflow = 'visible';
+    layoutPaper.style.maxWidth = 'none';
+    layoutPaper.style.width = 'max-content';
+
+    if (layoutBody) {
+        layoutBody.style.display = 'block';
+        layoutBody.style.width = '100%';
+    }
+    if (svgWrap) {
+        svgWrap.style.overflow = 'visible';
+        svgWrap.style.overflowX = 'visible';
+        svgWrap.style.display = 'block';
+        svgWrap.style.width = '100%';
+        svgWrap.style.padding = '20px';
+    }
+    if (orderSummaryEl) {
+        orderSummaryEl.style.minWidth = '0';
+        orderSummaryEl.style.maxWidth = 'none';
+        orderSummaryEl.style.width = '100%';
     }
 
-    // SVG-обёртка — убираем скролл и ограничения
-    const svgWrapClone = paperClone.querySelector('.layout-svg-wrap');
-    if (svgWrapClone) {
-        svgWrapClone.style.overflow = 'visible';
-        svgWrapClone.style.display = 'flex';
-        svgWrapClone.style.justifyContent = 'center';
-        svgWrapClone.style.width = '100%';
-        svgWrapClone.style.padding = '20px';
-    }
+    // Даём браузеру пересчитать
+    await new Promise(r => setTimeout(r, 200));
 
-    // Сводка — растягиваем на всю ширину
-    const summaryClone = paperClone.querySelector('.order-summary');
-    if (summaryClone) {
-        summaryClone.style.maxWidth = 'none';
-        summaryClone.style.minWidth = '0';
-        summaryClone.style.width = '100%';
-        summaryClone.style.alignSelf = 'stretch';
-        summaryClone.style.padding = '15px 20px';
-        summaryClone.style.borderTop = '1px dashed #e2e8f0';
-        summaryClone.style.borderLeft = 'none';
-    }
-
-    // Итоговый блок — растягиваем
-    const totalBlockClone = paperClone.querySelector('.order-total-block');
-    if (totalBlockClone) {
-        totalBlockClone.style.width = '100%';
-    }
-
-    wrapper.appendChild(paperClone);
-    document.body.appendChild(wrapper);
-
-    // Даём браузеру пересчитать layout
-    await new Promise(r => setTimeout(r, 300));
-
-    // Реальные размеры клона
-    const rect = paperClone.getBoundingClientRect();
+    const rect = layoutPaper.getBoundingClientRect();
     const captureWidth = Math.ceil(rect.width);
     const captureHeight = Math.ceil(rect.height);
 
     try {
         const captureScale = isMobile ? 3 : 2;
-        const canvas = await html2canvas(paperClone, {
+        const canvas = await html2canvas(layoutPaper, {
             backgroundColor: '#ffffff',
             scale: captureScale,
             useCORS: true,
@@ -2600,24 +2578,34 @@
             height: captureHeight,
             windowWidth: captureWidth,
             windowHeight: captureHeight,
-            scrollX: 0,
-            scrollY: 0,
-            // Важно: захватываем весь элемент целиком
-            x: 0,
-            y: 0
+            scrollX: -window.scrollX,
+            scrollY: -window.scrollY
         });
         return canvas;
+    } catch (err) {
+        console.error('html2canvas error:', err);
+        alert('Ошибка захвата: ' + err.message);
+        return null;
     } finally {
-        document.body.removeChild(wrapper);
+        // === ВОЗВРАЩАЕМ ОРИГИНАЛЬНЫЕ СТИЛИ ===
+        layoutPaper.style.overflow = origStyles.layoutPaper.overflow;
+        layoutPaper.style.maxWidth = origStyles.layoutPaper.maxWidth;
+        layoutPaper.style.width = origStyles.layoutPaper.width;
+
+        if (layoutBody && bodyOrig) {
+            layoutBody.style.display = bodyOrig.display;
+            layoutBody.style.flexDirection = bodyOrig.flexDirection;
+        }
+        if (svgWrap && svgOrig) {
+            svgWrap.style.overflow = svgOrig.overflow;
+            svgWrap.style.overflowX = svgOrig.overflowX;
+        }
+        if (orderSummaryEl && summaryOrig) {
+            orderSummaryEl.style.minWidth = summaryOrig.minWidth;
+            orderSummaryEl.style.maxWidth = summaryOrig.maxWidth;
+        }
     }
 }
-
-    function getFileName() {
-        const orderNum = orderNumber.value ? `заказ_${orderNumber.value}` : 'заказ';
-        const dateStr = new Date().toISOString().slice(0, 10);
-        const urgentStr = isUrgent ? '_СРОЧНО' : '';
-        return `${orderNum}${urgentStr}_${dateStr}.png`;
-    }
 
     // ==================================================================
     // СОБЫТИЯ
